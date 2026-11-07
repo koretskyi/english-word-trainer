@@ -185,6 +185,7 @@ button:disabled {
 }
 
 .study-instruction .target-translation {
+  color: #8BCF35;
   font-size: 18px !important;
   text-transform: none;
   letter-spacing: normal;
