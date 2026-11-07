@@ -373,7 +373,7 @@ function StudyPage({
         {levels.map((level) => <option key={level} value={level}>{level}</option>)}
       </select>
       <span>{masteredCount} / {totalWords} выучено на {selectedLevel}</span>
-      <button className="button button-secondary" type="button"
+      <button className="button button-secondary button-review-list" type="button"
         onClick={() => setShowReviewWords((value) => !value)}>
         Слова на повторении ({reviewWords.length})
       </button>
@@ -485,7 +485,7 @@ function StudyPage({
             <div className="form-actions">
               <button className="button button-primary" type="submit"
                 disabled={!isComplete}>Проверить ответ</button>
-              <button className="button button-secondary" type="button"
+              <button className="button button-secondary button-dont-know" type="button"
                 onClick={dontKnow}>Не знаю</button>
               {isReview && (
                 <button className="button button-primary" type="button"
