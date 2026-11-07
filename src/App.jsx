@@ -401,13 +401,6 @@ function StudyPage({
     </div>
   ) : null;
 
-  function submitAnswer(event) {
-    if (event) event.preventDefault();
-    if (!sentence || checked || !isComplete) return;
-    setChecked(true);
-    onComplete(sentence.word, correct);
-  }
-
   function handleAnswerChange(nextAnswer) {
     if (checked) return;
     setAnswer(nextAnswer);
@@ -473,8 +466,8 @@ function StudyPage({
       <p className="eyebrow">ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ</p>
       <h2 className="russian-sentence">{sentence.russian}</h2>
       <div className="english-section">
-        <p className="eyebrow">ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ</p>
-        <form onSubmit={submitAnswer}>
+        <p className="eyebrow">ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ: <strong>{sentence.russianWord}</strong></p>
+        <div className="answer-area">
           <div className="english-sentence">
             <span>{parts[0]}</span>
             <WordGap sentence={sentence} value={answer}
@@ -483,8 +476,6 @@ function StudyPage({
           </div>
           {!checked ? (
             <div className="form-actions">
-              <button className="button button-primary" type="submit"
-                disabled={!isComplete}>Проверить ответ</button>
               <button className="button button-secondary button-dont-know" type="button"
                 onClick={dontKnow}>Не знаю</button>
               {isReview && (
@@ -499,7 +490,7 @@ function StudyPage({
               <p>{markedKnown ? "Больше не будет появляться в обучении." : correct ? "Ответ засчитан." : "Слово вернётся через 5 других карточек."}</p>
             </div>
           )}
-        </form>
+        </div>
       </div>
     </section>
   );
