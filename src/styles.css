@@ -176,6 +176,12 @@ button:disabled {
   border-top: 1px solid var(--border);
 }
 
+.target-translation {
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 800;
+}
+
 .english-sentence {
   display: flex;
   align-items: baseline;
