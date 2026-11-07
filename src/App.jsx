@@ -411,7 +411,7 @@ function StudyPage({
       )}
       {levelSelector}
       <div className="card-topline">
-        <span>Обучение по алгоритму 5–10–20–40–80–160</span>
+        <span>Прогресс обучения</span>
         <span className="level-badge">{sentence.level}</span>
       </div>
       <div className="progress-track">
