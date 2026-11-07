@@ -354,8 +354,6 @@ function StudyPage({
   const [showReviewWords, setShowReviewWords] = useState(false);
   const [markedKnown, setMarkedKnown] = useState(false);
   const targetLetters = sentence ? [...sentence.word] : [];
-  const isComplete = targetLetters.length > 0 &&
-    targetLetters.every((_, position) => Boolean(answer[position]));
   const correct = Boolean(sentence) && isComplete &&
     targetLetters.every((letter, position) =>
       (answer[position] || "").toLowerCase() === letter.toLowerCase()
@@ -469,7 +467,7 @@ function StudyPage({
       <p className="eyebrow">ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ</p>
       <h2 className="russian-sentence">{sentence.russian}</h2>
       <div className="english-section">
-        <p className="eyebrow">ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ: <strong>{sentence.russianWord || "—"}</strong></p>
+        <p className="eyebrow">ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ: <strong className="target-translation">{sentence.russianWord || "—"}</strong></p>
         <div className="answer-area">
           <div className="english-sentence">
             <span>{parts[0]}</span>
