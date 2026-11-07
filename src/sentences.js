@@ -3306,8 +3306,8 @@ export const SENTENCES = [
     },
     {
       "id": "c1_068",
-      "russian": "Автор сопоставляет личные истории с официальной статистикой.",
-      "englishTemplate": "The author {word}s personal stories with official statistics.",
+      "russian": "Автор будет сопоставлять личные истории с официальной статистикой.",
+      "englishTemplate": "The author will {word} personal stories with official statistics.",
       "word": "juxtapose",
       "russianWord": "сопоставлять",
       "revealIndices": [
