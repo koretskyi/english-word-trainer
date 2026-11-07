@@ -51,6 +51,93 @@ function loadSentences() {
 
 
 
+const LEARNING_STORAGE_KEY = "english-word-trainer-learning-v1";
+const REVIEW_INTERVALS = [5, 10, 20, 40, 80, 160];
+
+function normalizeWord(word) {
+  return String(word || "").trim().toLowerCase();
+}
+
+function loadLearningData() {
+  try {
+    const saved = localStorage.getItem(LEARNING_STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.version === 1 && parsed.words) {
+        return {
+          version: 1,
+          completedCount: Number(parsed.completedCount) || 0,
+          words: parsed.words,
+        };
+      }
+    }
+  } catch (error) {
+    console.error("Ошибка загрузки прогресса:", error);
+  }
+  return { version: 1, completedCount: 0, words: {} };
+}
+
+function selectNextSentence(sentences, learningData) {
+  const unique = new Map();
+  sentences.forEach((sentence) => {
+    const key = normalizeWord(sentence.word);
+    if (key && !unique.has(key)) unique.set(key, sentence);
+  });
+
+  const entries = Array.from(unique.entries());
+  const due = entries
+    .filter(([key]) => {
+      const state = learningData.words[key];
+      return state && state.status === "REVIEW" &&
+        state.dueAt <= learningData.completedCount;
+    })
+    .sort((a, b) => {
+      const left = learningData.words[a[0]];
+      const right = learningData.words[b[0]];
+      return (left.dueAt - right.dueAt) || ((left.order || 0) - (right.order || 0));
+    });
+
+  if (due.length) return due[0][1];
+
+  const fresh = entries.find(([key]) => {
+    const state = learningData.words[key];
+    return !state || state.status === "NEW";
+  });
+  return fresh ? fresh[1] : null;
+}
+
+function recordWordAnswer(previous, word, isCorrect) {
+  const key = normalizeWord(word);
+  const completedCount = previous.completedCount + 1;
+  const old = previous.words[key] || { status: "NEW", stage: 0 };
+  const words = { ...previous.words };
+
+  if (!isCorrect) {
+    words[key] = {
+      status: "REVIEW",
+      stage: 1,
+      dueAt: completedCount + REVIEW_INTERVALS[0],
+      order: completedCount,
+    };
+  } else if (old.status === "NEW") {
+    words[key] = { status: "MASTERED", stage: 6, masteredAt: completedCount };
+  } else if (old.status === "REVIEW") {
+    if (old.stage >= REVIEW_INTERVALS.length) {
+      words[key] = { status: "MASTERED", stage: 6, masteredAt: completedCount };
+    } else {
+      const nextStage = old.stage + 1;
+      words[key] = {
+        status: "REVIEW",
+        stage: nextStage,
+        dueAt: completedCount + REVIEW_INTERVALS[nextStage - 1],
+        order: completedCount,
+      };
+    }
+  }
+
+  return { version: 1, completedCount, words };
+}
+
 function createId() {
 
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -238,215 +325,130 @@ function WordGap({ sentence, value, onChange, disabled }) {
 
 
 
- // Страница обучения.
+// Страница обучения с интервальным повторением.
 function StudyPage({
-  sentences,
-  index,
-  setIndex,
+  sentence,
   selectedLevel,
   setSelectedLevel,
   levels,
+  onComplete,
+  onAdvance,
+  masteredCount,
+  totalWords,
+  completedCount,
 }) {
-  const sentence = sentences[index];
-
-  const [answer, setAnswer] = useState(() =>
-    createInitialAnswer(sentence)
-  );
+  const [answer, setAnswer] = useState(() => createInitialAnswer(sentence));
   const [checked, setChecked] = useState(false);
-
   const targetLetters = sentence ? [...sentence.word] : [];
-
-  const isComplete =
-    targetLetters.length > 0 &&
+  const isComplete = targetLetters.length > 0 &&
     targetLetters.every((_, position) => Boolean(answer[position]));
-
-  const correct =
-    Boolean(sentence) &&
-    isComplete &&
-    targetLetters.every(
-      (letter, position) =>
-        (answer[position] || "").toLowerCase() ===
-        letter.toLowerCase()
+  const correct = Boolean(sentence) && isComplete &&
+    targetLetters.every((letter, position) =>
+      (answer[position] || "").toLowerCase() === letter.toLowerCase()
     );
 
   useEffect(() => {
-    if (!checked || !correct || sentences.length === 0) return;
-
-    const timer = setTimeout(() => {
-      setIndex((current) => (current + 1) % sentences.length);
-    }, 1000);
-
+    if (!checked) return undefined;
+    const timer = setTimeout(onAdvance, 900);
     return () => clearTimeout(timer);
-  }, [checked, correct, setIndex, sentences.length]);
+  }, [checked, onAdvance]);
 
-  const parts = sentence
-    ? sentence.englishTemplate.split("{word}")
-    : [];
-
+  const parts = sentence ? sentence.englishTemplate.split("{word}") : [];
   const levelSelector = (
     <div className="level-selector">
       <label htmlFor="study-level">Уровень:</label>
-      <select
-        id="study-level"
-        value={selectedLevel}
-        onChange={(event) => setSelectedLevel(event.target.value)}
-      >
-        {levels.map((level) => (
-          <option key={level} value={level}>
-            {level}
-          </option>
-        ))}
+      <select id="study-level" value={selectedLevel}
+        onChange={(event) => setSelectedLevel(event.target.value)}>
+        {levels.map((level) => <option key={level} value={level}>{level}</option>)}
       </select>
-      <span>{sentences.length} карточек</span>
+      <span>{masteredCount} / {totalWords} выучено</span>
     </div>
   );
 
-  // Автоматическая проверка после ввода последней буквы.
+  function submitAnswer(event) {
+    if (event) event.preventDefault();
+    if (!sentence || checked || !isComplete) return;
+    setChecked(true);
+    onComplete(sentence.word, correct);
+  }
+
   function handleAnswerChange(nextAnswer) {
+    if (checked) return;
     setAnswer(nextAnswer);
-
-    const complete = targetLetters.every(
-      (_, position) => Boolean(nextAnswer[position])
-    );
-
+    const complete = targetLetters.every((_, position) => Boolean(nextAnswer[position]));
     if (complete) {
+      const isRight = targetLetters.every((letter, position) =>
+        (nextAnswer[position] || "").toLowerCase() === letter.toLowerCase()
+      );
       setChecked(true);
+      onComplete(sentence.word, isRight);
     }
   }
 
-  function handleCheck(event) {
-    event.preventDefault();
+  function dontKnow() {
+    if (!sentence || checked) return;
     setChecked(true);
+    onComplete(sentence.word, false);
   }
 
-  function retry() {
-    setAnswer(createInitialAnswer(sentence));
-    setChecked(false);
-  }
-
-  // Если карточек нет, показываем сообщение.
   if (!sentence) {
     return (
       <section className="panel">
         {levelSelector}
-        <h2>Пока нет предложений для уровня {selectedLevel}</h2>
-        <p>Добавь предложения этого уровня через админку.</p>
+        <h2>На уровне {selectedLevel} пока нет доступных карточек</h2>
+        <p>Новые слова закончились, а слова на повторение ещё не подошли по интервалу.</p>
+        <p>Выполнено ответов: {completedCount}. Переключи уровень или добавь слова через админку.</p>
       </section>
     );
   }
 
   return (
-    <section
-      className={`panel study-panel${
-        checked && correct ? " answer-correct" : ""
-      }`}
-    >
+    <section className={"panel study-panel" + (checked && correct ? " answer-correct" : "")}>
       {checked && correct && (
         <div className="correct-overlay">
           <div className="correct-message">✓ Правильно!</div>
         </div>
       )}
-
       {levelSelector}
-
       <div className="card-topline">
-        <span>
-          Карточка {index + 1} из {sentences.length}
-        </span>
+        <span>Обучение по алгоритму 5–10–20–40–80–160</span>
         <span className="level-badge">{sentence.level}</span>
       </div>
-
       <div className="progress-track">
-        <div
-          className="progress-fill"
-          style={{
-            width: `${((index + 1) / sentences.length) * 100}%`,
-          }}
-        />
+        <div className="progress-fill" style={{
+          width: (totalWords ? (masteredCount / totalWords) * 100 : 0) + "%",
+        }} />
       </div>
-
       <p className="eyebrow">ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ</p>
-
       <h2 className="russian-sentence">{sentence.russian}</h2>
-
       <div className="english-section">
-        <p className="eyebrow">
-          ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ
-        </p>
-
-        <form onSubmit={handleCheck}>
+        <p className="eyebrow">ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ</p>
+        <form onSubmit={submitAnswer}>
           <div className="english-sentence">
             <span>{parts[0]}</span>
-
-            <WordGap
-              sentence={sentence}
-              value={answer}
-              onChange={handleAnswerChange}
-              disabled={checked}
-            />
-
+            <WordGap sentence={sentence} value={answer}
+              onChange={handleAnswerChange} disabled={checked} />
             <span>{parts.slice(1).join("{word}")}</span>
           </div>
-
           {!checked ? (
-            <button
-              className="button button-primary"
-              type="submit"
-            >
-              Проверить ответ
-            </button>
+            <div className="form-actions">
+              <button className="button button-primary" type="submit"
+                disabled={!isComplete}>Проверить ответ</button>
+              <button className="button button-secondary" type="button"
+                onClick={dontKnow}>Не знаю</button>
+            </div>
           ) : (
-            <div
-              className={`feedback ${
-                correct ? "correct" : "incorrect"
-              }`}
-            >
-              <strong>
-                {correct
-                  ? "✓ Правильно!"
-                  : `✗ Правильный ответ: ${sentence.word}`}
-              </strong>
-
-              <p>
-                {sentence.englishTemplate.replace(
-                  "{word}",
-                  sentence.word
-                )}
-              </p>
-
-              <button
-                type="button"
-                className="button button-secondary"
-                onClick={retry}
-              >
-                Попробовать ещё раз
-              </button>
+            <div className={"feedback " + (correct ? "correct" : "incorrect")}>
+              <strong>{correct ? "✓ Правильно!" : "✗ Правильный ответ: " + sentence.word}</strong>
+              <p>{sentence.englishTemplate.replace("{word}", sentence.word)}</p>
+              <p>{correct ? "Ответ засчитан." : "Слово вернётся через 5 других карточек."}</p>
             </div>
           )}
         </form>
       </div>
-
-      <div className="card-navigation">
-        <button
-          className="button button-secondary"
-          disabled={index === 0}
-          onClick={() => setIndex((current) => current - 1)}
-        >
-          ← Назад
-        </button>
-
-        <button
-          className="button button-primary"
-          disabled={index >= sentences.length - 1}
-          onClick={() => setIndex((current) => current + 1)}
-        >
-          Далее →
-        </button>
-      </div>
     </section>
   );
 }
-
 
 
 
@@ -975,206 +977,105 @@ function AdminPage({ sentences, onSave, onDelete }) {
 
 
 // Главный компонент приложения.
-
 export default function App() {
   const [sentences, setSentences] = useState(loadSentences);
   const [page, setPage] = useState("study");
-  const [index, setIndex] = useState(0);
   const [selectedLevel, setSelectedLevel] = useState("A1");
-
+  const [learningData, setLearningData] = useState(loadLearningData);
+  const [activeWordKey, setActiveWordKey] = useState(null);
   const levels = ["A1", "A2", "B1", "B2", "C1"];
 
-  const filteredSentences = sentences.filter(
-    (sentence) => sentence.level === selectedLevel
+  const filteredSentences = sentences.filter((sentence) => sentence.level === selectedLevel);
+  const candidate = selectNextSentence(filteredSentences, learningData);
+  const sentence = activeWordKey
+    ? filteredSentences.find((item) => normalizeWord(item.word) === activeWordKey) || candidate
+    : candidate;
+
+  const uniqueWords = new Set(sentences.map((item) => normalizeWord(item.word)).filter(Boolean));
+  const totalWords = uniqueWords.size;
+  const masteredCount = Array.from(uniqueWords).filter((word) =>
+    learningData.words[word] && learningData.words[word].status === "MASTERED"
+  ).length;
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sentences));
+    } catch (error) {
+      console.error("Не удалось сохранить предложения:", error);
+    }
+  }, [sentences]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(LEARNING_STORAGE_KEY, JSON.stringify(learningData));
+    } catch (error) {
+      console.error("Не удалось сохранить прогресс:", error);
+    }
+  }, [learningData]);
+
+  function completeWord(word, isCorrect) {
+    const key = normalizeWord(word);
+    setActiveWordKey(key);
+    setLearningData((previous) => recordWordAnswer(previous, word, isCorrect));
+  }
+
+  function advanceCard() {
+    setActiveWordKey(null);
+  }
+
+  function changeLevel(level) {
+    setActiveWordKey(null);
+    setSelectedLevel(level);
+  }
+
+  function saveSentence(sentence) {
+    setSentences((current) => {
+      const exists = current.some((item) => item.id === sentence.id);
+      if (exists) return current.map((item) => item.id === sentence.id ? sentence : item);
+      return [...current, sentence];
+    });
+  }
+
+  function deleteSentence(id) {
+    setSentences((current) => current.filter((item) => item.id !== id));
+  }
+
+  return (
+    <div className="app-shell">
+      <header className="app-header">
+        <div className="brand">
+          <div className="brand-icon">Aa</div>
+          <div>
+            <h1>English Word Trainer</h1>
+            <p>Учи слова в контексте</p>
+          </div>
+        </div>
+        <nav className="main-nav">
+          <button className={page === "study" ? "nav-button active" : "nav-button"}
+            onClick={() => setPage("study")}>Обучение</button>
+          <button className={page === "admin" ? "nav-button active" : "nav-button"}
+            onClick={() => setPage("admin")}>Админка</button>
+        </nav>
+      </header>
+      <main className="main-content">
+        {page === "study" ? (
+          <StudyPage
+            key={selectedLevel + ":" + (sentence ? normalizeWord(sentence.word) : "empty")}
+            sentence={sentence}
+            selectedLevel={selectedLevel}
+            setSelectedLevel={changeLevel}
+            levels={levels}
+            onComplete={completeWord}
+            onAdvance={advanceCard}
+            masteredCount={masteredCount}
+            totalWords={totalWords}
+            completedCount={learningData.completedCount}
+          />
+        ) : (
+          <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} />
+        )}
+      </main>
+      <footer className="app-footer">English Word Trainer · MVP v1</footer>
+    </div>
   );
-
-
-  useEffect(() => {
-
-    try {
-
-      localStorage.setItem(
-
-        STORAGE_KEY,
-
-        JSON.stringify(sentences)
-
-      );
-
-    } catch (error) {
-
-      console.error("Не удалось сохранить предложения:", error);
-
-    }
-
-  }, [sentences]);
-
-
-
-  useEffect(() => {
-
-    setIndex((current) =>
-
-      Math.min(current, Math.max(0, sentences.length - 1))
-
-    );
-
-  }, [sentences.length]);
-useEffect(() => {
-  setIndex(0);
-}, [selectedLevel]);
-
-
-  function saveSentence(sentence) {
-
-    setSentences((current) => {
-
-      const exists = current.some(
-
-        (item) => item.id === sentence.id
-
-      );
-
-
-
-      if (exists) {
-
-        return current.map((item) =>
-
-          item.id === sentence.id ? sentence : item
-
-        );
-
-      }
-
-
-
-      return [...current, sentence];
-
-    });
-
-  }
-
-
-
-  function deleteSentence(id) {
-
-    setSentences((current) =>
-
-      current.filter((item) => item.id !== id)
-
-    );
-
-  }
-
-
-
-  return (
-
-    <div className="app-shell">
-
-      <header className="app-header">
-
-        <div className="brand">
-
-          <div className="brand-icon">Aa</div>
-
-
-
-          <div>
-
-            <h1>English Word Trainer</h1>
-
-            <p>Учи слова в контексте</p>
-
-          </div>
-
-        </div>
-
-
-
-        <nav className="main-nav">
-
-          <button
-
-            className={
-
-              page === "study" ? "nav-button active" : "nav-button"
-
-            }
-
-            onClick={() => setPage("study")}
-
-          >
-
-            Обучение
-
-          </button>
-
-
-
-          <button
-
-            className={
-
-              page === "admin" ? "nav-button active" : "nav-button"
-
-            }
-
-            onClick={() => setPage("admin")}
-
-          >
-
-            Админка
-
-          </button>
-
-        </nav>
-
-      </header>
-
-
-
-      <main className="main-content">
-
-        {page === "study" ? (
-
-     <StudyPage
-  key={`${selectedLevel}:${filteredSentences[index]?.id || "empty"}`}
-  sentences={filteredSentences}
-  index={index}
-  setIndex={setIndex}
-  selectedLevel={selectedLevel}
-  setSelectedLevel={setSelectedLevel}
-  levels={levels}
-/>
-
-        ) : (
-
-          <AdminPage
-
-            sentences={sentences}
-
-            onSave={saveSentence}
-
-            onDelete={deleteSentence}
-
-          />
-
-        )}
-
-      </main>
-
-
-
-      <footer className="app-footer">
-
-        English Word Trainer · MVP v1
-
-      </footer>
-
-    </div>
-
-  );
-
 }
