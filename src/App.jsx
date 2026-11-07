@@ -1,0 +1,1180 @@
+import { SENTENCES } from "./sentences.js";
+import { useEffect, useRef, useState } from "react";
+
+
+
+
+const STORAGE_KEY = "english-word-trainer-v1";
+
+
+
+function loadSentences() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if (saved !== null) {
+      const parsed = JSON.parse(saved);
+
+      if (Array.isArray(parsed)) {
+        const savedById = new Map();
+
+        for (const sentence of parsed) {
+          if (sentence && sentence.id != null) {
+            savedById.set(sentence.id, sentence);
+          }
+        }
+
+        const builtInIds = new Set(SENTENCES.map((sentence) => sentence.id));
+
+        // Keep built-in order; user edits of the same id win.
+        // New built-in ids still appear even if they were never saved.
+        const mergedBuiltIn = SENTENCES.map(
+          (sentence) => savedById.get(sentence.id) || sentence
+        );
+
+        const userCreated = parsed.filter(
+          (sentence) =>
+            sentence &&
+            sentence.id != null &&
+            !builtInIds.has(sentence.id)
+        );
+
+        return [...mergedBuiltIn, ...userCreated];
+      }
+    }
+  } catch (error) {
+    console.error("Ошибка загрузки предложений:", error);
+  }
+
+  return SENTENCES;
+}
+
+
+
+function createId() {
+
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+}
+
+
+
+// Открытые буквы сразу помещаются на свои места.
+
+
+function createInitialAnswer(sentence) {
+  if (!sentence) return [];
+
+  const letters = [...sentence.word];
+
+  // Все поля изначально пустые, включая открытые буквы.
+  // Открытые буквы остаются подсказками, но пользователь вводит их сам.
+  return letters.map(() => "");
+}
+
+
+
+
+// Каждая буква слова находится в отдельном поле ввода.
+
+
+function WordGap({ sentence, value, onChange, disabled }) {
+  const letters = [...sentence.word];
+  const opened = new Set(sentence.revealIndices || []);
+  const inputRefs = useRef([]);
+
+  // Открытые буквы показываются как подсказки,
+  // но пользователь должен ввести каждую букву самостоятельно.
+  function focusAt(index) {
+    if (index >= 0 && index < letters.length) {
+      inputRefs.current[index]?.focus();
+      return true;
+    }
+
+    return false;
+  }
+
+  // При открытии карточки фокусируемся на первой пустой позиции.
+  useEffect(() => {
+    if (disabled) return;
+
+    const firstEmpty = value.findIndex(
+      (letter) => !letter
+    );
+
+    if (firstEmpty >= 0) {
+      focusAt(firstEmpty);
+    }
+  }, [sentence.id, sentence.word, disabled]);
+
+  function handleChange(index, rawValue) {
+    const character = [...rawValue].slice(-1)[0] || "";
+
+    if (character && !/^[a-z]$/i.test(character)) {
+      return;
+    }
+
+    const next = [...value];
+    next[index] = character;
+
+    onChange(next);
+
+    // После ввода переходим на следующую пустую позицию.
+    // Открытые буквы не пропускаются, пока не введены.
+    if (character) {
+      let nextIndex = index + 1;
+
+      while (
+        nextIndex < letters.length &&
+        next[nextIndex]
+      ) {
+        nextIndex++;
+      }
+
+      if (nextIndex < letters.length) {
+        focusAt(nextIndex);
+      }
+    }
+  }
+
+  function handleKeyDown(index, event) {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      focusAt(index - 1);
+      return;
+    }
+
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      focusAt(index + 1);
+      return;
+    }
+
+    if (event.key === "Backspace" && !value[index]) {
+      event.preventDefault();
+
+      let previous = index - 1;
+
+      while (previous >= 0 && !value[previous]) {
+        previous--;
+      }
+
+      if (previous >= 0) {
+        const next = [...value];
+        next[previous] = "";
+        onChange(next);
+        focusAt(previous);
+      }
+    }
+  }
+
+  return (
+    <span
+      className="word-gap-container"
+      style={{
+        display: "inline-flex",
+        alignItems: "baseline",
+        gap: "3px",
+        whiteSpace: "nowrap",
+        verticalAlign: "baseline",
+      }}
+    >
+      {letters.map((letter, index) => {
+        const isOpened = opened.has(index);
+
+        return (
+          <input
+            key={`${sentence.id}-${index}`}
+            ref={(element) => {
+              inputRefs.current[index] = element;
+            }}
+            className="word-gap"
+            type="text"
+            inputMode="text"
+            maxLength={1}
+            value={value[index] || ""}
+            placeholder={isOpened ? letter : "*"}
+            onChange={(event) =>
+              handleChange(index, event.target.value)
+            }
+            onKeyDown={(event) =>
+              handleKeyDown(index, event)
+            }
+            disabled={disabled}
+            autoComplete="off"
+            autoCapitalize="none"
+            spellCheck={false}
+            aria-label={`Буква ${index + 1}`}
+            style={{
+              width: "1.2em",
+              minWidth: "1.2em",
+              maxWidth: "1.2em",
+              flex: "0 0 1.2em",
+              height: "1.65em",
+              margin: 0,
+              padding: "0 1px",
+              textAlign: "center",
+              font: "inherit",
+              lineHeight: 1.2,
+              border: "none",
+              borderBottom: `2px solid ${
+                isOpened ? "#15803d" : "#3157d5"
+              }`,
+              borderRadius: 0,
+              backgroundColor: isOpened
+                ? "#e7f6eb"
+                : "#f0f3ff",
+              color: isOpened ? "#15803d" : "#172033",
+              fontWeight: isOpened ? 700 : 400,
+              outlineOffset: "1px",
+              opacity: 1,
+            }}
+          />
+        );
+      })}
+    </span>
+  );
+}
+
+
+
+ // Страница обучения.
+function StudyPage({
+  sentences,
+  index,
+  setIndex,
+  selectedLevel,
+  setSelectedLevel,
+  levels,
+}) {
+  const sentence = sentences[index];
+
+  const [answer, setAnswer] = useState(() =>
+    createInitialAnswer(sentence)
+  );
+  const [checked, setChecked] = useState(false);
+
+  const targetLetters = sentence ? [...sentence.word] : [];
+
+  const isComplete =
+    targetLetters.length > 0 &&
+    targetLetters.every((_, position) => Boolean(answer[position]));
+
+  const correct =
+    Boolean(sentence) &&
+    isComplete &&
+    targetLetters.every(
+      (letter, position) =>
+        (answer[position] || "").toLowerCase() ===
+        letter.toLowerCase()
+    );
+
+  useEffect(() => {
+    if (!checked || !correct || sentences.length === 0) return;
+
+    const timer = setTimeout(() => {
+      setIndex((current) => (current + 1) % sentences.length);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [checked, correct, setIndex, sentences.length]);
+
+  const parts = sentence
+    ? sentence.englishTemplate.split("{word}")
+    : [];
+
+  const levelSelector = (
+    <div className="level-selector">
+      <label htmlFor="study-level">Уровень:</label>
+      <select
+        id="study-level"
+        value={selectedLevel}
+        onChange={(event) => setSelectedLevel(event.target.value)}
+      >
+        {levels.map((level) => (
+          <option key={level} value={level}>
+            {level}
+          </option>
+        ))}
+      </select>
+      <span>{sentences.length} карточек</span>
+    </div>
+  );
+
+  // Автоматическая проверка после ввода последней буквы.
+  function handleAnswerChange(nextAnswer) {
+    setAnswer(nextAnswer);
+
+    const complete = targetLetters.every(
+      (_, position) => Boolean(nextAnswer[position])
+    );
+
+    if (complete) {
+      setChecked(true);
+    }
+  }
+
+  function handleCheck(event) {
+    event.preventDefault();
+    setChecked(true);
+  }
+
+  function retry() {
+    setAnswer(createInitialAnswer(sentence));
+    setChecked(false);
+  }
+
+  // Если карточек нет, показываем сообщение.
+  if (!sentence) {
+    return (
+      <section className="panel">
+        {levelSelector}
+        <h2>Пока нет предложений для уровня {selectedLevel}</h2>
+        <p>Добавь предложения этого уровня через админку.</p>
+      </section>
+    );
+  }
+
+  return (
+    <section
+      className={`panel study-panel${
+        checked && correct ? " answer-correct" : ""
+      }`}
+    >
+      {checked && correct && (
+        <div className="correct-overlay">
+          <div className="correct-message">✓ Правильно!</div>
+        </div>
+      )}
+
+      {levelSelector}
+
+      <div className="card-topline">
+        <span>
+          Карточка {index + 1} из {sentences.length}
+        </span>
+        <span className="level-badge">{sentence.level}</span>
+      </div>
+
+      <div className="progress-track">
+        <div
+          className="progress-fill"
+          style={{
+            width: `${((index + 1) / sentences.length) * 100}%`,
+          }}
+        />
+      </div>
+
+      <p className="eyebrow">ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ</p>
+
+      <h2 className="russian-sentence">{sentence.russian}</h2>
+
+      <div className="english-section">
+        <p className="eyebrow">
+          ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ
+        </p>
+
+        <form onSubmit={handleCheck}>
+          <div className="english-sentence">
+            <span>{parts[0]}</span>
+
+            <WordGap
+              sentence={sentence}
+              value={answer}
+              onChange={handleAnswerChange}
+              disabled={checked}
+            />
+
+            <span>{parts.slice(1).join("{word}")}</span>
+          </div>
+
+          {!checked ? (
+            <button
+              className="button button-primary"
+              type="submit"
+            >
+              Проверить ответ
+            </button>
+          ) : (
+            <div
+              className={`feedback ${
+                correct ? "correct" : "incorrect"
+              }`}
+            >
+              <strong>
+                {correct
+                  ? "✓ Правильно!"
+                  : `✗ Правильный ответ: ${sentence.word}`}
+              </strong>
+
+              <p>
+                {sentence.englishTemplate.replace(
+                  "{word}",
+                  sentence.word
+                )}
+              </p>
+
+              <button
+                type="button"
+                className="button button-secondary"
+                onClick={retry}
+              >
+                Попробовать ещё раз
+              </button>
+            </div>
+          )}
+        </form>
+      </div>
+
+      <div className="card-navigation">
+        <button
+          className="button button-secondary"
+          disabled={index === 0}
+          onClick={() => setIndex((current) => current - 1)}
+        >
+          ← Назад
+        </button>
+
+        <button
+          className="button button-primary"
+          disabled={index >= sentences.length - 1}
+          onClick={() => setIndex((current) => current + 1)}
+        >
+          Далее →
+        </button>
+      </div>
+    </section>
+  );
+}
+
+
+
+
+// Начальные значения формы админки.
+
+const EMPTY_FORM = {
+
+  russian: "",
+
+  englishTemplate: "",
+
+  word: "",
+
+  revealPositions: "",
+
+  level: "B1",
+
+};
+
+
+
+// Локальная админка.
+
+function AdminPage({ sentences, onSave, onDelete }) {
+
+  const [form, setForm] = useState({ ...EMPTY_FORM });
+
+  const [editingId, setEditingId] = useState(null);
+
+  const [error, setError] = useState("");
+
+
+
+  function update(field, value) {
+
+    setForm((current) => ({
+
+      ...current,
+
+      [field]: value,
+
+    }));
+
+  }
+
+
+
+  function resetForm() {
+
+    setForm({ ...EMPTY_FORM });
+
+    setEditingId(null);
+
+    setError("");
+
+  }
+
+
+
+  function editSentence(sentence) {
+
+    setEditingId(sentence.id);
+
+
+
+    setForm({
+
+      russian: sentence.russian,
+
+      englishTemplate: sentence.englishTemplate,
+
+      word: sentence.word,
+
+      revealPositions: (sentence.revealIndices || [])
+
+        .map((position) => position + 1)
+
+        .join(", "),
+
+      level: sentence.level || "B1",
+
+    });
+
+
+
+    setError("");
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+  }
+
+
+
+  function submit(event) {
+
+    event.preventDefault();
+
+    setError("");
+
+
+
+    const russian = form.russian.trim();
+
+    const englishTemplate = form.englishTemplate.trim();
+
+    const word = form.word.trim();
+
+
+
+    if (!russian || !englishTemplate || !word) {
+
+      setError("Заполни все обязательные поля.");
+
+      return;
+
+    }
+
+
+
+    if (/\s/.test(word)) {
+
+      setError("В этой версии указывай одно слово без пробелов.");
+
+      return;
+
+    }
+
+
+
+    const placeholderCount = (
+
+      englishTemplate.match(/\{word\}/g) || []
+
+    ).length;
+
+
+
+    if (placeholderCount !== 1) {
+
+      setError(
+
+        "Укажи {word} ровно один раз в английском шаблоне."
+
+      );
+
+      return;
+
+    }
+
+
+
+    const positions = form.revealPositions.trim()
+
+      ? form.revealPositions
+
+          .split(",")
+
+          .map((item) => Number(item.trim()) - 1)
+
+      : [];
+
+
+
+    if (
+
+      positions.some(
+
+        (position) =>
+
+          !Number.isInteger(position) ||
+
+          position < 0 ||
+
+          position >= [...word].length
+
+      )
+
+    ) {
+
+      setError(
+
+        `Номера открытых букв должны быть от 1 до ${[...word].length}.`
+
+      );
+
+      return;
+
+    }
+
+
+
+    onSave({
+
+      id: editingId || createId(),
+
+      russian,
+
+      englishTemplate,
+
+      word,
+
+      revealIndices: [...new Set(positions)],
+
+      level: form.level,
+
+    });
+
+
+
+    resetForm();
+
+  }
+
+
+
+  return (
+
+    <div className="admin-layout">
+
+      <section className="panel">
+
+        <h2>
+
+          {editingId
+
+            ? "Редактировать предложение"
+
+            : "Добавить предложение"}
+
+        </h2>
+
+
+
+        <p className="muted">
+
+          Используй {"{word}"} вместо пропущенного слова.
+
+        </p>
+
+
+
+        <form className="admin-form" onSubmit={submit}>
+
+          <label>
+
+            Предложение на русском
+
+            <textarea
+
+              rows={2}
+
+              required
+
+              value={form.russian}
+
+              onChange={(event) =>
+
+                update("russian", event.target.value)
+
+              }
+
+              placeholder="Я оставил пальто в машине."
+
+            />
+
+          </label>
+
+
+
+          <label>
+
+            Английский шаблон
+
+            <input
+
+              required
+
+              value={form.englishTemplate}
+
+              onChange={(event) =>
+
+                update("englishTemplate", event.target.value)
+
+              }
+
+              placeholder="I left my {word} in the car."
+
+            />
+
+          </label>
+
+
+
+          <label>
+
+            Пропущенное слово
+
+            <input
+
+              required
+
+              value={form.word}
+
+              onChange={(event) =>
+
+                update("word", event.target.value)
+
+              }
+
+              placeholder="coat"
+
+            />
+
+          </label>
+
+
+
+          <label>
+
+            Позиции открытых букв (нумерация с 1)
+
+            <input
+
+              value={form.revealPositions}
+
+              onChange={(event) =>
+
+                update("revealPositions", event.target.value)
+
+              }
+
+              placeholder="Например: 3 или 1, 4"
+
+            />
+
+          </label>
+
+
+
+          <label>
+
+            Уровень английского
+
+            <select
+
+              value={form.level}
+
+              onChange={(event) =>
+
+                update("level", event.target.value)
+
+              }
+
+            >
+
+              {["A1", "A2", "B1", "B2", "C1"].map((level) => (
+
+                <option key={level} value={level}>
+
+                  {level}
+
+                </option>
+
+              ))}
+
+            </select>
+
+          </label>
+
+
+
+          {error && (
+
+            <p className="form-error" role="alert">
+
+              {error}
+
+            </p>
+
+          )}
+
+
+
+          <div className="form-actions">
+
+            <button className="button button-primary" type="submit">
+
+              {editingId
+
+                ? "Сохранить изменения"
+
+                : "Добавить предложение"}
+
+            </button>
+
+
+
+            {editingId && (
+
+              <button
+
+                type="button"
+
+                className="button button-secondary"
+
+                onClick={resetForm}
+
+              >
+
+                Отмена
+
+              </button>
+
+            )}
+
+          </div>
+
+        </form>
+
+      </section>
+
+
+
+      <section className="panel">
+
+        <h2>Все предложения ({sentences.length})</h2>
+
+
+
+        {sentences.length === 0 && (
+
+          <p className="muted">Предложений пока нет.</p>
+
+        )}
+
+
+
+        {sentences.map((sentence) => (
+
+          <article className="sentence-item" key={sentence.id}>
+
+            <div>
+
+              <strong>{sentence.russian}</strong>
+
+
+
+              <p className="sentence-item-english">
+
+                {sentence.englishTemplate.replace(
+
+                  "{word}",
+
+                  `[${sentence.word}]`
+
+                )}
+
+              </p>
+
+
+
+              <span className="muted">{sentence.level}</span>
+
+            </div>
+
+
+
+            <div className="sentence-item-actions">
+
+              <button
+
+                className="button button-secondary"
+
+                onClick={() => editSentence(sentence)}
+
+              >
+
+                Изменить
+
+              </button>
+
+
+
+              <button
+
+                className="button button-danger"
+
+                onClick={() => {
+
+                  if (window.confirm("Удалить это предложение?")) {
+
+                    onDelete(sentence.id);
+
+
+
+                    if (editingId === sentence.id) {
+
+                      resetForm();
+
+                    }
+
+                  }
+
+                }}
+
+              >
+
+                Удалить
+
+              </button>
+
+            </div>
+
+          </article>
+
+        ))}
+
+      </section>
+
+    </div>
+
+  );
+
+}
+
+
+
+// Главный компонент приложения.
+
+export default function App() {
+  const [sentences, setSentences] = useState(loadSentences);
+  const [page, setPage] = useState("study");
+  const [index, setIndex] = useState(0);
+  const [selectedLevel, setSelectedLevel] = useState("A1");
+
+  const levels = ["A1", "A2", "B1", "B2", "C1"];
+
+  const filteredSentences = sentences.filter(
+    (sentence) => sentence.level === selectedLevel
+  );
+
+
+  useEffect(() => {
+
+    try {
+
+      localStorage.setItem(
+
+        STORAGE_KEY,
+
+        JSON.stringify(sentences)
+
+      );
+
+    } catch (error) {
+
+      console.error("Не удалось сохранить предложения:", error);
+
+    }
+
+  }, [sentences]);
+
+
+
+  useEffect(() => {
+
+    setIndex((current) =>
+
+      Math.min(current, Math.max(0, sentences.length - 1))
+
+    );
+
+  }, [sentences.length]);
+useEffect(() => {
+  setIndex(0);
+}, [selectedLevel]);
+
+
+  function saveSentence(sentence) {
+
+    setSentences((current) => {
+
+      const exists = current.some(
+
+        (item) => item.id === sentence.id
+
+      );
+
+
+
+      if (exists) {
+
+        return current.map((item) =>
+
+          item.id === sentence.id ? sentence : item
+
+        );
+
+      }
+
+
+
+      return [...current, sentence];
+
+    });
+
+  }
+
+
+
+  function deleteSentence(id) {
+
+    setSentences((current) =>
+
+      current.filter((item) => item.id !== id)
+
+    );
+
+  }
+
+
+
+  return (
+
+    <div className="app-shell">
+
+      <header className="app-header">
+
+        <div className="brand">
+
+          <div className="brand-icon">Aa</div>
+
+
+
+          <div>
+
+            <h1>English Word Trainer</h1>
+
+            <p>Учи слова в контексте</p>
+
+          </div>
+
+        </div>
+
+
+
+        <nav className="main-nav">
+
+          <button
+
+            className={
+
+              page === "study" ? "nav-button active" : "nav-button"
+
+            }
+
+            onClick={() => setPage("study")}
+
+          >
+
+            Обучение
+
+          </button>
+
+
+
+          <button
+
+            className={
+
+              page === "admin" ? "nav-button active" : "nav-button"
+
+            }
+
+            onClick={() => setPage("admin")}
+
+          >
+
+            Админка
+
+          </button>
+
+        </nav>
+
+      </header>
+
+
+
+      <main className="main-content">
+
+        {page === "study" ? (
+
+     <StudyPage
+  key={`${selectedLevel}:${filteredSentences[index]?.id || "empty"}`}
+  sentences={filteredSentences}
+  index={index}
+  setIndex={setIndex}
+  selectedLevel={selectedLevel}
+  setSelectedLevel={setSelectedLevel}
+  levels={levels}
+/>
+
+        ) : (
+
+          <AdminPage
+
+            sentences={sentences}
+
+            onSave={saveSentence}
+
+            onDelete={deleteSentence}
+
+          />
+
+        )}
+
+      </main>
+
+
+
+      <footer className="app-footer">
+
+        English Word Trainer · MVP v1
+
+      </footer>
+
+    </div>
+
+  );
+
+}
