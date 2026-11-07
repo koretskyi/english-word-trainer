@@ -1696,5 +1696,1771 @@ export const SENTENCES = [
       russianWord: "тогда как",
     revealIndices: [2, 4],
     level: "C1"
-  }
+  },
+    {
+      "id": "a1_051",
+      "russian": "Я съел апельсин на завтрак.",
+      "englishTemplate": "I ate an {word} for breakfast.",
+      "word": "orange",
+      "russianWord": "апельсин",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_052",
+      "russian": "Нам нужен картофель для ужина.",
+      "englishTemplate": "We need some {word} for dinner.",
+      "word": "potato",
+      "russianWord": "картофель",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_053",
+      "russian": "Добавь помидор в салат.",
+      "englishTemplate": "Add a {word} to the salad.",
+      "word": "tomato",
+      "russianWord": "помидор",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_054",
+      "russian": "Сегодня на ужин будет курица.",
+      "englishTemplate": "We are having {word} for dinner.",
+      "word": "chicken",
+      "russianWord": "курица",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_055",
+      "russian": "Она часто покупает свежую рыбу.",
+      "englishTemplate": "She often buys fresh {word}.",
+      "word": "fish",
+      "russianWord": "рыба",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_056",
+      "russian": "Я обычно готовлю завтрак в семь.",
+      "englishTemplate": "I usually make {word} at seven.",
+      "word": "breakfast",
+      "russianWord": "завтрак",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_057",
+      "russian": "Мы встречаемся после обеда.",
+      "englishTemplate": "We are meeting after {word}.",
+      "word": "lunch",
+      "russianWord": "обед",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_058",
+      "russian": "Ужин готов через десять минут.",
+      "englishTemplate": "{word} will be ready in ten minutes.",
+      "word": "dinner",
+      "russianWord": "ужин",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_059",
+      "russian": "В нашем саду растут цветы.",
+      "englishTemplate": "There are flowers in our {word}.",
+      "word": "garden",
+      "russianWord": "сад",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_060",
+      "russian": "Ванная находится рядом со спальней.",
+      "englishTemplate": "The {word} is next to the bedroom.",
+      "word": "bathroom",
+      "russianWord": "ванная",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_061",
+      "russian": "Кот спит на моей кровати.",
+      "englishTemplate": "The cat is sleeping on my {word}.",
+      "word": "bed",
+      "russianWord": "кровать",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_062",
+      "russian": "Диван очень удобный.",
+      "englishTemplate": "The {word} is very comfortable.",
+      "word": "sofa",
+      "russianWord": "диван",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_063",
+      "russian": "Включи лампу, пожалуйста.",
+      "englishTemplate": "Please turn on the {word}.",
+      "word": "lamp",
+      "russianWord": "лампа",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_064",
+      "russian": "Я не могу найти ключ от дома.",
+      "englishTemplate": "I cannot find the house {word}.",
+      "word": "key",
+      "russianWord": "ключ",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_065",
+      "russian": "Моя сумка слишком тяжёлая.",
+      "englishTemplate": "My {word} is too heavy.",
+      "word": "bag",
+      "russianWord": "сумка",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_066",
+      "russian": "Сними обувь у двери.",
+      "englishTemplate": "Take off your {word} by the door.",
+      "word": "shoes",
+      "russianWord": "обувь",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_067",
+      "russian": "Эта рубашка мне велика.",
+      "englishTemplate": "This {word} is too big for me.",
+      "word": "shirt",
+      "russianWord": "рубашка",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_068",
+      "russian": "Возьми куртку, на улице холодно.",
+      "englishTemplate": "Take your {word}; it is cold outside.",
+      "word": "jacket",
+      "russianWord": "куртка",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_069",
+      "russian": "У моего брата новая машина.",
+      "englishTemplate": "My brother has a new {word}.",
+      "word": "car",
+      "russianWord": "машина",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_070",
+      "russian": "Мы вызвали такси до аэропорта.",
+      "englishTemplate": "We called a {word} to the airport.",
+      "word": "taxi",
+      "russianWord": "такси",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_071",
+      "russian": "Аэропорт находится далеко отсюда.",
+      "englishTemplate": "The {word} is far from here.",
+      "word": "airport",
+      "russianWord": "аэропорт",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_072",
+      "russian": "Магазин закрывается в девять.",
+      "englishTemplate": "The {word} closes at nine.",
+      "word": "shop",
+      "russianWord": "магазин",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_073",
+      "russian": "По субботам мы ходим на рынок.",
+      "englishTemplate": "We go to the {word} on Saturdays.",
+      "word": "market",
+      "russianWord": "рынок",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_074",
+      "russian": "Дети играют в парке.",
+      "englishTemplate": "The children are playing in the {word}.",
+      "word": "park",
+      "russianWord": "парк",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_075",
+      "russian": "Больница находится в центре города.",
+      "englishTemplate": "The {word} is in the city centre.",
+      "word": "hospital",
+      "russianWord": "больница",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_076",
+      "russian": "Мне нужно поговорить с врачом.",
+      "englishTemplate": "I need to speak to a {word}.",
+      "word": "doctor",
+      "russianWord": "врач",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_077",
+      "russian": "Мой отец начинает работу рано.",
+      "englishTemplate": "My father starts {word} early.",
+      "word": "work",
+      "russianWord": "работа",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_078",
+      "russian": "Дети любят играть на улице.",
+      "englishTemplate": "Children love to {word} outside.",
+      "word": "play",
+      "russianWord": "играть",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_079",
+      "russian": "Мне нужно лечь спать пораньше.",
+      "englishTemplate": "I need to {word} earlier.",
+      "word": "sleep",
+      "russianWord": "спать",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a1_080",
+      "russian": "Я люблю слушать музыку вечером.",
+      "englishTemplate": "I like to {word} to music in the evening.",
+      "word": "listen",
+      "russianWord": "слушать",
+      "revealIndices": [
+        0
+      ],
+      "level": "A1"
+    },
+    {
+      "id": "a2_051",
+      "russian": "Мне нужно записаться к стоматологу.",
+      "englishTemplate": "I need to make an appointment with the {word}.",
+      "word": "dentist",
+      "russianWord": "стоматолог",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_052",
+      "russian": "Поднимитесь по лестнице на второй этаж.",
+      "englishTemplate": "Go up the {word} to the second floor.",
+      "word": "stairs",
+      "russianWord": "лестница",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_053",
+      "russian": "Лифт сегодня не работает.",
+      "englishTemplate": "The {word} is not working today.",
+      "word": "elevator",
+      "russianWord": "лифт",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_054",
+      "russian": "У нас есть бронь на двоих.",
+      "englishTemplate": "We have a {word} for two people.",
+      "word": "reservation",
+      "russianWord": "бронь",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_055",
+      "russian": "Мой чемодан слишком тяжёлый.",
+      "englishTemplate": "My {word} is too heavy.",
+      "word": "suitcase",
+      "russianWord": "чемодан",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_056",
+      "russian": "Не забудь взять паспорт.",
+      "englishTemplate": "Do not forget to take your {word}.",
+      "word": "passport",
+      "russianWord": "паспорт",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_057",
+      "russian": "Главный вход находится с другой стороны.",
+      "englishTemplate": "The main {word} is on the other side.",
+      "word": "entrance",
+      "russianWord": "вход",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_058",
+      "russian": "Где ближайший выход?",
+      "englishTemplate": "Where is the nearest {word}?",
+      "word": "exit",
+      "russianWord": "выход",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_059",
+      "russian": "Можете показать мне правильное направление?",
+      "englishTemplate": "Can you show me the right {word}?",
+      "word": "direction",
+      "russianWord": "направление",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_060",
+      "russian": "Мы посмотрели на карту города.",
+      "englishTemplate": "We looked at a {word} of the city.",
+      "word": "map",
+      "russianWord": "карта",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_061",
+      "russian": "Она хочет учиться за границей.",
+      "englishTemplate": "She wants to study {word}.",
+      "word": "abroad",
+      "russianWord": "за границей",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_062",
+      "russian": "Наш рейс задержали на час.",
+      "englishTemplate": "Our flight had a one-hour {word}.",
+      "word": "delay",
+      "russianWord": "задержка",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_063",
+      "russian": "Наш рейс вылетает в шесть утра.",
+      "englishTemplate": "Our {word} leaves at six in the morning.",
+      "word": "flight",
+      "russianWord": "рейс",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_064",
+      "russian": "Время отправления указано на билете.",
+      "englishTemplate": "The {word} time is printed on the ticket.",
+      "word": "departure",
+      "russianWord": "отправление",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_065",
+      "russian": "Я попросил вернуть деньги за билет.",
+      "englishTemplate": "I asked for a {word} for the ticket.",
+      "word": "refund",
+      "russianWord": "возврат денег",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_066",
+      "russian": "В этом магазине можно сделать обмен.",
+      "englishTemplate": "You can make an {word} in this shop.",
+      "word": "exchange",
+      "russianWord": "обмен",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_067",
+      "russian": "Нам пришлось стоять в длинной очереди.",
+      "englishTemplate": "We had to stand in a long {word}.",
+      "word": "queue",
+      "russianWord": "очередь",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_068",
+      "russian": "Попросите счёт, пожалуйста.",
+      "englishTemplate": "Could we have the {word}, please?",
+      "word": "bill",
+      "russianWord": "счёт",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_069",
+      "russian": "Наш заказ скоро будет готов.",
+      "englishTemplate": "Our {word} will be ready soon.",
+      "word": "order",
+      "russianWord": "заказ",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_070",
+      "russian": "Можно посмотреть меню?",
+      "englishTemplate": "Can we see the {word}?",
+      "word": "menu",
+      "russianWord": "меню",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_071",
+      "russian": "Покупатель задал вопрос продавцу.",
+      "englishTemplate": "The {word} asked the shop assistant a question.",
+      "word": "customer",
+      "russianWord": "покупатель",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_072",
+      "russian": "У меня нет наличных с собой.",
+      "englishTemplate": "I do not have any {word} with me.",
+      "word": "cash",
+      "russianWord": "наличные",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_073",
+      "russian": "Я нашёл монету на полу.",
+      "englishTemplate": "I found a {word} on the floor.",
+      "word": "coin",
+      "russianWord": "монета",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_074",
+      "russian": "Я заберу посылку после работы.",
+      "englishTemplate": "I will collect the {word} after work.",
+      "word": "parcel",
+      "russianWord": "посылка",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_075",
+      "russian": "Мы почти закончили работу.",
+      "englishTemplate": "We have {word} finished the work.",
+      "word": "nearly",
+      "russianWord": "почти",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_076",
+      "russian": "Он, вероятно, придёт позже.",
+      "englishTemplate": "He will {word} come later.",
+      "word": "probably",
+      "russianWord": "вероятно",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_077",
+      "russian": "Можешь одолжить мне свою ручку?",
+      "englishTemplate": "Can you {word} me your pen?",
+      "word": "lend",
+      "russianWord": "одалживать",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_078",
+      "russian": "Мне нужно упаковать вещи сегодня.",
+      "englishTemplate": "I need to {word} my things today.",
+      "word": "pack",
+      "russianWord": "упаковывать",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_079",
+      "russian": "Не опоздай на автобус.",
+      "englishTemplate": "Do not {word} the bus.",
+      "word": "miss",
+      "russianWord": "опоздать на",
+      "revealIndices": [
+        0
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "a2_080",
+      "russian": "Я заберу документы завтра.",
+      "englishTemplate": "I will {word} the documents tomorrow.",
+      "word": "collect",
+      "russianWord": "забирать",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "A2"
+    },
+    {
+      "id": "b1_051",
+      "russian": "Они будут вести переговоры о новой цене.",
+      "englishTemplate": "They will {word} a new price.",
+      "word": "negotiate",
+      "russianWord": "вести переговоры",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_052",
+      "russian": "Компания планирует расширить производство.",
+      "englishTemplate": "The company plans to {word} production.",
+      "word": "expand",
+      "russianWord": "расширять",
+      "revealIndices": [
+        0
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_053",
+      "russian": "Нам пришлось отложить встречу.",
+      "englishTemplate": "We had to {word} the meeting.",
+      "word": "postpone",
+      "russianWord": "откладывать",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_054",
+      "russian": "Нам нужно решить эту проблему сегодня.",
+      "englishTemplate": "We need to {word} this problem today.",
+      "word": "resolve",
+      "russianWord": "решать",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_055",
+      "russian": "Все сотрудники могут участвовать в проекте.",
+      "englishTemplate": "All employees can {word} in the project.",
+      "word": "participate",
+      "russianWord": "участвовать",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_056",
+      "russian": "Трудно оценить стоимость ремонта.",
+      "englishTemplate": "It is difficult to {word} the cost of the repair.",
+      "word": "estimate",
+      "russianWord": "оценивать",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_057",
+      "russian": "Менеджер должен оценить результаты.",
+      "englishTemplate": "The manager must {word} the results.",
+      "word": "evaluate",
+      "russianWord": "оценивать",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_058",
+      "russian": "Мы провели опрос среди клиентов.",
+      "englishTemplate": "We carried out a {word} among customers.",
+      "word": "survey",
+      "russianWord": "опрос",
+      "revealIndices": [
+        0
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_059",
+      "russian": "Я отправил заявку на эту должность.",
+      "englishTemplate": "I sent an {word} for this position.",
+      "word": "application",
+      "russianWord": "заявка",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_060",
+      "russian": "Каждого кандидата пригласят на собеседование.",
+      "englishTemplate": "Each {word} will be invited to an interview.",
+      "word": "candidate",
+      "russianWord": "кандидат",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_061",
+      "russian": "На сайте появилась новая вакансия.",
+      "englishTemplate": "A new {word} appeared on the website.",
+      "word": "vacancy",
+      "russianWord": "вакансия",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_062",
+      "russian": "Зарплата выплачивается раз в месяц.",
+      "englishTemplate": "The {word} is paid once a month.",
+      "word": "salary",
+      "russianWord": "зарплата",
+      "revealIndices": [
+        0
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_063",
+      "russian": "Его доход зависит от количества заказов.",
+      "englishTemplate": "His {word} depends on the number of orders.",
+      "word": "income",
+      "russianWord": "доход",
+      "revealIndices": [
+        0
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_064",
+      "russian": "Нам нужно сократить рекламный бюджет.",
+      "englishTemplate": "We need to reduce the advertising {word}.",
+      "word": "budget",
+      "russianWord": "бюджет",
+      "revealIndices": [
+        0
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_065",
+      "russian": "Наша стратегия нуждается в изменениях.",
+      "englishTemplate": "Our {word} needs to change.",
+      "word": "strategy",
+      "russianWord": "стратегия",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_066",
+      "russian": "Спасибо за честную обратную связь.",
+      "englishTemplate": "Thank you for your honest {word}.",
+      "word": "feedback",
+      "russianWord": "обратная связь",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_067",
+      "russian": "Мы заметили значительный прогресс.",
+      "englishTemplate": "We have noticed significant {word}.",
+      "word": "progress",
+      "russianWord": "прогресс",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_068",
+      "russian": "Это сложная задача для всей команды.",
+      "englishTemplate": "This is a difficult {word} for the whole team.",
+      "word": "challenge",
+      "russianWord": "сложная задача",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_069",
+      "russian": "Это было непростое решение.",
+      "englishTemplate": "It was not an easy {word}.",
+      "word": "decision",
+      "russianWord": "решение",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_070",
+      "russian": "Погода оказала влияние на поездку.",
+      "englishTemplate": "The weather had an {word} on the trip.",
+      "word": "impact",
+      "russianWord": "влияние",
+      "revealIndices": [
+        0
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_071",
+      "russian": "Реклама может влиять на выбор людей.",
+      "englishTemplate": "Advertising can {word} people's choices.",
+      "word": "influence",
+      "russianWord": "влиять",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_072",
+      "russian": "Хороший руководитель умеет мотивировать команду.",
+      "englishTemplate": "A good manager can {word} a team.",
+      "word": "motivate",
+      "russianWord": "мотивировать",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_073",
+      "russian": "Они смогли разрешить конфликт мирно.",
+      "englishTemplate": "They managed to resolve the {word} peacefully.",
+      "word": "conflict",
+      "russianWord": "конфликт",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_074",
+      "russian": "Компания получила жалобу от клиента.",
+      "englishTemplate": "The company received a {word} from a customer.",
+      "word": "complaint",
+      "russianWord": "жалоба",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_075",
+      "russian": "Вам следует извиниться за ошибку.",
+      "englishTemplate": "You should {word} for the mistake.",
+      "word": "apologise",
+      "russianWord": "извиняться",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_076",
+      "russian": "Я очень ценю вашу помощь.",
+      "englishTemplate": "I really {word} your help.",
+      "word": "appreciate",
+      "russianWord": "ценить",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_077",
+      "russian": "Результат будет зависеть от погоды.",
+      "englishTemplate": "The result will {word} on the weather.",
+      "word": "depend",
+      "russianWord": "зависеть",
+      "revealIndices": [
+        0
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_078",
+      "russian": "Несмотря на дождь, матч продолжился.",
+      "englishTemplate": "{word} the rain, the match continued.",
+      "word": "despite",
+      "russianWord": "несмотря на",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_079",
+      "russian": "Это временное решение.",
+      "englishTemplate": "This is a {word} solution.",
+      "word": "temporary",
+      "russianWord": "временный",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b1_080",
+      "russian": "Вероятно, цены скоро вырастут.",
+      "englishTemplate": "Prices are {word} to rise soon.",
+      "word": "likely",
+      "russianWord": "вероятный",
+      "revealIndices": [
+        0
+      ],
+      "level": "B1"
+    },
+    {
+      "id": "b2_051",
+      "russian": "Нужно распределить ресурсы между командами.",
+      "englishTemplate": "We need to {word} resources between the teams.",
+      "word": "allocate",
+      "russianWord": "распределять",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_052",
+      "russian": "Нам необходимо проанализировать данные.",
+      "englishTemplate": "We need to {word} the data.",
+      "word": "analyse",
+      "russianWord": "анализировать",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_053",
+      "russian": "Он продолжает утверждать, что был прав.",
+      "englishTemplate": "He continues to {word} that he was right.",
+      "word": "assert",
+      "russianWord": "утверждать",
+      "revealIndices": [
+        0
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_054",
+      "russian": "Она упорно работала, чтобы достичь своей цели.",
+      "englishTemplate": "She worked hard to {word} her goal.",
+      "word": "attain",
+      "russianWord": "достигать",
+      "revealIndices": [
+        0
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_055",
+      "russian": "Нельзя приписывать весь успех одному человеку.",
+      "englishTemplate": "We cannot {word} all the success to one person.",
+      "word": "attribute",
+      "russianWord": "приписывать",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_056",
+      "russian": "Компания решила прекратить эту деятельность.",
+      "englishTemplate": "The company decided to {word} this activity.",
+      "word": "cease",
+      "russianWord": "прекращать",
+      "revealIndices": [
+        0
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_057",
+      "russian": "Компания согласилась компенсировать ущерб.",
+      "englishTemplate": "The company agreed to {word} the damage.",
+      "word": "compensate",
+      "russianWord": "компенсировать",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_058",
+      "russian": "Каждый компонент системы важен.",
+      "englishTemplate": "Every {word} of the system is important.",
+      "word": "component",
+      "russianWord": "компонент",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_059",
+      "russian": "Его слова противоречат предыдущему заявлению.",
+      "englishTemplate": "His words {word} his previous statement.",
+      "word": "contradict",
+      "russianWord": "противоречить",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_060",
+      "russian": "Критерии отбора должны быть понятными.",
+      "englishTemplate": "The selection {word} should be clear.",
+      "word": "criteria",
+      "russianWord": "критерии",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_061",
+      "russian": "Продажи начали постепенно снижаться.",
+      "englishTemplate": "Sales began to {word} gradually.",
+      "word": "decline",
+      "russianWord": "снижаться",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_062",
+      "russian": "Отчёт демонстрирует явное улучшение.",
+      "englishTemplate": "The report {word} a clear improvement.",
+      "word": "demonstrate",
+      "russianWord": "демонстрировать",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_063",
+      "russian": "Важно различать факты и мнения.",
+      "englishTemplate": "It is important to {word} facts from opinions.",
+      "word": "distinguish",
+      "russianWord": "различать",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_064",
+      "russian": "Нам нужен более эффективный способ работы.",
+      "englishTemplate": "We need a more {word} way of working.",
+      "word": "efficient",
+      "russianWord": "эффективный",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_065",
+      "russian": "Новая система должна улучшить безопасность.",
+      "englishTemplate": "The new system should {word} security.",
+      "word": "enhance",
+      "russianWord": "улучшать",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_066",
+      "russian": "Проверьте документы, чтобы обеспечить точность.",
+      "englishTemplate": "Check the documents to {word} accuracy.",
+      "word": "ensure",
+      "russianWord": "обеспечивать",
+      "revealIndices": [
+        0
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_067",
+      "russian": "Эта квалификация эквивалентна университетскому диплому.",
+      "englishTemplate": "This qualification is {word} to a university degree.",
+      "word": "equivalent",
+      "russianWord": "эквивалентный",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_068",
+      "russian": "Нам нужна чёткая структура для проекта.",
+      "englishTemplate": "We need a clear {word} for the project.",
+      "word": "framework",
+      "russianWord": "структура",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_069",
+      "russian": "Исследователи проверили первоначальную гипотезу.",
+      "englishTemplate": "The researchers tested the original {word}.",
+      "word": "hypothesis",
+      "russianWord": "гипотеза",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_070",
+      "russian": "Бонус стал хорошим стимулом для сотрудников.",
+      "englishTemplate": "The bonus provided a strong {word} for employees.",
+      "word": "incentive",
+      "russianWord": "стимул",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_071",
+      "russian": "Ничто не может оправдать такое поведение.",
+      "englishTemplate": "Nothing can {word} such behaviour.",
+      "word": "justify",
+      "russianWord": "оправдывать",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_072",
+      "russian": "План был рискованным, но мы всё же продолжили.",
+      "englishTemplate": "The plan was risky; {word}, we continued.",
+      "word": "nevertheless",
+      "russianWord": "тем не менее",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_073",
+      "russian": "Наша главная цель — снизить расходы.",
+      "englishTemplate": "Our main {word} is to reduce costs.",
+      "word": "objective",
+      "russianWord": "цель",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_074",
+      "russian": "Предварительные результаты выглядят многообещающе.",
+      "englishTemplate": "The {word} results look promising.",
+      "word": "preliminary",
+      "russianWord": "предварительный",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_075",
+      "russian": "Она решила продолжить карьеру в науке.",
+      "englishTemplate": "She decided to {word} a career in science.",
+      "word": "pursue",
+      "russianWord": "стремиться к",
+      "revealIndices": [
+        0
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_076",
+      "russian": "Компания хочет сохранить опытных сотрудников.",
+      "englishTemplate": "The company wants to {word} experienced staff.",
+      "word": "retain",
+      "russianWord": "сохранять",
+      "revealIndices": [
+        0
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_077",
+      "russian": "Новые правила ограничивают доступ к зданию.",
+      "englishTemplate": "The new rules {word} access to the building.",
+      "word": "restrict",
+      "russianWord": "ограничивать",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_078",
+      "russian": "Мы готовы предпринять необходимые шаги.",
+      "englishTemplate": "We are ready to {word} the necessary steps.",
+      "word": "undertake",
+      "russianWord": "предпринимать",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_079",
+      "russian": "Проблема получила широкое распространение.",
+      "englishTemplate": "The problem became {word}.",
+      "word": "widespread",
+      "russianWord": "широко распространённый",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "b2_080",
+      "russian": "Они создали систему, посредством которой клиенты могут отслеживать заказы.",
+      "englishTemplate": "They created a system {word} customers can track orders.",
+      "word": "whereby",
+      "russianWord": "посредством которого",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "B2"
+    },
+    {
+      "id": "c1_051",
+      "russian": "Новые данные подтверждают его версию событий.",
+      "englishTemplate": "The new data {word} his account of events.",
+      "word": "corroborate",
+      "russianWord": "подтверждать",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_052",
+      "russian": "Совокупный эффект этих изменений оказался значительным.",
+      "englishTemplate": "The {word} effect of these changes was significant.",
+      "word": "cumulative",
+      "russianWord": "совокупный",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_053",
+      "russian": "Между двумя версиями нет заметной разницы.",
+      "englishTemplate": "There is no {word} difference between the two versions.",
+      "word": "discernible",
+      "russianWord": "различимый",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_054",
+      "russian": "Исследование выявило значительное неравенство в доходах.",
+      "englishTemplate": "The study revealed a significant {word} in income.",
+      "word": "disparity",
+      "russianWord": "неравенство",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_055",
+      "russian": "Организация стремится распространять достоверную информацию.",
+      "englishTemplate": "The organisation aims to {word} reliable information.",
+      "word": "disseminate",
+      "russianWord": "распространять",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_056",
+      "russian": "Вывод основан на эмпирических данных.",
+      "englishTemplate": "The conclusion is based on {word} evidence.",
+      "word": "empirical",
+      "russianWord": "эмпирический",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_057",
+      "russian": "Новая стратегия охватывает несколько направлений.",
+      "englishTemplate": "The new strategy will {word} several areas.",
+      "word": "encompass",
+      "russianWord": "охватывать",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_058",
+      "russian": "Эта должность предполагает частые поездки.",
+      "englishTemplate": "This position will {word} frequent travel.",
+      "word": "entail",
+      "russianWord": "влечь за собой",
+      "revealIndices": [
+        0
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_059",
+      "russian": "Комитет рассмотрел этические аспекты исследования.",
+      "englishTemplate": "The committee considered the {word} aspects of the research.",
+      "word": "ethical",
+      "russianWord": "этический",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_060",
+      "russian": "Новая платформа помогает обмену знаниями.",
+      "englishTemplate": "The new platform will {word} the exchange of knowledge.",
+      "word": "facilitate",
+      "russianWord": "способствовать",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_061",
+      "russian": "Давайте рассмотрим гипотетическую ситуацию.",
+      "englishTemplate": "Let us consider a {word} situation.",
+      "word": "hypothetical",
+      "russianWord": "гипотетический",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_062",
+      "russian": "Судья должен оставаться беспристрастным.",
+      "englishTemplate": "A judge must remain {word}.",
+      "word": "impartial",
+      "russianWord": "беспристрастный",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_063",
+      "russian": "Его слова могли подстрекать к насилию.",
+      "englishTemplate": "His words could {word} violence.",
+      "word": "incite",
+      "russianWord": "подстрекать",
+      "revealIndices": [
+        0
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_064",
+      "russian": "У неё есть склонность избегать конфликтов.",
+      "englishTemplate": "She has an {word} to avoid conflict.",
+      "word": "inclination",
+      "russianWord": "склонность",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_065",
+      "russian": "В отчёте обнаружили несоответствие.",
+      "englishTemplate": "The report contained an {word}.",
+      "word": "inconsistency",
+      "russianWord": "несоответствие",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_066",
+      "russian": "Его опыт оказался незаменимым для команды.",
+      "englishTemplate": "His experience proved {word} to the team.",
+      "word": "indispensable",
+      "russianWord": "незаменимый",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_067",
+      "russian": "Любопытство — неотъемлемая часть обучения.",
+      "englishTemplate": "Curiosity is an {word} part of learning.",
+      "word": "intrinsic",
+      "russianWord": "внутренне присущий",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_068",
+      "russian": "Автор сопоставляет личные истории с официальной статистикой.",
+      "englishTemplate": "The author {word}s personal stories with official statistics.",
+      "word": "juxtapose",
+      "russianWord": "сопоставлять",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_069",
+      "russian": "У него были законные основания для жалобы.",
+      "englishTemplate": "He had {word} grounds for complaint.",
+      "word": "legitimate",
+      "russianWord": "законный",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_070",
+      "russian": "Компания несёт ответственность за ущерб.",
+      "englishTemplate": "The company is {word} for the damage.",
+      "word": "liable",
+      "russianWord": "ответственный",
+      "revealIndices": [
+        0
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_071",
+      "russian": "Изменения оказали лишь незначительное влияние.",
+      "englishTemplate": "The changes had only a {word} effect.",
+      "word": "marginal",
+      "russianWord": "незначительный",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_072",
+      "russian": "Доказательства были ограниченными, тем не менее вывод оказался убедительным.",
+      "englishTemplate": "The evidence was limited; {word}, the conclusion was convincing.",
+      "word": "nonetheless",
+      "russianWord": "тем не менее",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_073",
+      "russian": "Формулировка была намеренно неясной.",
+      "englishTemplate": "The wording was deliberately {word}.",
+      "word": "obscure",
+      "russianWord": "неясный",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_074",
+      "russian": "Экономия компенсировала дополнительные расходы.",
+      "englishTemplate": "The savings helped to {word} the extra costs.",
+      "word": "offset",
+      "russianWord": "компенсировать",
+      "revealIndices": [
+        0
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_075",
+      "russian": "Опыт работы является обязательным условием для этой должности.",
+      "englishTemplate": "Work experience is a {word} for this position.",
+      "word": "prerequisite",
+      "russianWord": "предварительное условие",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_076",
+      "russian": "Нам необходимо согласовать противоречивые данные.",
+      "englishTemplate": "We need to {word} the conflicting data.",
+      "word": "reconcile",
+      "russianWord": "согласовывать",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_077",
+      "russian": "Результаты укрепляют нашу уверенность в гипотезе.",
+      "englishTemplate": "The results {word} our confidence in the hypothesis.",
+      "word": "reinforce",
+      "russianWord": "укреплять",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_078",
+      "russian": "Компания ввела строгие меры безопасности.",
+      "englishTemplate": "The company introduced {word} security measures.",
+      "word": "stringent",
+      "russianWord": "строгий",
+      "revealIndices": [
+        0,
+        2
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_079",
+      "russian": "Последующие события изменили наше мнение.",
+      "englishTemplate": "{word} events changed our opinion.",
+      "word": "subsequent",
+      "russianWord": "последующий",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "C1"
+    },
+    {
+      "id": "c1_080",
+      "russian": "Это был беспрецедентный шаг для организации.",
+      "englishTemplate": "It was an {word} move for the organisation.",
+      "word": "unprecedented",
+      "russianWord": "беспрецедентный",
+      "revealIndices": [
+        0,
+        2,
+        5
+      ],
+      "level": "C1"
+    }
   ];
