@@ -16,9 +16,18 @@ function loadSentences() {
       const parsed = JSON.parse(saved);
 
       if (Array.isArray(parsed)) {
+        // Ignore corrupted or incomplete localStorage entries.
+        const validParsed = parsed.filter(
+          (sentence) =>
+            sentence &&
+            typeof sentence === "object" &&
+            sentence.id != null &&
+            typeof sentence.word === "string" &&
+            typeof sentence.level === "string"
+        );
         const savedById = new Map();
 
-        for (const sentence of parsed) {
+        for (const sentence of validParsed) {
           if (sentence && sentence.id != null) {
             savedById.set(sentence.id, sentence);
           }
@@ -32,11 +41,8 @@ function loadSentences() {
           (sentence) => savedById.get(sentence.id) || sentence
         );
 
-        const userCreated = parsed.filter(
-          (sentence) =>
-            sentence &&
-            sentence.id != null &&
-            !builtInIds.has(sentence.id)
+        const userCreated = validParsed.filter(
+          (sentence) => !builtInIds.has(sentence.id)
         );
 
         return [...mergedBuiltIn, ...userCreated];
@@ -1033,7 +1039,7 @@ export default function App() {
   const [activeWordKey, setActiveWordKey] = useState(null);
   const levels = ["A1", "A2", "B1", "B2", "C1"];
 
-  const filteredSentences = sentences.filter((sentence) => sentence.level === selectedLevel);
+  const filteredSentences = sentences.filter((sentence) => sentence && sentence.level === selectedLevel);
   const candidate = selectNextSentence(filteredSentences, learningData);
   const sentence = activeWordKey
     ? filteredSentences.find((item) => normalizeWord(item.word) === activeWordKey) || candidate
@@ -1046,6 +1052,7 @@ export default function App() {
   ).length;
   const sentenceByWord = new Map();
   sentences.forEach((item) => {
+    if (!item || typeof item !== "object") return;
     const key = normalizeWord(item.word);
     if (key && !sentenceByWord.has(key)) sentenceByWord.set(key, item);
   });
