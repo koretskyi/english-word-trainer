@@ -251,6 +251,26 @@ button:disabled {
   background: #f6f7fb;
 }
 
+.button-dont-know {
+  border-color: #f3c8d2;
+  background: #fde8ee;
+  color: #8f4055;
+}
+
+.button-dont-know:hover:not(:disabled) {
+  background: #fbdbe4;
+}
+
+.button-review-list {
+  border-color: #cce99c;
+  background: #e9f7d7;
+  color: #426b20;
+}
+
+.button-review-list:hover:not(:disabled) {
+  background: #def1c5;
+}
+
 .button-danger {
   background: #fff0f0;
   color: #c62828;
