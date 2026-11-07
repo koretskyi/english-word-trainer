@@ -467,7 +467,7 @@ function StudyPage({
       <p className="eyebrow">ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ</p>
       <h2 className="russian-sentence">{sentence.russian}</h2>
       <div className="english-section">
-        <p className="study-instruction">ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ: <strong className="target-translation">{sentence.russianWord || "—"}</strong></p>
+        <p className="study-instruction">ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ: <strong className="target-translation" style={{ fontSize: "12px" }}>{sentence.russianWord || "—"}</strong></p>
         <div className="answer-area">
           <div className="english-sentence">
             <span>{parts[0]}</span>
