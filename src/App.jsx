@@ -1,5 +1,5 @@
 import { SENTENCES } from "./sentences.js";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 
 
@@ -336,9 +336,11 @@ function StudyPage({
   masteredCount,
   totalWords,
   completedCount,
+  reviewWords,
 }) {
   const [answer, setAnswer] = useState(() => createInitialAnswer(sentence));
   const [checked, setChecked] = useState(false);
+  const [showReviewWords, setShowReviewWords] = useState(false);
   const targetLetters = sentence ? [...sentence.word] : [];
   const isComplete = targetLetters.length > 0 &&
     targetLetters.every((_, position) => Boolean(answer[position]));
@@ -362,8 +364,33 @@ function StudyPage({
         {levels.map((level) => <option key={level} value={level}>{level}</option>)}
       </select>
       <span>{masteredCount} / {totalWords} выучено</span>
+      <button className="button button-secondary" type="button"
+        onClick={() => setShowReviewWords((value) => !value)}>
+        Слова на повторении ({reviewWords.length})
+      </button>
     </div>
   );
+
+  const reviewWordsPanel = showReviewWords ? (
+    <div className="panel review-words-panel">
+      <h3>Слова в алгоритме повторения</h3>
+      {reviewWords.length === 0 ? (
+        <p>Пока нет слов на повторении.</p>
+      ) : (
+        <ul>
+          {reviewWords.map((item) => (
+            <li key={item.key}>
+              <strong>{item.word}</strong>
+              <span>Этап {item.stage} из 6 · </span>
+              <span>{item.remaining === 0
+                ? "Готово к повтору"
+                : "через " + item.remaining + " карточек"}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  ) : null;
 
   function submitAnswer(event) {
     if (event) event.preventDefault();
@@ -395,6 +422,7 @@ function StudyPage({
     return (
       <section className="panel">
         {levelSelector}
+        {reviewWordsPanel}
         <h2>На уровне {selectedLevel} пока нет доступных карточек</h2>
         <p>Новые слова закончились, а слова на повторение ещё не подошли по интервалу.</p>
         <p>Выполнено ответов: {completedCount}. Переключи уровень или добавь слова через админку.</p>
@@ -410,6 +438,7 @@ function StudyPage({
         </div>
       )}
       {levelSelector}
+      {reviewWordsPanel}
       <div className="card-topline">
         <span>Прогресс обучения</span>
         <span className="level-badge">{sentence.level}</span>
@@ -996,6 +1025,22 @@ export default function App() {
   const masteredCount = Array.from(uniqueWords).filter((word) =>
     learningData.words[word] && learningData.words[word].status === "MASTERED"
   ).length;
+  const sentenceByWord = new Map();
+  sentences.forEach((item) => {
+    const key = normalizeWord(item.word);
+    if (key && !sentenceByWord.has(key)) sentenceByWord.set(key, item);
+  });
+  const reviewWords = Object.entries(learningData.words)
+    .filter(([, state]) => state.status === "REVIEW")
+    .map(([key, state]) => ({
+      key,
+      word: sentenceByWord.get(key)?.word || key,
+      stage: state.stage,
+      remaining: Math.max(0, state.dueAt - learningData.completedCount),
+      dueAt: state.dueAt,
+      order: state.order || 0,
+    }))
+    .sort((a, b) => (a.remaining - b.remaining) || (a.order - b.order));
 
   useEffect(() => {
     try {
@@ -1019,9 +1064,9 @@ export default function App() {
     setLearningData((previous) => recordWordAnswer(previous, word, isCorrect));
   }
 
-  function advanceCard() {
+  const advanceCard = useCallback(() => {
     setActiveWordKey(null);
-  }
+  }, []);
 
   function changeLevel(level) {
     setActiveWordKey(null);
@@ -1070,6 +1115,7 @@ export default function App() {
             masteredCount={masteredCount}
             totalWords={totalWords}
             completedCount={learningData.completedCount}
+            reviewWords={reviewWords}
           />
         ) : (
           <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} />
