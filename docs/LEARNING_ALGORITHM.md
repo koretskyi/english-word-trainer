@@ -123,6 +123,7 @@ Words in REVIEW are not mastered and do not contribute to the numerator. Do not 
 ## 8. Persistence and data integrity
 
 - Each sentence card also stores `russianWord`: only the Russian translation of the target English word, not the full Russian sentence. It is shown in bold after the study instruction and is editable in the admin form.
+- In the study sentence, reveal `Math.floor(word.length / 3)` letters at random positions (one random letter per complete group of 3 characters). Examples: 6-letter word = 2 revealed letters; 8-letter word = 2; 9-letter word = 3. The random positions stay fixed while that card is displayed and are randomized again when a new card is shown.
 
 - Persist word states and review countdowns across reloads and browser restarts.
 - Keep learning progress separate from sentence content/admin edits where practical.
