@@ -529,7 +529,7 @@ button:disabled {
   font-size: 0.9rem;
 }
 
-/* Салют и конфетти при правильном ответе */
+/* Салют запускается из позиции введённого слова */
 .correct-overlay {
   overflow: hidden;
 }
@@ -554,12 +554,18 @@ button:disabled {
 
 .firework {
   position: absolute;
+  left: var(--fireworks-x);
+  top: var(--fireworks-y);
   width: 8px;
   height: 8px;
   border-radius: 50%;
   opacity: 0;
-  animation: firework-burst 1.15s ease-out infinite;
+  transform: translate(-50%, -50%) scale(0.08);
+  animation: firework-burst 0.58s ease-out both;
 }
+
+.firework-two { animation-delay: 0.18s; }
+.firework-three { animation-delay: 0.36s; }
 
 .firework::before {
   content: "";
@@ -586,28 +592,17 @@ button:disabled {
     -58px -58px #e040fb;
 }
 
-.firework-one {
-  top: 31%;
-  left: 25%;
-}
-
-.firework-two {
-  top: 27%;
-  left: 72%;
-  animation-delay: 0.28s;
-}
-
-.firework-three {
-  top: 62%;
-  left: 50%;
-  animation-delay: 0.56s;
-}
-
 @keyframes firework-burst {
-  0% { opacity: 0; transform: scale(0.08); }
-  12% { opacity: 1; }
-  72% { opacity: 0.9; transform: scale(1); }
-  100% { opacity: 0; transform: scale(1.18); }
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.08);
+  }
+  15% { opacity: 1; }
+  75% { opacity: 0.95; }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1.12);
+  }
 }
 
 .confetti {
