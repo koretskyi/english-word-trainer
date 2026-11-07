@@ -354,7 +354,7 @@ function StudyPage({
   const [showReviewWords, setShowReviewWords] = useState(false);
   const [markedKnown, setMarkedKnown] = useState(false);
   const targetLetters = sentence ? [...sentence.word] : [];
-  const correct = Boolean(sentence) && isComplete &&
+  const correct = Boolean(sentence) && targetLetters.length > 0 &&
     targetLetters.every((letter, position) =>
       (answer[position] || "").toLowerCase() === letter.toLowerCase()
     );
