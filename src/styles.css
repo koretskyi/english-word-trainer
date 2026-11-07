@@ -92,6 +92,7 @@ button:disabled {
 
 .form-actions {
   gap: 14px;
+  margin-top: 22px;
 }
 
 .nav-button {
