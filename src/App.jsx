@@ -337,6 +337,8 @@ function StudyPage({
   totalWords,
   completedCount,
   reviewWords,
+  isReview,
+  onKnow,
 }) {
   const [answer, setAnswer] = useState(() => createInitialAnswer(sentence));
   const [checked, setChecked] = useState(false);
@@ -363,7 +365,7 @@ function StudyPage({
         onChange={(event) => setSelectedLevel(event.target.value)}>
         {levels.map((level) => <option key={level} value={level}>{level}</option>)}
       </select>
-      <span>{masteredCount} / {totalWords} выучено</span>
+      <span>{masteredCount} / {totalWords} выучено на {selectedLevel}</span>
       <button className="button button-secondary" type="button"
         onClick={() => setShowReviewWords((value) => !value)}>
         Слова на повторении ({reviewWords.length})
@@ -443,6 +445,11 @@ function StudyPage({
         <span>Прогресс обучения</span>
         <span className="level-badge">{sentence.level}</span>
       </div>
+      {isReview && (
+        <div className="review-origin-label" style={{ margin: "12px 0", padding: "8px 12px", borderRadius: "8px", background: "#fff4d6", color: "#805500", fontWeight: 600 }}>
+          ↻ Это слово пришло из повторения
+        </div>
+      )}
       <div className="progress-track">
         <div className="progress-fill" style={{
           width: (totalWords ? (masteredCount / totalWords) * 100 : 0) + "%",
@@ -465,6 +472,10 @@ function StudyPage({
                 disabled={!isComplete}>Проверить ответ</button>
               <button className="button button-secondary" type="button"
                 onClick={dontKnow}>Не знаю</button>
+              {isReview && (
+                <button className="button button-primary" type="button"
+                  onClick={onKnow}>Я знаю</button>
+              )}
             </div>
           ) : (
             <div className={"feedback " + (correct ? "correct" : "incorrect")}>
@@ -1020,9 +1031,9 @@ export default function App() {
     ? filteredSentences.find((item) => normalizeWord(item.word) === activeWordKey) || candidate
     : candidate;
 
-  const uniqueWords = new Set(sentences.map((item) => normalizeWord(item.word)).filter(Boolean));
-  const totalWords = uniqueWords.size;
-  const masteredCount = Array.from(uniqueWords).filter((word) =>
+  const levelWords = new Set(filteredSentences.map((item) => normalizeWord(item.word)).filter(Boolean));
+  const totalWords = levelWords.size;
+  const masteredCount = Array.from(levelWords).filter((word) =>
     learningData.words[word] && learningData.words[word].status === "MASTERED"
   ).length;
   const sentenceByWord = new Map();
@@ -1031,7 +1042,7 @@ export default function App() {
     if (key && !sentenceByWord.has(key)) sentenceByWord.set(key, item);
   });
   const reviewWords = Object.entries(learningData.words)
-    .filter(([, state]) => state.status === "REVIEW")
+    .filter(([key, state]) => state.status === "REVIEW" && levelWords.has(key))
     .map(([key, state]) => ({
       key,
       word: sentenceByWord.get(key)?.word || key,
@@ -1062,6 +1073,22 @@ export default function App() {
     const key = normalizeWord(word);
     setActiveWordKey(key);
     setLearningData((previous) => recordWordAnswer(previous, word, isCorrect));
+  }
+
+  function markWordKnown(word) {
+    const key = normalizeWord(word);
+    setActiveWordKey(key);
+    setLearningData((previous) => {
+      const old = previous.words[key];
+      if (!old || old.status !== "REVIEW") return previous;
+      return {
+        ...previous,
+        words: {
+          ...previous.words,
+          [key]: { status: "MASTERED", stage: 6, masteredAt: previous.completedCount, markedKnown: true },
+        },
+      };
+    });
   }
 
   const advanceCard = useCallback(() => {
@@ -1111,6 +1138,8 @@ export default function App() {
             setSelectedLevel={changeLevel}
             levels={levels}
             onComplete={completeWord}
+            onKnow={() => markWordKnown(sentence?.word)}
+            isReview={Boolean(sentence && learningData.words[normalizeWord(sentence.word)]?.status === "REVIEW")}
             onAdvance={advanceCard}
             masteredCount={masteredCount}
             totalWords={totalWords}
