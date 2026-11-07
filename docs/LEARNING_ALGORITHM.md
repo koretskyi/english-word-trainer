@@ -2,7 +2,7 @@
 
 **Status:** Product requirement / source of truth for learning logic  
 **Applies to:** English Word Trainer  
-**Last updated:** 2026-11-07
+**Last updated:** 2026-11-07 (updated with review controls and level-specific progress)
 
 This document defines how a vocabulary item moves through practice, review, and mastered states. If the implementation behaves differently, treat this document as the expected behavior and fix the code.
 
@@ -13,7 +13,10 @@ This document defines how a vocabulary item moves through practice, review, and 
 3. If the first answer is incorrect, or the learner indicates that they do not know the word, the word enters spaced repetition.
 4. A word in spaced repetition becomes mastered only after passing all six scheduled reviews.
 5. A mastered word is permanently excluded from ordinary study and review. It must not appear again in the normal training flow.
-6. Progress and review scheduling must survive page reloads and browser restarts.
+6. While a word is in REVIEW, the learner may explicitly mark it as already known using the “Я знаю” action. This immediately moves it to MASTERED and removes it from all future queues.
+7. Review cards must be visually identified as words returning from spaced repetition.
+8. Learning progress is displayed separately for each level (A1, A2, B1, B2, C1). The review countdown itself remains a shared completed-card counter across levels in the current MVP.
+9. Progress and review scheduling must survive page reloads and browser restarts.
 
 ## 2. Word identity
 
@@ -31,7 +34,7 @@ Each unique word has exactly one learning state:
 - **REVIEW** — has made an error and is working through the review intervals.
 - **MASTERED** — answered correctly on the first attempt, or passed all six reviews.
 
-A mastered word is terminal in the normal learning algorithm. There is no automatic demotion or scheduled resurfacing.
+A mastered word is terminal in the normal learning algorithm. There is no automatic demotion or scheduled resurfacing. A REVIEW word can be moved to MASTERED manually with the “Я знаю” action.
 
 Suggested per-word persisted data:
 
@@ -84,6 +87,7 @@ Rules:
 - A correct answer at Review 6 changes the state to MASTERED immediately.
 - An incorrect completed answer at **any** review resets the word to Review 1: set `reviewStage = 0` and schedule it again after 5 other completed cards.
 - An explicit “I don't know / reveal answer” action has the same effect as an incorrect answer.
+- The “Я знаю” action is available only while the current word is in REVIEW. It immediately changes the word to MASTERED, records it as manually marked known, and prevents further reviews. It does not increment the completed-card counter or change the countdowns of other words.
 
 ## 6. Counting cards and selecting the next card
 
@@ -104,11 +108,14 @@ The overall progress bar is based on unique vocabulary words:
 
 `mastered unique words / total unique words in the vocabulary`
 
-Display at least:
-- mastered count;
-- total unique word count;
-- percentage, rounded to a whole number for display;
-- a visual progress bar with the same percentage.
+Display progress for the currently selected level only:
+- mastered unique words in the selected level;
+- total unique words in the selected level;
+- a visual progress bar calculated from those two values.
+
+Switching from A1 to A2 (or another level) must immediately recalculate both numerator and denominator using only words whose sentence cards belong to the selected level. A word appearing in multiple sentences at the same level counts once. If the same normalized word appears at multiple levels, its learning state is shared, but it contributes to each level's denominator and mastered count where it appears.
+
+The review-words list must show only REVIEW words belonging to the currently selected level, including each word's current stage and number of other completed cards remaining.
 
 Words in REVIEW are not mastered and do not contribute to the numerator. Do not hardcode a future goal such as 4,000 as the denominator unless a separate explicit product requirement says the denominator is a fixed target. By default, use the unique words actually present in the active vocabulary.
 
@@ -140,6 +147,9 @@ The implementation is correct only if all of the following pass:
 12. Reloading or restarting the browser preserves status, stage, and remaining countdown.
 13. The progress numerator and denominator count unique words, not sentence cards.
 14. If no card is eligible, the app does not break the interval rules by showing a mastered or not-yet-due word.
+15. “Я знаю” is visible only on a REVIEW card; using it moves that word to MASTERED immediately and it no longer appears in the review list or study queue.
+16. A REVIEW card has a visible indicator that it came from spaced repetition.
+17. Changing the selected level updates the progress numerator, denominator, progress bar, and review-words list to that level only.
 
 ## 10. Explicit non-goals
 
