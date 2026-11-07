@@ -177,6 +177,7 @@ button:disabled {
 }
 
 .target-translation {
+  font-size: inherit;
   text-transform: none;
   letter-spacing: normal;
   font-weight: 800;
