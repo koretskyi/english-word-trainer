@@ -2,7 +2,7 @@
 
 **Status:** Product requirement / source of truth for learning logic  
 **Applies to:** English Word Trainer  
-**Last updated:** 2026-11-07 (updated with review controls and level-specific progress)
+**Last updated:** 2026-11-07 (expanded vocabulary to 80 cards per level)
 
 This document defines how a vocabulary item moves through practice, review, and mastered states. If the implementation behaves differently, treat this document as the expected behavior and fix the code.
 
@@ -154,7 +154,14 @@ The implementation is correct only if all of the following pass:
 16. A REVIEW card has a visible indicator that it came from spaced repetition.
 17. Changing the selected level updates the progress numerator, denominator, progress bar, and review-words list to that level only.
 
-## 10. Explicit non-goals
+## 10. Vocabulary catalogue
+
+- The built-in vocabulary contains **400 sentence cards**: exactly 80 each for A1, A2, B1, B2, and C1.
+- Each card has a unique ID, one target English word, one English sentence template containing exactly one `{word}` placeholder, a full Russian sentence, and `russianWord` containing only the Russian translation of the target word or short expression.
+- New cards use the ID ranges `a1_051`–`a1_080`, `a2_051`–`a2_080`, `b1_051`–`b1_080`, `b2_051`–`b2_080`, and `c1_051`–`c1_080`.
+- The same normalized target word may appear at more than one level; such entries share learning progress according to the word-identity rules above.
+
+## 11. Explicit non-goals
 
 - No automatic review of MASTERED words in ordinary training.
 - No calendar-based intervals; intervals are measured in completed cards.
