@@ -174,7 +174,7 @@ function createInitialAnswer(sentence) {
 // Каждая буква слова находится в отдельном поле ввода.
 
 
-function WordGap({ sentence, value, onChange, disabled }) {
+function WordGap({ sentence, value, onChange, disabled, containerRef }) {
   const letters = [...sentence.word];
   // Открываем одну случайную букву на каждые полные 3 буквы слова.
   // Выбор фиксируется на время показа карточки и меняется при переходе к новой.
@@ -278,6 +278,7 @@ function WordGap({ sentence, value, onChange, disabled }) {
 
   return (
     <span
+      ref={containerRef}
       className="word-gap-container"
       style={{
         display: "inline-flex",
@@ -366,6 +367,8 @@ function StudyPage({
   const [checked, setChecked] = useState(false);
   const [showReviewWords, setShowReviewWords] = useState(false);
   const [markedKnown, setMarkedKnown] = useState(false);
+  const wordGapRef = useRef(null);
+  const [fireworksOrigin, setFireworksOrigin] = useState({ x: 0, y: 0 });
   const targetLetters = sentence ? [...sentence.word] : [];
   const correct = Boolean(sentence) && targetLetters.length > 0 &&
     targetLetters.every((letter, position) =>
@@ -374,7 +377,7 @@ function StudyPage({
 
   useEffect(() => {
     if (!checked) return undefined;
-    const timer = setTimeout(onAdvance, correct ? 1600 : 900);
+    const timer = setTimeout(onAdvance, correct ? 1000 : 900);
     return () => clearTimeout(timer);
   }, [checked, correct, onAdvance]);
 
@@ -427,6 +430,13 @@ function StudyPage({
       const isRight = targetLetters.every((letter, position) =>
         (nextAnswer[position] || "").toLowerCase() === letter.toLowerCase()
       );
+      if (isRight && wordGapRef.current) {
+        const rect = wordGapRef.current.getBoundingClientRect();
+        setFireworksOrigin({
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2,
+        });
+      }
       setChecked(true);
       onComplete(sentence.word, isRight);
     }
@@ -461,7 +471,14 @@ function StudyPage({
     <section className={"panel study-panel" + (checked && correct ? " answer-correct" : "")}>
       {checked && correct && (
         <div className="correct-overlay">
-          <div className="fireworks" aria-hidden="true">
+          <div
+            className="fireworks"
+            aria-hidden="true"
+            style={{
+              "--fireworks-x": `${fireworksOrigin.x}px`,
+              "--fireworks-y": `${fireworksOrigin.y}px`,
+            }}
+          >
             <span className="firework firework-one" />
             <span className="firework firework-two" />
             <span className="firework firework-three" />
@@ -507,7 +524,7 @@ function StudyPage({
           <div className="english-sentence">
             <span>{parts[0]}</span>
             <WordGap key={`${sentence.id}-${sentence.word}`} sentence={sentence} value={answer}
-              onChange={handleAnswerChange} disabled={checked} />
+              onChange={handleAnswerChange} disabled={checked} containerRef={wordGapRef} />
             <span>{parts.slice(1).join("{word}")}</span>
           </div>
           {!checked ? (
