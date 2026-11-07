@@ -401,12 +401,16 @@ function StudyPage({
       ) : (
         <ul>
           {reviewWords.map((item) => (
-            <li key={item.key} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "6px", marginBottom: "14px" }}>
-              <strong>{item.word}</strong>
-              <span>Этап {item.stage} из 6 · </span>
-              <span>{item.remaining === 0
-                ? "Готово к повтору"
-                : "через " + item.remaining + " карточек"}</span>
+            <li key={item.key} className="review-word-item">
+              <strong className="review-word-name">{item.word}</strong>
+              <span className="review-word-stage">Этап {item.stage} из 6</span>
+              <span className="review-word-countdown">
+                {item.remaining === 0 ? (
+                  "Готово к повтору"
+                ) : (
+                  <>Отображение через <strong className="review-word-number">{item.remaining}</strong> карточек</>
+                )}
+              </span>
             </li>
           ))}
         </ul>
