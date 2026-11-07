@@ -292,6 +292,29 @@ button:disabled {
   background: #def1c5;
 }
 
+.review-word-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.review-word-name {
+  color: #8bcf35;
+  font-weight: 800;
+}
+
+.review-word-stage,
+.review-word-countdown {
+  color: inherit;
+}
+
+.review-word-number {
+  color: #e53935;
+  font-weight: 800;
+}
+
 .button-danger {
   background: #fff0f0;
   color: #c62828;
