@@ -90,6 +90,10 @@ button:disabled {
   flex-wrap: wrap;
 }
 
+.form-actions {
+  gap: 14px;
+}
+
 .nav-button {
   padding: 10px 14px;
   border: 0;
@@ -175,7 +179,7 @@ button:disabled {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 0 5px;
+  gap: 0 8px;
   font-size: clamp(19px, 3.5vw, 25px);
   line-height: 2.2;
   overflow-wrap: anywhere;
