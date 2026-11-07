@@ -176,7 +176,19 @@ function createInitialAnswer(sentence) {
 
 function WordGap({ sentence, value, onChange, disabled }) {
   const letters = [...sentence.word];
-  const opened = new Set(sentence.revealIndices || []);
+  // Открываем одну случайную букву на каждые полные 3 буквы слова.
+  // Выбор фиксируется на время показа карточки и меняется при переходе к новой.
+  const [opened] = useState(() => {
+    const count = Math.floor(letters.length / 3);
+    const positions = letters.map((_, index) => index);
+
+    for (let i = positions.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [positions[i], positions[j]] = [positions[j], positions[i]];
+    }
+
+    return new Set(positions.slice(0, count));
+  });
   const inputRefs = useRef([]);
 
   // Открытые буквы показываются как подсказки,
@@ -471,7 +483,7 @@ function StudyPage({
         <div className="answer-area">
           <div className="english-sentence">
             <span>{parts[0]}</span>
-            <WordGap sentence={sentence} value={answer}
+            <WordGap key={`${sentence.id}-${sentence.word}`} sentence={sentence} value={answer}
               onChange={handleAnswerChange} disabled={checked} />
             <span>{parts.slice(1).join("{word}")}</span>
           </div>
