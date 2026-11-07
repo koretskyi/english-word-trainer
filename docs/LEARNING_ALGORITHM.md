@@ -9,7 +9,7 @@ This document defines how a vocabulary item moves through practice, review, and 
 ## 1. Core principles
 
 1. Learning progress belongs to a **unique vocabulary word**, not to an individual sentence card.
-2. A word answered correctly on its first completed attempt is mastered immediately.
+2. A word entered correctly on its first completed attempt is mastered immediately.
 3. If the first answer is incorrect, or the learner indicates that they do not know the word, the word enters spaced repetition.
 4. A word in spaced repetition becomes mastered only after passing all six scheduled reviews.
 5. A mastered word is permanently excluded from ordinary study and review. It must not appear again in the normal training flow.
@@ -53,13 +53,14 @@ The exact implementation shape may differ, but it must preserve the same informa
 
 ## 4. First attempt
 
-- A first attempt is evaluated when the learner completes/submits an answer for the word.
-- Merely typing and correcting letters before submitting a complete answer is not an error.
+- A first attempt is evaluated automatically as soon as the learner fills the final missing letter.
+- There is no “Check answer” button or manual submission step.
+- The learner can edit letters freely until the word is complete; the answer is evaluated immediately on completion.
 - If the completed answer is correct and no incorrect completed attempt has occurred:
   - set status to `MASTERED`;
   - remove the word from all future ordinary study and review queues;
   - update the learned-word count and overall progress immediately.
-- If the completed answer is incorrect, or the learner chooses an explicit “I don't know / reveal answer” action:
+- If the automatically evaluated answer is incorrect, or the learner chooses the explicit “I don't know / reveal answer” action:
   - set status to `REVIEW`;
   - set `reviewStage = 0`;
   - schedule the first review after **5 other completed cards**.
@@ -121,6 +122,8 @@ Words in REVIEW are not mastered and do not contribute to the numerator. Do not 
 
 ## 8. Persistence and data integrity
 
+- Each sentence card also stores `russianWord`: only the Russian translation of the target English word, not the full Russian sentence. It is shown in bold after the study instruction and is editable in the admin form.
+
 - Persist word states and review countdowns across reloads and browser restarts.
 - Keep learning progress separate from sentence content/admin edits where practical.
 - Use a versioned storage key/schema so future migrations can be implemented safely.
@@ -133,13 +136,13 @@ Words in REVIEW are not mastered and do not contribute to the numerator. Do not 
 
 The implementation is correct only if all of the following pass:
 
-1. Correct first completed answer -> word becomes MASTERED immediately and never appears again in normal training.
-2. Incorrect first completed answer -> word is scheduled after exactly 5 other completed cards.
+1. Filling the final letter with a correct first answer -> word becomes MASTERED immediately and never appears again in normal training.
+2. Filling the final letter with an incorrect first answer -> word is scheduled after exactly 5 other completed cards.
 3. Correct Review 1 -> next review is after exactly 10 other completed cards.
 4. Subsequent correct reviews schedule 20, 40, 80, then 160 other completed cards.
 5. Correct Review 6 -> word becomes MASTERED and is excluded permanently from normal training.
 6. An incorrect answer at any review -> schedule resets to 5 other completed cards.
-7. “I don't know / reveal answer” on the first attempt or a review -> same failure/reset behavior.
+7. “I don't know / reveal answer” on the first attempt or a review -> same failure/reset behavior. Answer checking is automatic when the final letter is entered; no submit button exists.
 8. The target word itself never reduces its own countdown.
 9. Other review words count as other completed cards.
 10. Duplicate sentence cards containing the same normalized target word share one state and count once in progress.
