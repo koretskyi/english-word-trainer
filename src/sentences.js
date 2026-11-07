@@ -706,7 +706,7 @@ export const SENTENCES = [
   {
     id: "a2_048",
     russian: "Поезд отправляется с третьей платформы.",
-    englishTemplate: "The train leaves from platform number three.",
+    englishTemplate: "The train leaves from {word} number three.",
     word: "platform",
     revealIndices: [2, 4, 6],
     level: "A2"
