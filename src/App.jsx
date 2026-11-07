@@ -467,6 +467,7 @@ function StudyPage({
       <div className="progress-track">
         <div className="progress-fill" style={{
           width: (totalWords ? (masteredCount / totalWords) * 100 : 0) + "%",
+          backgroundColor: "#A8E64A",
         }} />
       </div>
       <p className="eyebrow">ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ</p>
