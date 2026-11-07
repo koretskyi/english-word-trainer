@@ -148,7 +148,7 @@ button:disabled {
 
 .progress-fill {
   height: 100%;
-  background: var(--primary);
+  background: #a8e64a;
   transition: width 180ms ease;
 }
 
