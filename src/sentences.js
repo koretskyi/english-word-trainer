@@ -1703,9 +1703,7 @@ export const SENTENCES = [
       "englishTemplate": "I ate an {word} for breakfast.",
       "word": "orange",
       "russianWord": "апельсин",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 1, 4],
       "level": "A1"
     },
     {
@@ -1714,9 +1712,7 @@ export const SENTENCES = [
       "englishTemplate": "We need some {word} for dinner.",
       "word": "potato",
       "russianWord": "картофель",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 3],
       "level": "A1"
     },
     {
@@ -1725,9 +1721,7 @@ export const SENTENCES = [
       "englishTemplate": "Add a {word} to the salad.",
       "word": "tomato",
       "russianWord": "помидор",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [3, 5],
       "level": "A1"
     },
     {
@@ -1736,10 +1730,7 @@ export const SENTENCES = [
       "englishTemplate": "We are having {word} for dinner.",
       "word": "chicken",
       "russianWord": "курица",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1, 6],
       "level": "A1"
     },
     {
@@ -1748,9 +1739,7 @@ export const SENTENCES = [
       "englishTemplate": "She often buys fresh {word}.",
       "word": "fish",
       "russianWord": "рыба",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1],
       "level": "A1"
     },
     {
@@ -1759,10 +1748,7 @@ export const SENTENCES = [
       "englishTemplate": "I usually make {word} at seven.",
       "word": "breakfast",
       "russianWord": "завтрак",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [2],
       "level": "A1"
     },
     {
@@ -1771,9 +1757,7 @@ export const SENTENCES = [
       "englishTemplate": "We are meeting after {word}.",
       "word": "lunch",
       "russianWord": "обед",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [2, 3],
       "level": "A1"
     },
     {
@@ -1782,9 +1766,7 @@ export const SENTENCES = [
       "englishTemplate": "{word} will be ready in ten minutes.",
       "word": "dinner",
       "russianWord": "ужин",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0],
       "level": "A1"
     },
     {
@@ -1793,9 +1775,7 @@ export const SENTENCES = [
       "englishTemplate": "There are flowers in our {word}.",
       "word": "garden",
       "russianWord": "сад",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1],
       "level": "A1"
     },
     {
@@ -1804,10 +1784,7 @@ export const SENTENCES = [
       "englishTemplate": "The {word} is next to the bedroom.",
       "word": "bathroom",
       "russianWord": "ванная",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [4, 6],
       "level": "A1"
     },
     {
@@ -1816,9 +1793,7 @@ export const SENTENCES = [
       "englishTemplate": "The cat is sleeping on my {word}.",
       "word": "bed",
       "russianWord": "кровать",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 2],
       "level": "A1"
     },
     {
@@ -1827,9 +1802,7 @@ export const SENTENCES = [
       "englishTemplate": "The {word} is very comfortable.",
       "word": "sofa",
       "russianWord": "диван",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [2, 3],
       "level": "A1"
     },
     {
@@ -1838,9 +1811,7 @@ export const SENTENCES = [
       "englishTemplate": "Please turn on the {word}.",
       "word": "lamp",
       "russianWord": "лампа",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 2],
       "level": "A1"
     },
     {
@@ -1849,9 +1820,7 @@ export const SENTENCES = [
       "englishTemplate": "I cannot find the house {word}.",
       "word": "key",
       "russianWord": "ключ",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1],
       "level": "A1"
     },
     {
@@ -1860,9 +1829,7 @@ export const SENTENCES = [
       "englishTemplate": "My {word} is too heavy.",
       "word": "bag",
       "russianWord": "сумка",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 2],
       "level": "A1"
     },
     {
@@ -1871,9 +1838,7 @@ export const SENTENCES = [
       "englishTemplate": "Take off your {word} by the door.",
       "word": "shoes",
       "russianWord": "обувь",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [2, 3],
       "level": "A1"
     },
     {
@@ -1882,9 +1847,7 @@ export const SENTENCES = [
       "englishTemplate": "This {word} is too big for me.",
       "word": "shirt",
       "russianWord": "рубашка",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0],
       "level": "A1"
     },
     {
@@ -1893,9 +1856,7 @@ export const SENTENCES = [
       "englishTemplate": "Take your {word}; it is cold outside.",
       "word": "jacket",
       "russianWord": "куртка",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1],
       "level": "A1"
     },
     {
@@ -1904,9 +1865,7 @@ export const SENTENCES = [
       "englishTemplate": "My brother has a new {word}.",
       "word": "car",
       "russianWord": "машина",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [2],
       "level": "A1"
     },
     {
@@ -1915,9 +1874,7 @@ export const SENTENCES = [
       "englishTemplate": "We called a {word} to the airport.",
       "word": "taxi",
       "russianWord": "такси",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [2],
       "level": "A1"
     },
     {
@@ -1926,10 +1883,7 @@ export const SENTENCES = [
       "englishTemplate": "The {word} is far from here.",
       "word": "airport",
       "russianWord": "аэропорт",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [6],
       "level": "A1"
     },
     {
@@ -1938,9 +1892,7 @@ export const SENTENCES = [
       "englishTemplate": "The {word} closes at nine.",
       "word": "shop",
       "russianWord": "магазин",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 2],
       "level": "A1"
     },
     {
@@ -1949,9 +1901,7 @@ export const SENTENCES = [
       "englishTemplate": "We go to the {word} on Saturdays.",
       "word": "market",
       "russianWord": "рынок",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [3],
       "level": "A1"
     },
     {
@@ -1960,9 +1910,7 @@ export const SENTENCES = [
       "englishTemplate": "The children are playing in the {word}.",
       "word": "park",
       "russianWord": "парк",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 2, 3],
       "level": "A1"
     },
     {
@@ -1971,10 +1919,7 @@ export const SENTENCES = [
       "englishTemplate": "The {word} is in the city centre.",
       "word": "hospital",
       "russianWord": "больница",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [2, 6],
       "level": "A1"
     },
     {
@@ -1983,9 +1928,7 @@ export const SENTENCES = [
       "englishTemplate": "I need to speak to a {word}.",
       "word": "doctor",
       "russianWord": "врач",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0],
       "level": "A1"
     },
     {
@@ -1994,9 +1937,7 @@ export const SENTENCES = [
       "englishTemplate": "My father starts {word} early.",
       "word": "work",
       "russianWord": "работа",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 1],
       "level": "A1"
     },
     {
@@ -2005,9 +1946,7 @@ export const SENTENCES = [
       "englishTemplate": "Children love to {word} outside.",
       "word": "play",
       "russianWord": "играть",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0],
       "level": "A1"
     },
     {
@@ -2016,9 +1955,7 @@ export const SENTENCES = [
       "englishTemplate": "I need to {word} earlier.",
       "word": "sleep",
       "russianWord": "спать",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [2],
       "level": "A1"
     },
     {
@@ -2027,9 +1964,7 @@ export const SENTENCES = [
       "englishTemplate": "I like to {word} to music in the evening.",
       "word": "listen",
       "russianWord": "слушать",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1, 5],
       "level": "A1"
     },
     {
@@ -2038,10 +1973,7 @@ export const SENTENCES = [
       "englishTemplate": "I need to make an appointment with the {word}.",
       "word": "dentist",
       "russianWord": "стоматолог",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0],
       "level": "A2"
     },
     {
@@ -2050,9 +1982,7 @@ export const SENTENCES = [
       "englishTemplate": "Go up the {word} to the second floor.",
       "word": "stairs",
       "russianWord": "лестница",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 1],
       "level": "A2"
     },
     {
@@ -2061,10 +1991,7 @@ export const SENTENCES = [
       "englishTemplate": "The {word} is not working today.",
       "word": "elevator",
       "russianWord": "лифт",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [6],
       "level": "A2"
     },
     {
@@ -2073,11 +2000,7 @@ export const SENTENCES = [
       "englishTemplate": "We have a {word} for two people.",
       "word": "reservation",
       "russianWord": "бронь",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [2],
       "level": "A2"
     },
     {
@@ -2086,10 +2009,7 @@ export const SENTENCES = [
       "englishTemplate": "My {word} is too heavy.",
       "word": "suitcase",
       "russianWord": "чемодан",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [3, 6],
       "level": "A2"
     },
     {
@@ -2098,10 +2018,7 @@ export const SENTENCES = [
       "englishTemplate": "Do not forget to take your {word}.",
       "word": "passport",
       "russianWord": "паспорт",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1],
       "level": "A2"
     },
     {
@@ -2110,10 +2027,7 @@ export const SENTENCES = [
       "englishTemplate": "The main {word} is on the other side.",
       "word": "entrance",
       "russianWord": "вход",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 1],
       "level": "A2"
     },
     {
@@ -2122,9 +2036,7 @@ export const SENTENCES = [
       "englishTemplate": "Where is the nearest {word}?",
       "word": "exit",
       "russianWord": "выход",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1, 2],
       "level": "A2"
     },
     {
@@ -2133,10 +2045,7 @@ export const SENTENCES = [
       "englishTemplate": "Can you show me the right {word}?",
       "word": "direction",
       "russianWord": "направление",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 2],
       "level": "A2"
     },
     {
@@ -2145,9 +2054,7 @@ export const SENTENCES = [
       "englishTemplate": "We looked at a {word} of the city.",
       "word": "map",
       "russianWord": "карта",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1, 2],
       "level": "A2"
     },
     {
@@ -2156,9 +2063,7 @@ export const SENTENCES = [
       "englishTemplate": "She wants to study {word}.",
       "word": "abroad",
       "russianWord": "за границей",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [3, 4],
       "level": "A2"
     },
     {
@@ -2167,9 +2072,7 @@ export const SENTENCES = [
       "englishTemplate": "Our flight had a one-hour {word}.",
       "word": "delay",
       "russianWord": "задержка",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1, 2],
       "level": "A2"
     },
     {
@@ -2178,9 +2081,7 @@ export const SENTENCES = [
       "englishTemplate": "Our {word} leaves at six in the morning.",
       "word": "flight",
       "russianWord": "рейс",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1, 3],
       "level": "A2"
     },
     {
@@ -2189,10 +2090,7 @@ export const SENTENCES = [
       "englishTemplate": "The {word} time is printed on the ticket.",
       "word": "departure",
       "russianWord": "отправление",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 6],
       "level": "A2"
     },
     {
@@ -2201,9 +2099,7 @@ export const SENTENCES = [
       "englishTemplate": "I asked for a {word} for the ticket.",
       "word": "refund",
       "russianWord": "возврат денег",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1, 3, 5],
       "level": "A2"
     },
     {
@@ -2212,10 +2108,7 @@ export const SENTENCES = [
       "englishTemplate": "You can make an {word} in this shop.",
       "word": "exchange",
       "russianWord": "обмен",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 4],
       "level": "A2"
     },
     {
@@ -2224,9 +2117,7 @@ export const SENTENCES = [
       "englishTemplate": "We had to stand in a long {word}.",
       "word": "queue",
       "russianWord": "очередь",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [3, 4],
       "level": "A2"
     },
     {
@@ -2235,9 +2126,7 @@ export const SENTENCES = [
       "englishTemplate": "Could we have the {word}, please?",
       "word": "bill",
       "russianWord": "счёт",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 3],
       "level": "A2"
     },
     {
@@ -2246,9 +2135,7 @@ export const SENTENCES = [
       "englishTemplate": "Our {word} will be ready soon.",
       "word": "order",
       "russianWord": "заказ",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1, 3],
       "level": "A2"
     },
     {
@@ -2257,9 +2144,7 @@ export const SENTENCES = [
       "englishTemplate": "Can we see the {word}?",
       "word": "menu",
       "russianWord": "меню",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 1],
       "level": "A2"
     },
     {
@@ -2268,10 +2153,7 @@ export const SENTENCES = [
       "englishTemplate": "The {word} asked the shop assistant a question.",
       "word": "customer",
       "russianWord": "покупатель",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 6],
       "level": "A2"
     },
     {
@@ -2280,9 +2162,7 @@ export const SENTENCES = [
       "englishTemplate": "I do not have any {word} with me.",
       "word": "cash",
       "russianWord": "наличные",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1, 2, 3],
       "level": "A2"
     },
     {
@@ -2291,9 +2171,7 @@ export const SENTENCES = [
       "englishTemplate": "I found a {word} on the floor.",
       "word": "coin",
       "russianWord": "монета",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [2, 3],
       "level": "A2"
     },
     {
@@ -2302,9 +2180,7 @@ export const SENTENCES = [
       "englishTemplate": "I will collect the {word} after work.",
       "word": "parcel",
       "russianWord": "посылка",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 1],
       "level": "A2"
     },
     {
@@ -2313,9 +2189,7 @@ export const SENTENCES = [
       "englishTemplate": "We have {word} finished the work.",
       "word": "nearly",
       "russianWord": "почти",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 2],
       "level": "A2"
     },
     {
@@ -2324,10 +2198,7 @@ export const SENTENCES = [
       "englishTemplate": "He will {word} come later.",
       "word": "probably",
       "russianWord": "вероятно",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1, 6],
       "level": "A2"
     },
     {
@@ -2336,9 +2207,7 @@ export const SENTENCES = [
       "englishTemplate": "Can you {word} me your pen?",
       "word": "lend",
       "russianWord": "одалживать",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 2],
       "level": "A2"
     },
     {
@@ -2347,9 +2216,7 @@ export const SENTENCES = [
       "englishTemplate": "I need to {word} my things today.",
       "word": "pack",
       "russianWord": "упаковывать",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1, 3],
       "level": "A2"
     },
     {
@@ -2358,9 +2225,7 @@ export const SENTENCES = [
       "englishTemplate": "Do not {word} the bus.",
       "word": "miss",
       "russianWord": "опоздать на",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 1, 2],
       "level": "A2"
     },
     {
@@ -2369,10 +2234,7 @@ export const SENTENCES = [
       "englishTemplate": "I will {word} the documents tomorrow.",
       "word": "collect",
       "russianWord": "забирать",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 5],
       "level": "A2"
     },
     {
@@ -2381,10 +2243,7 @@ export const SENTENCES = [
       "englishTemplate": "They will {word} a new price.",
       "word": "negotiate",
       "russianWord": "вести переговоры",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 1],
       "level": "B1"
     },
     {
@@ -2393,9 +2252,7 @@ export const SENTENCES = [
       "englishTemplate": "The company plans to {word} production.",
       "word": "expand",
       "russianWord": "расширять",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1, 3, 4],
       "level": "B1"
     },
     {
@@ -2404,10 +2261,7 @@ export const SENTENCES = [
       "englishTemplate": "We had to {word} the meeting.",
       "word": "postpone",
       "russianWord": "откладывать",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [2, 5],
       "level": "B1"
     },
     {
@@ -2416,10 +2270,7 @@ export const SENTENCES = [
       "englishTemplate": "We need to {word} this problem today.",
       "word": "resolve",
       "russianWord": "решать",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [3, 4, 6],
       "level": "B1"
     },
     {
@@ -2428,11 +2279,7 @@ export const SENTENCES = [
       "englishTemplate": "All employees can {word} in the project.",
       "word": "participate",
       "russianWord": "участвовать",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [0, 1],
       "level": "B1"
     },
     {
@@ -2441,10 +2288,7 @@ export const SENTENCES = [
       "englishTemplate": "It is difficult to {word} the cost of the repair.",
       "word": "estimate",
       "russianWord": "оценивать",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1, 4, 5, 6],
       "level": "B1"
     },
     {
@@ -2453,10 +2297,7 @@ export const SENTENCES = [
       "englishTemplate": "The manager must {word} the results.",
       "word": "evaluate",
       "russianWord": "оценивать",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 2],
       "level": "B1"
     },
     {
@@ -2465,9 +2306,7 @@ export const SENTENCES = [
       "englishTemplate": "We carried out a {word} among customers.",
       "word": "survey",
       "russianWord": "опрос",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1, 3],
       "level": "B1"
     },
     {
@@ -2476,11 +2315,7 @@ export const SENTENCES = [
       "englishTemplate": "I sent an {word} for this position.",
       "word": "application",
       "russianWord": "заявка",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [0, 5],
       "level": "B1"
     },
     {
@@ -2489,10 +2324,7 @@ export const SENTENCES = [
       "englishTemplate": "Each {word} will be invited to an interview.",
       "word": "candidate",
       "russianWord": "кандидат",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [4, 5],
       "level": "B1"
     },
     {
@@ -2501,10 +2333,7 @@ export const SENTENCES = [
       "englishTemplate": "A new {word} appeared on the website.",
       "word": "vacancy",
       "russianWord": "вакансия",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [3, 5],
       "level": "B1"
     },
     {
@@ -2513,9 +2342,7 @@ export const SENTENCES = [
       "englishTemplate": "The {word} is paid once a month.",
       "word": "salary",
       "russianWord": "зарплата",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 2, 4],
       "level": "B1"
     },
     {
@@ -2524,9 +2351,7 @@ export const SENTENCES = [
       "englishTemplate": "His {word} depends on the number of orders.",
       "word": "income",
       "russianWord": "доход",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1, 5],
       "level": "B1"
     },
     {
@@ -2535,9 +2360,7 @@ export const SENTENCES = [
       "englishTemplate": "We need to reduce the advertising {word}.",
       "word": "budget",
       "russianWord": "бюджет",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 4],
       "level": "B1"
     },
     {
@@ -2546,10 +2369,7 @@ export const SENTENCES = [
       "englishTemplate": "Our {word} needs to change.",
       "word": "strategy",
       "russianWord": "стратегия",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1, 4, 5],
       "level": "B1"
     },
     {
@@ -2558,10 +2378,7 @@ export const SENTENCES = [
       "englishTemplate": "Thank you for your honest {word}.",
       "word": "feedback",
       "russianWord": "обратная связь",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [2, 6],
       "level": "B1"
     },
     {
@@ -2570,10 +2387,7 @@ export const SENTENCES = [
       "englishTemplate": "We have noticed significant {word}.",
       "word": "progress",
       "russianWord": "прогресс",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [2, 5],
       "level": "B1"
     },
     {
@@ -2582,10 +2396,7 @@ export const SENTENCES = [
       "englishTemplate": "This is a difficult {word} for the whole team.",
       "word": "challenge",
       "russianWord": "сложная задача",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 6],
       "level": "B1"
     },
     {
@@ -2594,10 +2405,7 @@ export const SENTENCES = [
       "englishTemplate": "It was not an easy {word}.",
       "word": "decision",
       "russianWord": "решение",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 3],
       "level": "B1"
     },
     {
@@ -2606,9 +2414,7 @@ export const SENTENCES = [
       "englishTemplate": "The weather had an {word} on the trip.",
       "word": "impact",
       "russianWord": "влияние",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1, 2],
       "level": "B1"
     },
     {
@@ -2617,10 +2423,7 @@ export const SENTENCES = [
       "englishTemplate": "Advertising can {word} people's choices.",
       "word": "influence",
       "russianWord": "влиять",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 7],
       "level": "B1"
     },
     {
@@ -2629,10 +2432,7 @@ export const SENTENCES = [
       "englishTemplate": "A good manager can {word} a team.",
       "word": "motivate",
       "russianWord": "мотивировать",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 1],
       "level": "B1"
     },
     {
@@ -2641,10 +2441,7 @@ export const SENTENCES = [
       "englishTemplate": "They managed to resolve the {word} peacefully.",
       "word": "conflict",
       "russianWord": "конфликт",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [6],
       "level": "B1"
     },
     {
@@ -2653,10 +2450,7 @@ export const SENTENCES = [
       "englishTemplate": "The company received a {word} from a customer.",
       "word": "complaint",
       "russianWord": "жалоба",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [3, 7],
       "level": "B1"
     },
     {
@@ -2665,10 +2459,7 @@ export const SENTENCES = [
       "englishTemplate": "You should {word} for the mistake.",
       "word": "apologise",
       "russianWord": "извиняться",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [3, 8],
       "level": "B1"
     },
     {
@@ -2677,11 +2468,7 @@ export const SENTENCES = [
       "englishTemplate": "I really {word} your help.",
       "word": "appreciate",
       "russianWord": "ценить",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [0, 1, 8],
       "level": "B1"
     },
     {
@@ -2690,9 +2477,7 @@ export const SENTENCES = [
       "englishTemplate": "The result will {word} on the weather.",
       "word": "depend",
       "russianWord": "зависеть",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [2, 5],
       "level": "B1"
     },
     {
@@ -2701,10 +2486,7 @@ export const SENTENCES = [
       "englishTemplate": "{word} the rain, the match continued.",
       "word": "despite",
       "russianWord": "несмотря на",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1, 3],
       "level": "B1"
     },
     {
@@ -2713,10 +2495,7 @@ export const SENTENCES = [
       "englishTemplate": "This is a {word} solution.",
       "word": "temporary",
       "russianWord": "временный",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 6],
       "level": "B1"
     },
     {
@@ -2725,9 +2504,7 @@ export const SENTENCES = [
       "englishTemplate": "Prices are {word} to rise soon.",
       "word": "likely",
       "russianWord": "вероятный",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 2, 3],
       "level": "B1"
     },
     {
@@ -2736,10 +2513,7 @@ export const SENTENCES = [
       "englishTemplate": "We need to {word} resources between the teams.",
       "word": "allocate",
       "russianWord": "распределять",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1, 4],
       "level": "B2"
     },
     {
@@ -2748,10 +2522,7 @@ export const SENTENCES = [
       "englishTemplate": "We need to {word} the data.",
       "word": "analyse",
       "russianWord": "анализировать",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 2, 4],
       "level": "B2"
     },
     {
@@ -2760,9 +2531,7 @@ export const SENTENCES = [
       "englishTemplate": "He continues to {word} that he was right.",
       "word": "assert",
       "russianWord": "утверждать",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 5],
       "level": "B2"
     },
     {
@@ -2771,9 +2540,7 @@ export const SENTENCES = [
       "englishTemplate": "She worked hard to {word} her goal.",
       "word": "attain",
       "russianWord": "достигать",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [2, 3],
       "level": "B2"
     },
     {
@@ -2782,10 +2549,7 @@ export const SENTENCES = [
       "englishTemplate": "We cannot {word} all the success to one person.",
       "word": "attribute",
       "russianWord": "приписывать",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [3, 7],
       "level": "B2"
     },
     {
@@ -2794,9 +2558,7 @@ export const SENTENCES = [
       "englishTemplate": "The company decided to {word} this activity.",
       "word": "cease",
       "russianWord": "прекращать",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 4],
       "level": "B2"
     },
     {
@@ -2805,11 +2567,7 @@ export const SENTENCES = [
       "englishTemplate": "The company agreed to {word} the damage.",
       "word": "compensate",
       "russianWord": "компенсировать",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [3, 5, 6],
       "level": "B2"
     },
     {
@@ -2818,10 +2576,7 @@ export const SENTENCES = [
       "englishTemplate": "Every {word} of the system is important.",
       "word": "component",
       "russianWord": "компонент",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 3, 6],
       "level": "B2"
     },
     {
@@ -2830,11 +2585,7 @@ export const SENTENCES = [
       "englishTemplate": "His words {word} his previous statement.",
       "word": "contradict",
       "russianWord": "противоречить",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [2, 3, 6, 8],
       "level": "B2"
     },
     {
@@ -2843,10 +2594,7 @@ export const SENTENCES = [
       "englishTemplate": "The selection {word} should be clear.",
       "word": "criteria",
       "russianWord": "критерии",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1, 4, 5],
       "level": "B2"
     },
     {
@@ -2855,10 +2603,7 @@ export const SENTENCES = [
       "englishTemplate": "Sales began to {word} gradually.",
       "word": "decline",
       "russianWord": "снижаться",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [3, 6],
       "level": "B2"
     },
     {
@@ -2867,11 +2612,7 @@ export const SENTENCES = [
       "englishTemplate": "The report {word} a clear improvement.",
       "word": "demonstrate",
       "russianWord": "демонстрировать",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [1, 4, 7, 8],
       "level": "B2"
     },
     {
@@ -2880,11 +2621,7 @@ export const SENTENCES = [
       "englishTemplate": "It is important to {word} facts from opinions.",
       "word": "distinguish",
       "russianWord": "различать",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [1, 2],
       "level": "B2"
     },
     {
@@ -2893,10 +2630,7 @@ export const SENTENCES = [
       "englishTemplate": "We need a more {word} way of working.",
       "word": "efficient",
       "russianWord": "эффективный",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1, 6, 7],
       "level": "B2"
     },
     {
@@ -2905,10 +2639,7 @@ export const SENTENCES = [
       "englishTemplate": "The new system should {word} security.",
       "word": "enhance",
       "russianWord": "улучшать",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [3, 6],
       "level": "B2"
     },
     {
@@ -2917,9 +2648,7 @@ export const SENTENCES = [
       "englishTemplate": "Check the documents to {word} accuracy.",
       "word": "ensure",
       "russianWord": "обеспечивать",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 1],
       "level": "B2"
     },
     {
@@ -2928,11 +2657,7 @@ export const SENTENCES = [
       "englishTemplate": "This qualification is {word} to a university degree.",
       "word": "equivalent",
       "russianWord": "эквивалентный",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [4, 6],
       "level": "B2"
     },
     {
@@ -2941,10 +2666,7 @@ export const SENTENCES = [
       "englishTemplate": "We need a clear {word} for the project.",
       "word": "framework",
       "russianWord": "структура",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1, 4, 5],
       "level": "B2"
     },
     {
@@ -2953,11 +2675,7 @@ export const SENTENCES = [
       "englishTemplate": "The researchers tested the original {word}.",
       "word": "hypothesis",
       "russianWord": "гипотеза",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [0, 2, 3],
       "level": "B2"
     },
     {
@@ -2966,10 +2684,7 @@ export const SENTENCES = [
       "englishTemplate": "The bonus provided a strong {word} for employees.",
       "word": "incentive",
       "russianWord": "стимул",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 2],
       "level": "B2"
     },
     {
@@ -2978,10 +2693,7 @@ export const SENTENCES = [
       "englishTemplate": "Nothing can {word} such behaviour.",
       "word": "justify",
       "russianWord": "оправдывать",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [5, 6],
       "level": "B2"
     },
     {
@@ -2990,11 +2702,7 @@ export const SENTENCES = [
       "englishTemplate": "The plan was risky; {word}, we continued.",
       "word": "nevertheless",
       "russianWord": "тем не менее",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [2, 10],
       "level": "B2"
     },
     {
@@ -3003,10 +2711,7 @@ export const SENTENCES = [
       "englishTemplate": "Our main {word} is to reduce costs.",
       "word": "objective",
       "russianWord": "цель",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [3, 5, 8],
       "level": "B2"
     },
     {
@@ -3015,11 +2720,7 @@ export const SENTENCES = [
       "englishTemplate": "The {word} results look promising.",
       "word": "preliminary",
       "russianWord": "предварительный",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [2, 4, 5],
       "level": "B2"
     },
     {
@@ -3028,9 +2729,7 @@ export const SENTENCES = [
       "englishTemplate": "She decided to {word} a career in science.",
       "word": "pursue",
       "russianWord": "стремиться к",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1, 3, 5],
       "level": "B2"
     },
     {
@@ -3039,9 +2738,7 @@ export const SENTENCES = [
       "englishTemplate": "The company wants to {word} experienced staff.",
       "word": "retain",
       "russianWord": "сохранять",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 1, 2, 3],
       "level": "B2"
     },
     {
@@ -3050,10 +2747,7 @@ export const SENTENCES = [
       "englishTemplate": "The new rules {word} access to the building.",
       "word": "restrict",
       "russianWord": "ограничивать",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1, 2],
       "level": "B2"
     },
     {
@@ -3062,10 +2756,7 @@ export const SENTENCES = [
       "englishTemplate": "We are ready to {word} the necessary steps.",
       "word": "undertake",
       "russianWord": "предпринимать",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 4],
       "level": "B2"
     },
     {
@@ -3074,11 +2765,7 @@ export const SENTENCES = [
       "englishTemplate": "The problem became {word}.",
       "word": "widespread",
       "russianWord": "широко распространённый",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [0, 4],
       "level": "B2"
     },
     {
@@ -3087,10 +2774,7 @@ export const SENTENCES = [
       "englishTemplate": "They created a system {word} customers can track orders.",
       "word": "whereby",
       "russianWord": "посредством которого",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [4, 6],
       "level": "B2"
     },
     {
@@ -3099,11 +2783,7 @@ export const SENTENCES = [
       "englishTemplate": "The new data {word} his account of events.",
       "word": "corroborate",
       "russianWord": "подтверждать",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [5, 6, 7],
       "level": "C1"
     },
     {
@@ -3112,11 +2792,7 @@ export const SENTENCES = [
       "englishTemplate": "The {word} effect of these changes was significant.",
       "word": "cumulative",
       "russianWord": "совокупный",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [2, 9],
       "level": "C1"
     },
     {
@@ -3125,11 +2801,7 @@ export const SENTENCES = [
       "englishTemplate": "There is no {word} difference between the two versions.",
       "word": "discernible",
       "russianWord": "различимый",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [5, 6, 8, 10],
       "level": "C1"
     },
     {
@@ -3138,10 +2810,7 @@ export const SENTENCES = [
       "englishTemplate": "The study revealed a significant {word} in income.",
       "word": "disparity",
       "russianWord": "неравенство",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [2, 4],
       "level": "C1"
     },
     {
@@ -3150,11 +2819,7 @@ export const SENTENCES = [
       "englishTemplate": "The organisation aims to {word} reliable information.",
       "word": "disseminate",
       "russianWord": "распространять",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [3, 8, 10],
       "level": "C1"
     },
     {
@@ -3163,10 +2828,7 @@ export const SENTENCES = [
       "englishTemplate": "The conclusion is based on {word} evidence.",
       "word": "empirical",
       "russianWord": "эмпирический",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1, 4, 8],
       "level": "C1"
     },
     {
@@ -3175,10 +2837,7 @@ export const SENTENCES = [
       "englishTemplate": "The new strategy will {word} several areas.",
       "word": "encompass",
       "russianWord": "охватывать",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1, 3, 4],
       "level": "C1"
     },
     {
@@ -3187,9 +2846,7 @@ export const SENTENCES = [
       "englishTemplate": "This position will {word} frequent travel.",
       "word": "entail",
       "russianWord": "влечь за собой",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [4, 5],
       "level": "C1"
     },
     {
@@ -3198,10 +2855,7 @@ export const SENTENCES = [
       "englishTemplate": "The committee considered the {word} aspects of the research.",
       "word": "ethical",
       "russianWord": "этический",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1, 2, 5],
       "level": "C1"
     },
     {
@@ -3210,11 +2864,7 @@ export const SENTENCES = [
       "englishTemplate": "The new platform will {word} the exchange of knowledge.",
       "word": "facilitate",
       "russianWord": "способствовать",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [1, 6, 9],
       "level": "C1"
     },
     {
@@ -3223,11 +2873,7 @@ export const SENTENCES = [
       "englishTemplate": "Let us consider a {word} situation.",
       "word": "hypothetical",
       "russianWord": "гипотетический",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [2, 11],
       "level": "C1"
     },
     {
@@ -3236,10 +2882,7 @@ export const SENTENCES = [
       "englishTemplate": "A judge must remain {word}.",
       "word": "impartial",
       "russianWord": "беспристрастный",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 3, 5],
       "level": "C1"
     },
     {
@@ -3248,9 +2891,7 @@ export const SENTENCES = [
       "englishTemplate": "His words could {word} violence.",
       "word": "incite",
       "russianWord": "подстрекать",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 4],
       "level": "C1"
     },
     {
@@ -3259,11 +2900,7 @@ export const SENTENCES = [
       "englishTemplate": "She has an {word} to avoid conflict.",
       "word": "inclination",
       "russianWord": "склонность",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [1, 10],
       "level": "C1"
     },
     {
@@ -3272,11 +2909,7 @@ export const SENTENCES = [
       "englishTemplate": "The report contained an {word}.",
       "word": "inconsistency",
       "russianWord": "несоответствие",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [2, 8],
       "level": "C1"
     },
     {
@@ -3285,11 +2918,7 @@ export const SENTENCES = [
       "englishTemplate": "His experience proved {word} to the team.",
       "word": "indispensable",
       "russianWord": "незаменимый",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [0, 7],
       "level": "C1"
     },
     {
@@ -3298,10 +2927,7 @@ export const SENTENCES = [
       "englishTemplate": "Curiosity is an {word} part of learning.",
       "word": "intrinsic",
       "russianWord": "внутренне присущий",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1, 6],
       "level": "C1"
     },
     {
@@ -3310,10 +2936,7 @@ export const SENTENCES = [
       "englishTemplate": "The author will {word} personal stories with official statistics.",
       "word": "juxtapose",
       "russianWord": "сопоставлять",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [2, 6, 7],
       "level": "C1"
     },
     {
@@ -3322,11 +2945,7 @@ export const SENTENCES = [
       "englishTemplate": "He had {word} grounds for complaint.",
       "word": "legitimate",
       "russianWord": "законный",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [2, 5],
       "level": "C1"
     },
     {
@@ -3335,9 +2954,7 @@ export const SENTENCES = [
       "englishTemplate": "The company is {word} for the damage.",
       "word": "liable",
       "russianWord": "ответственный",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [0, 2, 5],
       "level": "C1"
     },
     {
@@ -3346,10 +2963,7 @@ export const SENTENCES = [
       "englishTemplate": "The changes had only a {word} effect.",
       "word": "marginal",
       "russianWord": "незначительный",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [3, 5],
       "level": "C1"
     },
     {
@@ -3358,11 +2972,7 @@ export const SENTENCES = [
       "englishTemplate": "The evidence was limited; {word}, the conclusion was convincing.",
       "word": "nonetheless",
       "russianWord": "тем не менее",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [0, 4],
       "level": "C1"
     },
     {
@@ -3371,10 +2981,7 @@ export const SENTENCES = [
       "englishTemplate": "The wording was deliberately {word}.",
       "word": "obscure",
       "russianWord": "неясный",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1, 6],
       "level": "C1"
     },
     {
@@ -3383,9 +2990,7 @@ export const SENTENCES = [
       "englishTemplate": "The savings helped to {word} the extra costs.",
       "word": "offset",
       "russianWord": "компенсировать",
-      "revealIndices": [
-        0
-      ],
+      "revealIndices": [1, 2, 4],
       "level": "C1"
     },
     {
@@ -3394,11 +2999,7 @@ export const SENTENCES = [
       "englishTemplate": "Work experience is a {word} for this position.",
       "word": "prerequisite",
       "russianWord": "предварительное условие",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [3, 11],
       "level": "C1"
     },
     {
@@ -3407,10 +3008,7 @@ export const SENTENCES = [
       "englishTemplate": "We need to {word} the conflicting data.",
       "word": "reconcile",
       "russianWord": "согласовывать",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 2, 7, 8],
       "level": "C1"
     },
     {
@@ -3419,10 +3017,7 @@ export const SENTENCES = [
       "englishTemplate": "The results {word} our confidence in the hypothesis.",
       "word": "reinforce",
       "russianWord": "укреплять",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [1, 8],
       "level": "C1"
     },
     {
@@ -3431,10 +3026,7 @@ export const SENTENCES = [
       "englishTemplate": "The company introduced {word} security measures.",
       "word": "stringent",
       "russianWord": "строгий",
-      "revealIndices": [
-        0,
-        2
-      ],
+      "revealIndices": [0, 3, 4, 5],
       "level": "C1"
     },
     {
@@ -3443,11 +3035,7 @@ export const SENTENCES = [
       "englishTemplate": "{word} events changed our opinion.",
       "word": "subsequent",
       "russianWord": "последующий",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [0, 4, 6],
       "level": "C1"
     },
     {
@@ -3456,11 +3044,7 @@ export const SENTENCES = [
       "englishTemplate": "It was an {word} move for the organisation.",
       "word": "unprecedented",
       "russianWord": "беспрецедентный",
-      "revealIndices": [
-        0,
-        2,
-        5
-      ],
+      "revealIndices": [1, 3, 12],
       "level": "C1"
     }
   ];
