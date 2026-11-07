@@ -374,9 +374,9 @@ function StudyPage({
 
   useEffect(() => {
     if (!checked) return undefined;
-    const timer = setTimeout(onAdvance, 900);
+    const timer = setTimeout(onAdvance, correct ? 1600 : 900);
     return () => clearTimeout(timer);
-  }, [checked, onAdvance]);
+  }, [checked, correct, onAdvance]);
 
   const parts = sentence ? sentence.englishTemplate.split("{word}") : [];
   const levelSelector = (
@@ -461,6 +461,24 @@ function StudyPage({
     <section className={"panel study-panel" + (checked && correct ? " answer-correct" : "")}>
       {checked && correct && (
         <div className="correct-overlay">
+          <div className="fireworks" aria-hidden="true">
+            <span className="firework firework-one" />
+            <span className="firework firework-two" />
+            <span className="firework firework-three" />
+          </div>
+          <div className="confetti" aria-hidden="true">
+            {Array.from({ length: 42 }, (_, index) => (
+              <span
+                key={index}
+                style={{
+                  left: `${(index * 37) % 100}%`,
+                  animationDelay: `${(index % 12) * 0.035}s`,
+                  "--fall-duration": `${1.05 + (index % 6) * 0.1}s`,
+                  "--confetti-rotation": `${index * 137}deg`,
+                }}
+              />
+            ))}
+          </div>
           <div className="correct-message">✓ Правильно!</div>
         </div>
       )}
