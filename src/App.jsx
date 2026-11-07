@@ -282,7 +282,7 @@ function WordGap({ sentence, value, onChange, disabled }) {
       style={{
         display: "inline-flex",
         alignItems: "baseline",
-        gap: "3px",
+        gap: "5px",
         whiteSpace: "nowrap",
         verticalAlign: "baseline",
       }}
@@ -314,15 +314,16 @@ function WordGap({ sentence, value, onChange, disabled }) {
             spellCheck={false}
             aria-label={`Буква ${index + 1}`}
             style={{
-              width: "1.2em",
-              minWidth: "1.2em",
-              maxWidth: "1.2em",
-              flex: "0 0 1.2em",
-              height: "1.65em",
+              width: "calc(1.2em + 2px)",
+              minWidth: "calc(1.2em + 2px)",
+              maxWidth: "calc(1.2em + 2px)",
+              flex: "0 0 calc(1.2em + 2px)",
+              height: "calc(1.65em + 2px)",
               margin: 0,
               padding: "0 1px",
               textAlign: "center",
               font: "inherit",
+              fontSize: "calc(1em + 1px)",
               lineHeight: 1.2,
               border: "none",
               borderBottom: `2px solid ${
