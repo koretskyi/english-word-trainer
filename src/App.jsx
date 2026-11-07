@@ -343,6 +343,7 @@ function StudyPage({
   const [answer, setAnswer] = useState(() => createInitialAnswer(sentence));
   const [checked, setChecked] = useState(false);
   const [showReviewWords, setShowReviewWords] = useState(false);
+  const [markedKnown, setMarkedKnown] = useState(false);
   const targetLetters = sentence ? [...sentence.word] : [];
   const isComplete = targetLetters.length > 0 &&
     targetLetters.every((_, position) => Boolean(answer[position]));
@@ -420,6 +421,13 @@ function StudyPage({
     onComplete(sentence.word, false);
   }
 
+  function knowWord() {
+    if (!sentence || !isReview || checked) return;
+    setMarkedKnown(true);
+    setChecked(true);
+    onKnow();
+  }
+
   if (!sentence) {
     return (
       <section className="panel">
@@ -474,14 +482,14 @@ function StudyPage({
                 onClick={dontKnow}>Не знаю</button>
               {isReview && (
                 <button className="button button-primary" type="button"
-                  onClick={onKnow}>Я знаю</button>
+                  onClick={knowWord}>Я знаю</button>
               )}
             </div>
           ) : (
             <div className={"feedback " + (correct ? "correct" : "incorrect")}>
-              <strong>{correct ? "✓ Правильно!" : "✗ Правильный ответ: " + sentence.word}</strong>
+              <strong>{markedKnown ? "✓ Слово перенесено в выученные" : correct ? "✓ Правильно!" : "✗ Правильный ответ: " + sentence.word}</strong>
               <p>{sentence.englishTemplate.replace("{word}", sentence.word)}</p>
-              <p>{correct ? "Ответ засчитан." : "Слово вернётся через 5 других карточек."}</p>
+              <p>{markedKnown ? "Больше не будет появляться в обучении." : correct ? "Ответ засчитан." : "Слово вернётся через 5 других карточек."}</p>
             </div>
           )}
         </form>
