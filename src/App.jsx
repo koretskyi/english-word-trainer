@@ -379,7 +379,7 @@ function StudyPage({
       ) : (
         <ul>
           {reviewWords.map((item) => (
-            <li key={item.key}>
+            <li key={item.key} style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "6px", marginBottom: "14px" }}>
               <strong>{item.word}</strong>
               <span>Этап {item.stage} из 6 · </span>
               <span>{item.remaining === 0
