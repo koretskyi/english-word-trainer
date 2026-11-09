@@ -380,6 +380,7 @@ function speakEnglish(text) {
 // Страница обучения с интервальным повторением.
 function StudyPage({
   sentence,
+  audioEnabled,
   selectedLevel,
   setSelectedLevel,
   levels,
@@ -416,7 +417,9 @@ function StudyPage({
 
   // Озвучиваем предложение один раз при открытии новой карточки.
   useEffect(() => {
-    if (!englishText) return undefined;
+    // При выключенном звуке не обращаемся к SpeechSynthesis,
+    // не запрашиваем голоса и не создаём таймеры/обработчики.
+    if (!audioEnabled || !englishText || !("speechSynthesis" in window)) return undefined;
 
     let cancelled = false;
     let fallbackTimer;
@@ -442,7 +445,7 @@ function StudyPage({
       window.speechSynthesis?.removeEventListener?.("voiceschanged", play);
       window.speechSynthesis?.cancel?.();
     };
-  }, [sentence?.id, sentence?.word, sentence?.englishTemplate]);
+  }, [audioEnabled, sentence?.id, sentence?.word, sentence?.englishTemplate]);
 
   const parts = sentence ? sentence.englishTemplate.split("{word}") : [];
   const levelSelector = (
@@ -594,7 +597,10 @@ function StudyPage({
           <button
             className="button button-secondary"
             type="button"
-            onClick={() => speakEnglish(englishText)}
+            onClick={() => {
+              if (audioEnabled) speakEnglish(englishText);
+            }}
+            disabled={!audioEnabled}
             aria-label="Повторить английское предложение"
             style={{ marginTop: "10px" }}
           >
@@ -1189,7 +1195,29 @@ export default function App() {
   const [selectedLevel, setSelectedLevel] = useState("A1");
   const [learningData, setLearningData] = useState(loadLearningData);
   const [activeWordKey, setActiveWordKey] = useState(null);
+  const [audioEnabled, setAudioEnabled] = useState(() => {
+    try {
+      return localStorage.getItem("english-word-trainer-audio") !== "off";
+    } catch {
+      return true;
+    }
+  });
   const levels = ["A1", "A2", "B1", "B2", "C1"];
+
+  function toggleAudio() {
+    setAudioEnabled((enabled) => {
+      const next = !enabled;
+      try {
+        localStorage.setItem("english-word-trainer-audio", next ? "on" : "off");
+      } catch (error) {
+        console.error("Не удалось сохранить настройку звука:", error);
+      }
+      if (!next && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+      return next;
+    });
+  }
 
   const filteredSentences = sentences.filter((sentence) => sentence && sentence.level === selectedLevel);
   const candidate = selectNextSentence(filteredSentences, learningData);
@@ -1289,18 +1317,31 @@ export default function App() {
             <p>Учи слова в контексте</p>
           </div>
         </div>
-        <nav className="main-nav">
-          <button className={page === "study" ? "nav-button active" : "nav-button"}
-            onClick={() => setPage("study")}>Обучение</button>
-          <button className={page === "admin" ? "nav-button active" : "nav-button"}
-            onClick={() => setPage("admin")}>Админка</button>
-        </nav>
+        <div className="header-actions">
+          <nav className="main-nav">
+            <button className={page === "study" ? "nav-button active" : "nav-button"}
+              onClick={() => setPage("study")}>Обучение</button>
+            <button className={page === "admin" ? "nav-button active" : "nav-button"}
+              onClick={() => setPage("admin")}>Админка</button>
+          </nav>
+          <button
+            className={"sound-toggle" + (audioEnabled ? "" : " sound-toggle-off")}
+            type="button"
+            onClick={toggleAudio}
+            aria-label={audioEnabled ? "Выключить озвучивание" : "Включить озвучивание"}
+            aria-pressed={audioEnabled}
+            title={audioEnabled ? "Выключить звук" : "Включить звук"}
+          >
+            {audioEnabled ? "🔊" : "🔇"}
+          </button>
+        </div>
       </header>
       <main className="main-content">
         {page === "study" ? (
           <StudyPage
             key={selectedLevel + ":" + (sentence ? normalizeWord(sentence.word) : "empty")}
             sentence={sentence}
+            audioEnabled={audioEnabled}
             selectedLevel={selectedLevel}
             setSelectedLevel={changeLevel}
             levels={levels}
