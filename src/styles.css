@@ -1408,11 +1408,6 @@ button:disabled {
   width: 34px;
   height: 23px;
 }
-.language-settings-caret {
-  color: #64748b;
-  font-size: 15px;
-  line-height: 1;
-}
 .language-settings-menu {
   position: absolute;
   z-index: 30;
