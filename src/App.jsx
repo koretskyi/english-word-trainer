@@ -641,7 +641,7 @@ function StudyPage({
           ) : (
             <div className={"feedback " + (correct ? "correct" : "incorrect")}>
               {dontKnowClicked ? (
-                <div className="dont-know-answer">
+                <div className="answer-comparison-row dont-know-answer">
                   <span className="answer-comparison-label">Правильный ответ</span>
                   <div className="answer-comparison-line correct-word-line">{sentence.word}</div>
                 </div>
@@ -1384,7 +1384,7 @@ export default function App() {
           <div className="brand-icon">Aa</div>
           <div>
             <h1>English Word Trainer</h1>
-            <p>Учи слова в контексте</p>
+            <p>Мама, я все выучил!</p>
           </div>
         </div>
         <div className="header-actions">
