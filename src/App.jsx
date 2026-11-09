@@ -447,6 +447,15 @@ function StudyPage({
     };
   }, [audioEnabled, sentence?.id, sentence?.word, sentence?.englishTemplate]);
 
+  // После правильного ответа отдельно произносим само выучиваемое слово.
+  useEffect(() => {
+    if (!audioEnabled || !checked || !correct || !sentence?.word) return undefined;
+    const timer = setTimeout(() => {
+      speakEnglish(sentence.word);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [audioEnabled, checked, correct, sentence?.word]);
+
   const parts = sentence ? sentence.englishTemplate.split("{word}") : [];
   const levelSelector = (
     <div className="level-selector">
