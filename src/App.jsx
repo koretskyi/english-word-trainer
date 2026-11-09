@@ -417,6 +417,37 @@ function speakEnglish(text, onFinished) {
   return true;
 }
 
+const REVIEW_STAGE_ICONS = ["🌱", "🌿", "🌳", "⭐", "🏆", "👑"];
+
+function ReviewLadder({ stage = 1, compact = false }) {
+  const currentStage = Math.min(6, Math.max(1, Number(stage) || 1));
+  return (
+    <div
+      className={compact ? "review-ladder review-ladder-compact" : "review-ladder"}
+      role="progressbar"
+      aria-label={`Путь освоения слова: этап ${currentStage} из 6`}
+      aria-valuemin={1}
+      aria-valuemax={6}
+      aria-valuenow={currentStage}
+    >
+      {!compact && <span className="review-ladder-caption">Путь освоения</span>}
+      <div className="review-ladder-steps">
+        {REVIEW_STAGE_ICONS.map((icon, index) => (
+          <span
+            key={icon}
+            className={index < currentStage ? "review-ladder-step reached" : "review-ladder-step"}
+            aria-hidden="true"
+            title={`Этап ${index + 1}`}
+          >
+            {icon}
+          </span>
+        ))}
+      </div>
+      <span className="review-ladder-count">{currentStage}/6</span>
+    </div>
+  );
+}
+
 // Страница обучения с интервальным повторением.
 function StudyPage({
   sentence,
@@ -526,19 +557,7 @@ function StudyPage({
             <li key={item.key} className="review-word-item">
               <strong className="review-word-name">{item.word}</strong>
               <span className="review-word-level">{item.level}</span>
-              <div
-                className="review-word-progress"
-                role="progressbar"
-                aria-label={`Прогресс изучения слова ${item.word}`}
-                aria-valuemin={0}
-                aria-valuemax={6}
-                aria-valuenow={item.stage - 1}
-              >
-                <div
-                  className="review-word-progress-fill"
-                  style={{ width: `${((item.stage - 1) / 5) * 100}%` }}
-                />
-              </div>
+              <ReviewLadder stage={item.stage} compact />
             </li>
           ))}
         </ul>
@@ -617,8 +636,9 @@ function StudyPage({
         <span className="level-badge">{sentence.level}</span>
       </div>
       {isReview && (
-        <div className="review-origin-label" style={{ margin: "12px 0", padding: "8px 12px", borderRadius: "8px", background: "#fff4d6", color: "#805500", fontWeight: 600 }}>
-          ↻ Это слово пришло из повторения
+        <div className="review-card-progress">
+          <div className="review-origin-label">↻ Это слово пришло из повторения</div>
+          <ReviewLadder stage={reviewStage} />
         </div>
       )}
       <div className="progress-track">
@@ -1356,6 +1376,7 @@ export default function App() {
             onComplete={completeWord}
             onKnow={() => markWordKnown(sentence?.word)}
             isReview={Boolean(sentence && learningData.words[normalizeWord(sentence.word)]?.status === "REVIEW")}
+            reviewStage={learningData.words[normalizeWord(sentence?.word)]?.stage || 1}
             onAdvance={advanceCard}
             masteredCount={masteredCount}
             totalWords={totalWords}
