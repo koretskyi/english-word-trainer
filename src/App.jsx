@@ -299,7 +299,7 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
             ref={(element) => {
               inputRefs.current[index] = element;
             }}
-            className="word-gap"
+            className={`word-gap${isMistake ? " word-gap-mistake" : ""}`}
             type="text"
             inputMode="text"
             maxLength={1}
@@ -379,7 +379,7 @@ function StudyPage({
 
   useEffect(() => {
     if (!checked) return undefined;
-    const timer = setTimeout(onAdvance, correct ? 1000 : 2000);
+    const timer = setTimeout(onAdvance, correct ? 1000 : 3000);
     return () => clearTimeout(timer);
   }, [checked, correct, onAdvance]);
 
