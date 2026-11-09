@@ -536,6 +536,15 @@ function StudyPage({
     </div>
   ) : null;
 
+  // В режиме статистики не показываем карточку обучения.
+  if (showStats) {
+    return (
+      <section className="stats-only-view">
+        {statsPanel}
+      </section>
+    );
+  }
+
   function handleAnswerChange(nextAnswer) {
     if (checked) return;
     setAnswer(nextAnswer);
@@ -1380,15 +1389,34 @@ export default function App() {
         </div>
         <div className="header-actions">
           <nav className="main-nav">
-            <button className={page === "study" ? "nav-button active" : "nav-button"}
-              onClick={() => setPage("study")}>Обучение</button>
-            <button className={page === "admin" ? "nav-button active" : "nav-button"}
-              onClick={() => setPage("admin")}>Админка</button>
-            <button className={showStats ? "nav-button active" : "nav-button"}
+            <button
+              type="button"
+              className={page === "study" && !showStats ? "nav-button active" : "nav-button"}
               onClick={() => {
                 setPage("study");
-                setShowStats((value) => !value);
-              }}>Статистика</button>
+                setShowStats(false);
+              }}
+            >Обучение</button>
+            <button
+              type="button"
+              className={page === "admin" ? "nav-button active" : "nav-button"}
+              onClick={() => {
+                setPage("admin");
+                setShowStats(false);
+              }}
+            >Админка</button>
+            <button
+              type="button"
+              className={page === "study" && showStats ? "nav-button active" : "nav-button"}
+              onClick={() => {
+                if (page === "study" && showStats) {
+                  setShowStats(false);
+                } else {
+                  setPage("study");
+                  setShowStats(true);
+                }
+              }}
+            >Статистика</button>
           </nav>
           <button
             className={"sound-toggle" + (audioEnabled ? "" : " sound-toggle-off")}
