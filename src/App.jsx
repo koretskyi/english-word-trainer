@@ -633,7 +633,7 @@ function StudyPage({
               )}
             </div>
           ) : (
-            <div className={"feedback " + (correct ? "correct" : "incorrect")}>
+            {(!correct || markedKnown) && <div className={"feedback " + (correct ? "correct" : "incorrect")}>
               {!correct && !markedKnown ? (
                 <>
                   <strong className="incorrect-feedback-title">✗ Ошибка</strong>
@@ -664,7 +664,7 @@ function StudyPage({
                   <p>Больше не будет появляться в обучении.</p>
                 </>
               ) : null}
-            </div>
+            </div>}
           )}
         </div>
       </div>
