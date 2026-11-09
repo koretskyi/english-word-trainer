@@ -272,7 +272,7 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
   function handleChange(index, rawValue) {
     const character = [...rawValue].slice(-1)[0] || "";
 
-    if (character && !/^[a-z]$/i.test(character)) {
+    if (character && !/^\\p{L}$/u.test(character)) {
       return;
     }
 
@@ -689,6 +689,7 @@ function StudyPage({
 
   if (!sentence) {
     return (
+      <Localized language={interfaceLanguage}>
       <section className="panel">
         {levelSelector}
         {statsPanel}
@@ -696,6 +697,7 @@ function StudyPage({
         <p>Новые слова закончились, а слова на повторение ещё не подошли по интервалу.</p>
         <p>Выполнено ответов: {completedCount}. Переключи уровень или добавь слова через админку.</p>
       </section>
+      </Localized>
     );
   }
 
