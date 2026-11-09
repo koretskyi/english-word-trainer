@@ -467,6 +467,8 @@ function StudyPage({
   levelProgress,
   showStats,
   setShowStats,
+  statsLevel,
+  setStatsLevel,
   isReview,
   reviewStage,
   onKnow,
@@ -510,7 +512,10 @@ function StudyPage({
       <button
         type="button"
         className="level-review-shortcut"
-        onClick={() => setShowStats(true)}
+        onClick={() => {
+          setStatsLevel(selectedLevel);
+          setShowStats(true);
+        }}
         aria-label={`Открыть статистику: ${selectedLevelReviewCount} слов на повторении уровня ${selectedLevel}`}
         title={`Слова на повторении уровня ${selectedLevel}`}
       >
@@ -520,6 +525,8 @@ function StudyPage({
       </button>
     </div>
   );
+
+  const statsLevelWords = reviewWords.filter((item) => item.level === statsLevel);
 
   const accuracy = stats.totalAnswers
     ? Math.round((stats.correctAnswers / stats.totalAnswers) * 100)
@@ -563,41 +570,52 @@ function StudyPage({
         ))}
       </div>
 
-      <h4>Слова на повторении ({reviewWords.length})</h4>
-      {reviewWords.length === 0 ? (
-        <p>Пока нет слов на повторении.</p>
-      ) : (
-        ["A1", "A2", "B1", "B2", "C1"].map((level) => {
-          const levelWords = reviewWords.filter((item) => item.level === level);
-          if (levelWords.length === 0) return null;
+      <div className="stats-review-title-row">
+        <h4>Слова на повторении — {statsLevel}</h4>
+        <span className="stats-review-total">{statsLevelWords.length} слов</span>
+      </div>
+      <div className="stats-level-tabs" role="tablist" aria-label="Уровень слов на повторении">
+        {levels.map((level) => {
+          const count = reviewWords.filter((item) => item.level === level).length;
           return (
-            <section className="stats-review-level" key={level}>
-              <h5 className="stats-review-level-heading">
-                {level} <span>({levelWords.length})</span>
-              </h5>
-              <ol className="stats-review-list">
-                {levelWords.map((item, index) => (
-                  <li key={item.key} className="review-word-item">
-                    <div className="review-word-heading">
-                      <span className="review-word-number">{index + 1}</span>
-                      <strong className="review-word-name">{item.word}</strong>
-                      <span className="review-word-level">{item.level}</span>
-                    </div>
-                    <ReviewLadder stage={item.stage} compact />
-                    <span className="review-word-due">
-                      До появления: <strong>{Math.max(1, item.remaining)}</strong>{" "}
-                      {Math.max(1, item.remaining) === 1
-                        ? "карточка"
-                        : Math.max(1, item.remaining) >= 2 && Math.max(1, item.remaining) <= 4
-                          ? "карточки"
-                          : "карточек"}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            </section>
+            <button
+              key={level}
+              type="button"
+              role="tab"
+              aria-selected={statsLevel === level}
+              className={statsLevel === level ? "stats-level-tab active" : "stats-level-tab"}
+              onClick={() => setStatsLevel(level)}
+            >
+              {level} <span>{count}</span>
+            </button>
           );
-        })
+        })}
+      </div>
+      {statsLevelWords.length === 0 ? (
+        <p>На уровне {statsLevel} пока нет слов на повторении.</p>
+      ) : (
+        <section className="stats-review-level" key={statsLevel}>
+          <ol className="stats-review-list">
+            {statsLevelWords.map((item, index) => (
+              <li key={item.key} className="review-word-item">
+                <div className="review-word-heading">
+                  <span className="review-word-number">{index + 1}</span>
+                  <strong className="review-word-name">{item.word}</strong>
+                  <span className="review-word-level">{item.level}</span>
+                </div>
+                <ReviewLadder stage={item.stage} compact />
+                <span className="review-word-due">
+                  До появления: <strong>{Math.max(1, item.remaining)}</strong>{" "}
+                  {Math.max(1, item.remaining) === 1
+                    ? "карточка"
+                    : Math.max(1, item.remaining) >= 2 && Math.max(1, item.remaining) <= 4
+                      ? "карточки"
+                      : "карточек"}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
       )}
     </div>
   ) : null;
@@ -1227,6 +1245,7 @@ export default function App() {
   const [page, setPage] = useState("study");
   const [showStats, setShowStats] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState("A1");
+  const [statsLevel, setStatsLevel] = useState("A1");
   const [learningData, setLearningData] = useState(loadLearningData);
   const [activeWordKey, setActiveWordKey] = useState(null);
   const [audioEnabled, setAudioEnabled] = useState(() => {
@@ -1447,6 +1466,8 @@ export default function App() {
             levelProgress={levelProgress}
             showStats={showStats}
             setShowStats={setShowStats}
+            statsLevel={statsLevel}
+            setStatsLevel={setStatsLevel}
           />
         ) : (
           <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} />
