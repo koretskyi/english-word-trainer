@@ -743,6 +743,8 @@ function AdminPage({ sentences, onSave, onDelete }) {
   const [editingId, setEditingId] = useState(null);
 
   const [error, setError] = useState("");
+  const [activeLevel, setActiveLevel] = useState("A1");
+  const adminLevels = ["A1", "A2", "B1", "B2", "C1"];
 
 
 
@@ -1143,38 +1145,43 @@ function AdminPage({ sentences, onSave, onDelete }) {
 
       <section className="panel">
 
-        <h2>Все предложения ({safeSentences.length})</h2>
+        <h2>Предложения ({safeSentences.length})</h2>
 
+        <div className="admin-level-tabs" role="tablist" aria-label="Уровень предложений">
+          {adminLevels.map((level) => {
+            const count = safeSentences.filter(
+              (sentence) => (sentence.level || "B1") === level
+            ).length;
+            return (
+              <button
+                key={level}
+                type="button"
+                role="tab"
+                aria-selected={activeLevel === level}
+                className={activeLevel === level ? "admin-level-tab active" : "admin-level-tab"}
+                onClick={() => setActiveLevel(level)}
+              >
+                {level} <span>({count})</span>
+              </button>
+            );
+          })}
+        </div>
 
-
-        {safeSentences.length === 0 && (
-
-          <p className="muted">Предложений пока нет.</p>
-
-        )}
-
-
-
-        {["A1", "A2", "B1", "B2", "C1"].map((level) => {
+        {(() => {
           const levelSentences = safeSentences.filter(
-            (sentence) => (sentence.level || "B1") === level
+            (sentence) => (sentence.level || "B1") === activeLevel
           );
-          if (levelSentences.length === 0) return null;
-
+          if (levelSentences.length === 0) {
+            return <p className="muted">На уровне {activeLevel} пока нет предложений.</p>;
+          }
           return (
-            <div className="admin-level-group" key={level}>
-              <h3 className="admin-level-heading">
-                {level} <span>({levelSentences.length})</span>
-              </h3>
+            <div className="admin-level-group">
               {levelSentences.map((sentence) => (
                 <article className="sentence-item" key={sentence.id}>
                   <div>
                     <strong>{sentence.russian}</strong>
                     <p className="sentence-item-english">
-                      {(sentence.englishTemplate || "").replace(
-                        "{word}",
-                        `[${sentence.word || ""}]`
-                      )}
+                      {(sentence.englishTemplate || "").replace("{word}", `[${sentence.word || ""}]`)}
                     </p>
                   </div>
                   <div className="sentence-item-actions">
@@ -1197,9 +1204,8 @@ function AdminPage({ sentences, onSave, onDelete }) {
               ))}
             </div>
           );
-        })}
-
-      </section>
+        })()}
+      </section>
 
     </div>
 
