@@ -601,6 +601,37 @@ button:disabled {
   font-size: 0.9rem;
 }
 
+.level-review-shortcut {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border: 1px solid #dbe4ee;
+  border-radius: 9px;
+  background: #f8fafc;
+  color: #475569;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.level-review-shortcut:hover {
+  background: #eef4fb;
+  border-color: #b8c8dc;
+}
+
+.level-review-shortcut > span:first-child {
+  color: #0f766e;
+  font-size: 17px;
+  line-height: 1;
+}
+
+.level-review-shortcut strong {
+  color: #0f766e;
+  font-variant-numeric: tabular-nums;
+}
+
 /* Салют запускается из позиции введённого слова */
 .correct-overlay {
   overflow: hidden;
