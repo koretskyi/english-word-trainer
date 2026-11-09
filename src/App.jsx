@@ -441,6 +441,8 @@ function StudyPage({
   const [checked, setChecked] = useState(false);
   const [successVisible, setSuccessVisible] = useState(false);
   const [markedKnown, setMarkedKnown] = useState(false);
+  const wordGapRef = useRef(null);
+  const [fireworksOrigin, setFireworksOrigin] = useState({ x: 0, y: 0 });
   const targetLetters = sentence ? [...sentence.word] : [];
   const correct = Boolean(sentence) && targetLetters.length > 0 &&
     targetLetters.every((letter, position) =>
@@ -542,6 +544,13 @@ function StudyPage({
       const isRight = targetLetters.every((letter, position) =>
         (nextAnswer[position] || "").toLowerCase() === letter.toLowerCase()
       );
+      if (isRight && wordGapRef.current) {
+        const rect = wordGapRef.current.getBoundingClientRect();
+        setFireworksOrigin({
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2,
+        });
+      }
       setChecked(true);
       onComplete(sentence.word, isRight);
       if (isRight) {
@@ -581,7 +590,37 @@ function StudyPage({
   }
 
   return (
-    <section className="panel study-panel">
+    <section className={"panel study-panel" + (checked && correct ? " answer-correct" : "")}>
+      {checked && correct && successVisible && (
+        <div className="correct-overlay">
+          <div
+            className="fireworks"
+            aria-hidden="true"
+            style={{
+              "--fireworks-x": `${fireworksOrigin.x}px`,
+              "--fireworks-y": `${fireworksOrigin.y}px`,
+            }}
+          >
+            <span className="firework firework-one" />
+            <span className="firework firework-two" />
+            <span className="firework firework-three" />
+          </div>
+          <div className="confetti" aria-hidden="true">
+            {Array.from({ length: 42 }, (_, index) => (
+              <span
+                key={index}
+                style={{
+                  left: `${(index * 37) % 100}%`,
+                  animationDelay: `${(index % 12) * 0.035}s`,
+                  "--fall-duration": `${1.05 + (index % 6) * 0.1}s`,
+                  "--confetti-rotation": `${index * 137}deg`,
+                }}
+              />
+            ))}
+          </div>
+          <div className="correct-message">✓ Правильно!</div>
+        </div>
+      )}
       {levelSelector}
       {statsPanel}
       <div className="card-topline">
@@ -607,7 +646,7 @@ function StudyPage({
           <div className="english-sentence">
             <span>{parts[0]}</span>
             <WordGap key={`${sentence.id}-${sentence.word}`} sentence={sentence} value={answer}
-              onChange={handleAnswerChange} disabled={checked}
+              onChange={handleAnswerChange} disabled={checked} containerRef={wordGapRef}
               showMistakes={checked && !correct} />
             <span>{parts.slice(1).join("{word}")}</span>
           </div>
@@ -632,36 +671,41 @@ function StudyPage({
                   onClick={knowWord}>Я знаю</button>
               )}
             </div>
-          ) : !correct && !markedKnown ? (
-            <div className="feedback incorrect">
-              <strong className="incorrect-feedback-title">✗ Ошибка</strong>
-              <div className="incorrect-answer-comparison" aria-label="Правильный ответ и твой вариант">
-                <div className="answer-comparison-row">
-                  <span className="answer-comparison-label">Правильный ответ</span>
-                  <div className="answer-comparison-line correct-word-line">{sentence.word}</div>
-                </div>
-                <div className="answer-comparison-row">
-                  <span className="answer-comparison-label">Ваш ответ</span>
-                  <div className="answer-comparison-line user-word-line">
-                    {targetLetters.map((letter, index) => {
-                      const userLetter = answer[index] || "";
-                      const isMistake = userLetter.toLowerCase() !== letter.toLowerCase();
-                      return (
-                        <span key={index} className={isMistake ? "user-word-letter-mistake" : ""}>
-                          {userLetter || "_"}
-                        </span>
-                      );
-                    })}
+          ) : (
+            <div className={"feedback " + (correct ? "correct" : "incorrect")}>
+              {!correct && !markedKnown ? (
+                <>
+                  <strong className="incorrect-feedback-title">✗ Ошибка</strong>
+                  <div className="incorrect-answer-comparison" aria-label="Правильный ответ и твой вариант">
+                    <div className="answer-comparison-row">
+                      <span className="answer-comparison-label">Правильный ответ</span>
+                      <div className="answer-comparison-line correct-word-line">{sentence.word}</div>
+                    </div>
+                    <div className="answer-comparison-row">
+                      <span className="answer-comparison-label">Ваш ответ</span>
+                      <div className="answer-comparison-line user-word-line">
+                        {targetLetters.map((letter, index) => {
+                          const userLetter = answer[index] || "";
+                          const isMistake = userLetter.toLowerCase() !== letter.toLowerCase();
+                          return (
+                            <span key={index} className={isMistake ? "user-word-letter-mistake" : ""}>
+                              {userLetter || "_"}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </>
+              ) : (
+                <>
+                  <strong>{markedKnown ? "✓ Слово перенесено в выученные" : "✓ Правильно!"}</strong>
+                  <p>{sentence.englishTemplate.replace("{word}", sentence.word)}</p>
+                  <p>{markedKnown ? "Больше не будет появляться в обучении." : "Ответ засчитан."}</p>
+                </>
+              )}
             </div>
-          ) : markedKnown ? (
-            <div className="feedback correct">
-              <strong>✓ Слово перенесено в выученные</strong>
-              <p>Больше не будет появляться в обучении.</p>
-            </div>
-          ) : null}
+          )}
         </div>
       </div>
     </section>
