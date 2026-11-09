@@ -555,7 +555,7 @@ function StudyPage({
       onComplete(sentence.word, isRight);
       if (isRight) {
         if (audioEnabled) {
-          const started = speakEnglish(sentence.word, () => setSuccessVisible(true));
+          const started = speakEnglish(englishText, () => setSuccessVisible(true));
           if (!started) setSuccessVisible(true);
         } else {
           setSuccessVisible(true);
