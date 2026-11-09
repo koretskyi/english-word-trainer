@@ -963,3 +963,43 @@ button:disabled {
     transform: translate3d(18px, 145px, 0) rotate(720deg);
   }
 }
+
+
+/* Вкладки уровней в админке */
+.admin-level-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-level-tab {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #f8faff;
+  color: #4e5a70;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.admin-level-tab:hover {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+}
+
+.admin-level-tab.active {
+  background: #e9eeff;
+  border-color: #8da5f5;
+  color: var(--primary);
+  box-shadow: 0 0 0 1px #c7d2fe inset;
+}
+
+.admin-level-tab span {
+  opacity: 0.7;
+  font-size: 0.85em;
+}
