@@ -677,7 +677,7 @@ function StudyPage({
     setDontKnowClicked(true);
     setChecked(true);
     onComplete(sentence.word, false);
-    if (audioEnabled) speakEnglish(sentence.word);
+    if (audioEnabled) speakEnglish(sentence.word, undefined, studyLanguage);
   }
 
   function knowWord() {
@@ -1270,6 +1270,13 @@ const UI_TRANSLATIONS = {
   is: [["Интерфейс","Viðmót"],["Изучаю","Ég læri"],["Обучение","Nám"],["Админка","Stjórnborð"],["Статистика","Tölfræði"],["Уровень:","Stig:"],["Не знаю","Ég veit ekki"],["Я знаю","Ég kann þetta"],["Статистика обучения","Námstölfræði"],["Слов изучено сегодня","Orð lærð í dag"],["Правильных подряд","Rétt svör í röð"],["Точность ответов","Nákvæmni svara"],["Слов на повторении","Orð til upprifjunar"],["Прогресс по уровням","Framvinda eftir stigum"],["Добавить предложение","Bæta við setningu"],["Редактировать предложение","Breyta setningu"],["Предложения","Setningar"],["Изменить","Breyta"],["Удалить","Eyða"],["Отмена","Hætta við"],["Сохранить изменения","Vista breytingar"],["ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ","ÞÝDDU Á MARKMÁLI"]]
 };
 
+
+UI_TRANSLATIONS.uk.push(["Мама, я все выучил!","Мамо, я все вивчив!"],["ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ:","ВПИШІТЬ СЛОВО ПРЯМО В РЕЧЕННЯ:"],["ПЕРЕВЕДИТЕ НА НЕМЕЦКИЙ","ПЕРЕКЛАДІТЬ НІМЕЦЬКОЮ"],["ПЕРЕВЕДИТЕ НА ФРАНЦУЗСКИЙ","ПЕРЕКЛАДІТЬ ФРАНЦУЗЬКОЮ"],["ПЕРЕВЕДИТЕ НА ИСЛАНДСКИЙ","ПЕРЕКЛАДІТЬ ІСЛАНДСЬКОЮ"],["Правильный ответ","Правильна відповідь"],["Ваш ответ","Ваша відповідь"],["✗ Ошибка","✗ Помилка"],["✓ Правильно!","✓ Правильно!"],["Прогресс обучения","Прогрес навчання"],["Это слово пришло из повторения","Це слово надійшло з повторення"],["Слово перенесено в выученные","Слово перенесено до вивчених"],["Больше не будет появляться в обучении.","Більше не з’являтиметься під час навчання."]);
+UI_TRANSLATIONS.en.push(["Мама, я все выучил!","Look, I learned everything!"],["ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ:","TYPE THE WORD INTO THE SENTENCE:"],["ПЕРЕВЕДИТЕ НА НЕМЕЦКИЙ","TRANSLATE INTO GERMAN"],["ПЕРЕВЕДИТЕ НА ФРАНЦУЗСКИЙ","TRANSLATE INTO FRENCH"],["ПЕРЕВЕДИТЕ НА ИСЛАНДСКИЙ","TRANSLATE INTO ICELANDIC"],["Правильный ответ","Correct answer"],["Ваш ответ","Your answer"],["✗ Ошибка","✗ Incorrect"],["✓ Правильно!","✓ Correct!"],["Прогресс обучения","Learning progress"],["Это слово пришло из повторения","This word is from review"],["Слово перенесено в выученные","Word marked as mastered"],["Больше не будет появляться в обучении.","It will no longer appear in study."]);
+UI_TRANSLATIONS.de.push(["Мама, я все выучил!","Ich habe alles gelernt!"],["ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ:","TRAGE DAS WORT IN DEN SATZ EIN:"],["ПЕРЕВЕДИТЕ НА НЕМЕЦКИЙ","ÜBERSETZE INS DEUTSCHE"],["ПЕРЕВЕДИТЕ НА ФРАНЦУЗСКИЙ","ÜBERSETZE INS FRANZÖSISCHE"],["ПЕРЕВЕДИТЕ НА ИСЛАНДСКИЙ","ÜBERSETZE INS ISLÄNDISCHE"],["Правильный ответ","Richtige Antwort"],["Ваш ответ","Deine Antwort"],["✗ Ошибка","✗ Falsch"],["✓ Правильно!","✓ Richtig!"],["Прогресс обучения","Lernfortschritt"],["Это слово пришло из повторения","Dieses Wort kommt aus der Wiederholung"],["Слово перенесено в выученные","Wort als gelernt markiert"],["Больше не будет появляться в обучении.","Es erscheint nicht mehr beim Lernen."]);
+UI_TRANSLATIONS.fr.push(["Мама, я все выучил!","J’ai tout appris !"],["ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ:","ÉCRIVEZ LE MOT DANS LA PHRASE :"],["ПЕРЕВЕДИТЕ НА НЕМЕЦКИЙ","TRADUISEZ EN ALLEMAND"],["ПЕРЕВЕДИТЕ НА ФРАНЦУЗСКИЙ","TRADUISEZ EN FRANÇAIS"],["ПЕРЕВЕДИТЕ НА ИСЛАНДСКИЙ","TRADUISEZ EN ISLANDAIS"],["Правильный ответ","Bonne réponse"],["Ваш ответ","Votre réponse"],["✗ Ошибка","✗ Incorrect"],["✓ Правильно!","✓ Correct !"],["Прогресс обучения","Progression d’apprentissage"],["Это слово пришло из повторения","Ce mot vient des révisions"],["Слово перенесено в выученные","Mot marqué comme maîtrisé"],["Больше не будет появляться в обучении.","Il n’apparaîtra plus dans l’apprentissage."]);
+UI_TRANSLATIONS.is.push(["Мама, я все выучил!","Ég hef lært þetta allt!"],["ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ:","SKRIFAÐU ORÐIÐ INN Í SETNINGUNA:"],["ПЕРЕВЕДИТЕ НА НЕМЕЦКИЙ","ÞÝDDU Á ÞÝSKU"],["ПЕРЕВЕДИТЕ НА ФРАНЦУЗСКИЙ","ÞÝDDU Á FRÖNSKU"],["ПЕРЕВЕДИТЕ НА ИСЛАНДСКИЙ","ÞÝDDU Á ÍSLENSKU"],["Правильный ответ","Rétt svar"],["Ваш ответ","Þitt svar"],["✗ Ошибка","✗ Rangt"],["✓ Правильно!","✓ Rétt!"],["Прогресс обучения","Námsframvinda"],["Это слово пришло из повторения","Þetta orð kemur úr upprifjun"],["Слово перенесено в выученные","Orð merkt sem lært"],["Больше не будет появляться в обучении.","Það birtist ekki aftur í náminu."]);
+
 function Localized({ language, children }) {
   const dictionary = Object.fromEntries(UI_TRANSLATIONS[language] || []);
   function translate(value) {
@@ -1313,7 +1320,7 @@ export default function App() {
       return true;
     }
   });
-  const levels = ["A1", "A2", "B1", "B2", "C1"];
+  const levels = studyLanguage === "en" ? ["A1", "A2", "B1", "B2", "C1"] : ["A1"];
 
   function toggleAudio() {
     setAudioEnabled((enabled) => {
