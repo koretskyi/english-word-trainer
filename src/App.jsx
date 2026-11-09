@@ -1,5 +1,6 @@
 import { SENTENCES } from "./sentences.js";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Children, cloneElement, useCallback, useEffect, useRef, useState } from "react";
+import { LANGUAGE_SENTENCES } from "./languages.js";
 
 
 
@@ -103,6 +104,23 @@ function loadLearningData() {
     console.error("Ошибка загрузки прогресса:", error);
   }
   return { version: 1, completedCount: 0, words: {}, stats: emptyStats };
+}
+
+function loadLearningDataForLanguage(language) {
+  if (language === "en") return loadLearningData();
+  try {
+    const saved = localStorage.getItem(LEARNING_STORAGE_KEY + "-" + language);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.version === 1 && parsed.words && typeof parsed.words === "object") return parsed;
+    }
+  } catch (error) {
+    console.error("Could not load saved language progress:", error);
+  }
+  return {
+    version: 1, completedCount: 0, words: {},
+    stats: { totalAnswers: 0, correctAnswers: 0, streak: 0, daily: { date: getLocalDateKey(), count: 0 } }
+  };
 }
 
 function selectNextSentence(sentences, learningData) {
@@ -254,7 +272,7 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
   function handleChange(index, rawValue) {
     const character = [...rawValue].slice(-1)[0] || "";
 
-    if (character && !/^[a-z]$/i.test(character)) {
+    if (character && !/^\p{L}$/u.test(character)) {
       return;
     }
 
@@ -387,7 +405,7 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
 
 
 // Озвучивание английского предложения встроенным синтезом речи браузера.
-function speakEnglish(text, onFinished) {
+function speakEnglish(text, onFinished, language = "en") {
   if (!text || !("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
     return false;
   }
@@ -399,18 +417,15 @@ function speakEnglish(text, onFinished) {
     utterance.onerror = onFinished;
   }
   const voices = window.speechSynthesis.getVoices();
-  const englishVoices = voices.filter((voice) => /^en(-|_)/i.test(voice.lang));
+  const languageVoices = voices.filter((voice) => new RegExp("^" + language + "(-|_)", "i").test(voice.lang));
   // Сначала выбираем именно Microsoft Jenny; остальные голоса — только запасной вариант.
-  const preferredVoice =
-    englishVoices.find((voice) => /microsoft.*jenny|jenny.*microsoft/i.test(voice.name)) ||
-    englishVoices.find((voice) => /jenny/i.test(voice.name)) ||
-    englishVoices.find((voice) => /aria|samantha|ava|zira|susan|karen|victoria|female/i.test(voice.name)) ||
-    englishVoices.find((voice) => /^en-US/i.test(voice.lang)) ||
-    englishVoices.find((voice) => /^en-GB/i.test(voice.lang)) ||
-    englishVoices[0];
+  const preferredVoice = languageVoices.find((voice) => language === "en" && /microsoft.*jenny|jenny.*microsoft/i.test(voice.name)) ||
+    languageVoices.find((voice) => language === "en" && /jenny/i.test(voice.name)) ||
+    languageVoices.find((voice) => /aria|samantha|ava|zira|susan|karen|victoria|female/i.test(voice.name)) ||
+    languageVoices[0];
 
   if (preferredVoice) utterance.voice = preferredVoice;
-  utterance.lang = preferredVoice?.lang || "en-US";
+  utterance.lang = preferredVoice?.lang || ({ en: "en-US", de: "de-DE", fr: "fr-FR", is: "is-IS" }[language] || "en-US");
   utterance.rate = 0.9;
   utterance.pitch = 1.08;
   window.speechSynthesis.speak(utterance);
@@ -453,6 +468,8 @@ function ReviewLadder({ stage = 1, compact = false }) {
 // Страница обучения с интервальным повторением.
 function StudyPage({
   sentence,
+  interfaceLanguage,
+  studyLanguage,
   audioEnabled,
   selectedLevel,
   setSelectedLevel,
@@ -623,9 +640,9 @@ function StudyPage({
   // В режиме статистики не показываем карточку обучения.
   if (showStats) {
     return (
-      <section className="stats-only-view">
-        {statsPanel}
-      </section>
+      <Localized language={interfaceLanguage}>
+        <section className="stats-only-view">{statsPanel}</section>
+      </Localized>
     );
   }
 
@@ -643,14 +660,14 @@ function StudyPage({
         // Показываем надпись и салюты сразу, не дожидаясь окончания озвучки.
         setSuccessVisible(true);
         if (audioEnabled) {
-          const started = speakEnglish(englishText, () => setAudioFinished(true));
+          const started = speakEnglish(englishText, () => setAudioFinished(true), studyLanguage);
           if (!started) setAudioFinished(true);
         } else {
           setAudioFinished(true);
         }
       } else if (audioEnabled) {
         // При ошибке произносим правильное английское слово.
-        speakEnglish(sentence.word);
+        speakEnglish(sentence.word, undefined, studyLanguage);
       }
     }
   }
@@ -660,7 +677,7 @@ function StudyPage({
     setDontKnowClicked(true);
     setChecked(true);
     onComplete(sentence.word, false);
-    if (audioEnabled) speakEnglish(sentence.word);
+    if (audioEnabled) speakEnglish(sentence.word, undefined, studyLanguage);
   }
 
   function knowWord() {
@@ -672,6 +689,7 @@ function StudyPage({
 
   if (!sentence) {
     return (
+      <Localized language={interfaceLanguage}>
       <section className="panel">
         {levelSelector}
         {statsPanel}
@@ -679,10 +697,12 @@ function StudyPage({
         <p>Новые слова закончились, а слова на повторение ещё не подошли по интервалу.</p>
         <p>Выполнено ответов: {completedCount}. Переключи уровень или добавь слова через админку.</p>
       </section>
+      </Localized>
     );
   }
 
   return (
+    <Localized language={interfaceLanguage}>
     <section className={"panel study-panel" + (checked && correct ? " answer-correct" : "")}>
       {levelSelector}
       {statsPanel}
@@ -711,7 +731,7 @@ function StudyPage({
           <ReviewLadder stage={reviewStage} />
         </div>
       )}
-      <p className="eyebrow">ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ</p>
+      <p className="eyebrow">{studyLanguage === "en" ? "ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ" : studyLanguage === "de" ? "ПЕРЕВЕДИТЕ НА НЕМЕЦКИЙ" : studyLanguage === "fr" ? "ПЕРЕВЕДИТЕ НА ФРАНЦУЗСКИЙ" : "ПЕРЕВЕДИТЕ НА ИСЛАНДСКИЙ"}</p>
       <h2 className="russian-sentence">{sentence.russian}</h2>
       <div className="english-section">
         <p className="study-instruction">ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ: <strong className="target-translation" style={{ fontSize: "18px" }}>{sentence.russianWord || "—"}</strong></p>
@@ -800,6 +820,7 @@ function StudyPage({
         </div>
       </div>
     </section>
+    </Localized>
   );
 }
 
@@ -824,7 +845,7 @@ const EMPTY_FORM = {
 
 // Локальная админка.
 
-function AdminPage({ sentences, onSave, onDelete }) {
+function AdminPage({ sentences, onSave, onDelete, interfaceLanguage }) {
   const safeSentences = Array.isArray(sentences)
     ? sentences.filter((sentence) => sentence && typeof sentence === "object")
     : [];
@@ -978,7 +999,8 @@ function AdminPage({ sentences, onSave, onDelete }) {
 
   return (
 
-    <div className="admin-layout">
+    <Localized language={interfaceLanguage}>
+    <div className="admin-layout">
 
       <section className="panel">
 
@@ -1232,6 +1254,7 @@ function AdminPage({ sentences, onSave, onDelete }) {
       </section>
 
     </div>
+    </Localized>
 
   );
 
@@ -1240,13 +1263,89 @@ function AdminPage({ sentences, onSave, onDelete }) {
 
 
 // Главный компонент приложения.
+
+const UI_TRANSLATIONS = {
+  uk: [["Интерфейс","Інтерфейс"],["Изучаю","Вивчаю"],["Обучение","Навчання"],["Админка","Адмінка"],["Статистика","Статистика"],["Уровень:","Рівень:"],["Не знаю","Не знаю"],["Я знаю","Я знаю"],["Статистика обучения","Статистика навчання"],["Слов изучено сегодня","Слів вивчено сьогодні"],["Правильных подряд","Правильних поспіль"],["Точность ответов","Точність відповідей"],["Слов на повторении","Слів на повторенні"],["Прогресс по уровням","Прогрес за рівнями"],["Добавить предложение","Додати речення"],["Редактировать предложение","Редагувати речення"],["Предложения","Речення"],["Изменить","Змінити"],["Удалить","Видалити"],["Отмена","Скасувати"],["Сохранить изменения","Зберегти зміни"],["ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ","ПЕРЕКЛАДІТЬ ЦІЛЬОВОЮ МОВОЮ"]],
+  en: [["Интерфейс","Interface"],["Изучаю","Learning"],["Обучение","Study"],["Админка","Admin"],["Статистика","Statistics"],["Уровень:","Level:"],["Не знаю","I don't know"],["Я знаю","I know"],["Статистика обучения","Learning statistics"],["Слов изучено сегодня","Words learned today"],["Правильных подряд","Correct in a row"],["Точность ответов","Answer accuracy"],["Слов на повторении","Words to review"],["Прогресс по уровням","Progress by level"],["Добавить предложение","Add sentence"],["Редактировать предложение","Edit sentence"],["Предложения","Sentences"],["Изменить","Edit"],["Удалить","Delete"],["Отмена","Cancel"],["Сохранить изменения","Save changes"],["ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ","TRANSLATE INTO ENGLISH"]],
+  de: [["Интерфейс","Oberfläche"],["Изучаю","Ich lerne"],["Обучение","Lernen"],["Админка","Verwaltung"],["Статистика","Statistik"],["Уровень:","Niveau:"],["Не знаю","Weiß ich nicht"],["Я знаю","Ich weiß"],["Статистика обучения","Lernstatistik"],["Слов изучено сегодня","Heute gelernte Wörter"],["Правильных подряд","Richtige Antworten in Folge"],["Точность ответов","Antwortgenauigkeit"],["Слов на повторении","Wörter zur Wiederholung"],["Прогресс по уровням","Fortschritt nach Niveau"],["Добавить предложение","Satz hinzufügen"],["Редактировать предложение","Satz bearbeiten"],["Предложения","Sätze"],["Изменить","Bearbeiten"],["Удалить","Löschen"],["Отмена","Abbrechen"],["Сохранить изменения","Änderungen speichern"],["ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ","ÜBERSETZE IN DIE ZIELSPRACHE"]],
+  fr: [["Интерфейс","Interface"],["Изучаю","J’apprends"],["Обучение","Apprentissage"],["Админка","Administration"],["Статистика","Statistiques"],["Уровень:","Niveau :"],["Не знаю","Je ne sais pas"],["Я знаю","Je sais"],["Статистика обучения","Statistiques d’apprentissage"],["Слов изучено сегодня","Mots appris aujourd’hui"],["Правильных подряд","Bonnes réponses consécutives"],["Точность ответов","Précision des réponses"],["Слов на повторении","Mots à réviser"],["Прогресс по уровням","Progression par niveau"],["Добавить предложение","Ajouter une phrase"],["Редактировать предложение","Modifier la phrase"],["Предложения","Phrases"],["Изменить","Modifier"],["Удалить","Supprimer"],["Отмена","Annuler"],["Сохранить изменения","Enregistrer"],["ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ","TRADUISEZ DANS LA LANGUE ÉTUDIÉE"]],
+  is: [["Интерфейс","Viðmót"],["Изучаю","Ég læri"],["Обучение","Nám"],["Админка","Stjórnborð"],["Статистика","Tölfræði"],["Уровень:","Stig:"],["Не знаю","Ég veit ekki"],["Я знаю","Ég kann þetta"],["Статистика обучения","Námstölfræði"],["Слов изучено сегодня","Orð lærð í dag"],["Правильных подряд","Rétt svör í röð"],["Точность ответов","Nákvæmni svara"],["Слов на повторении","Orð til upprifjunar"],["Прогресс по уровням","Framvinda eftir stigum"],["Добавить предложение","Bæta við setningu"],["Редактировать предложение","Breyta setningu"],["Предложения","Setningar"],["Изменить","Breyta"],["Удалить","Eyða"],["Отмена","Hætta við"],["Сохранить изменения","Vista breytingar"],["ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ","ÞÝDDU Á MARKMÁLI"]]
+};
+
+
+UI_TRANSLATIONS.uk.push(["Мама, я все выучил!","Мамо, я все вивчив!"],["ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ:","ВПИШІТЬ СЛОВО ПРЯМО В РЕЧЕННЯ:"],["ПЕРЕВЕДИТЕ НА НЕМЕЦКИЙ","ПЕРЕКЛАДІТЬ НІМЕЦЬКОЮ"],["ПЕРЕВЕДИТЕ НА ФРАНЦУЗСКИЙ","ПЕРЕКЛАДІТЬ ФРАНЦУЗЬКОЮ"],["ПЕРЕВЕДИТЕ НА ИСЛАНДСКИЙ","ПЕРЕКЛАДІТЬ ІСЛАНДСЬКОЮ"],["Правильный ответ","Правильна відповідь"],["Ваш ответ","Ваша відповідь"],["✗ Ошибка","✗ Помилка"],["✓ Правильно!","✓ Правильно!"],["Прогресс обучения","Прогрес навчання"],["Это слово пришло из повторения","Це слово надійшло з повторення"],["Слово перенесено в выученные","Слово перенесено до вивчених"],["Больше не будет появляться в обучении.","Більше не з’являтиметься під час навчання."]);
+UI_TRANSLATIONS.en.push(["Мама, я все выучил!","Look, I learned everything!"],["ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ:","TYPE THE WORD INTO THE SENTENCE:"],["ПЕРЕВЕДИТЕ НА НЕМЕЦКИЙ","TRANSLATE INTO GERMAN"],["ПЕРЕВЕДИТЕ НА ФРАНЦУЗСКИЙ","TRANSLATE INTO FRENCH"],["ПЕРЕВЕДИТЕ НА ИСЛАНДСКИЙ","TRANSLATE INTO ICELANDIC"],["Правильный ответ","Correct answer"],["Ваш ответ","Your answer"],["✗ Ошибка","✗ Incorrect"],["✓ Правильно!","✓ Correct!"],["Прогресс обучения","Learning progress"],["Это слово пришло из повторения","This word is from review"],["Слово перенесено в выученные","Word marked as mastered"],["Больше не будет появляться в обучении.","It will no longer appear in study."]);
+UI_TRANSLATIONS.de.push(["Мама, я все выучил!","Ich habe alles gelernt!"],["ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ:","TRAGE DAS WORT IN DEN SATZ EIN:"],["ПЕРЕВЕДИТЕ НА НЕМЕЦКИЙ","ÜBERSETZE INS DEUTSCHE"],["ПЕРЕВЕДИТЕ НА ФРАНЦУЗСКИЙ","ÜBERSETZE INS FRANZÖSISCHE"],["ПЕРЕВЕДИТЕ НА ИСЛАНДСКИЙ","ÜBERSETZE INS ISLÄNDISCHE"],["Правильный ответ","Richtige Antwort"],["Ваш ответ","Deine Antwort"],["✗ Ошибка","✗ Falsch"],["✓ Правильно!","✓ Richtig!"],["Прогресс обучения","Lernfortschritt"],["Это слово пришло из повторения","Dieses Wort kommt aus der Wiederholung"],["Слово перенесено в выученные","Wort als gelernt markiert"],["Больше не будет появляться в обучении.","Es erscheint nicht mehr beim Lernen."]);
+UI_TRANSLATIONS.fr.push(["Мама, я все выучил!","J’ai tout appris !"],["ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ:","ÉCRIVEZ LE MOT DANS LA PHRASE :"],["ПЕРЕВЕДИТЕ НА НЕМЕЦКИЙ","TRADUISEZ EN ALLEMAND"],["ПЕРЕВЕДИТЕ НА ФРАНЦУЗСКИЙ","TRADUISEZ EN FRANÇAIS"],["ПЕРЕВЕДИТЕ НА ИСЛАНДСКИЙ","TRADUISEZ EN ISLANDAIS"],["Правильный ответ","Bonne réponse"],["Ваш ответ","Votre réponse"],["✗ Ошибка","✗ Incorrect"],["✓ Правильно!","✓ Correct !"],["Прогресс обучения","Progression d’apprentissage"],["Это слово пришло из повторения","Ce mot vient des révisions"],["Слово перенесено в выученные","Mot marqué comme maîtrisé"],["Больше не будет появляться в обучении.","Il n’apparaîtra plus dans l’apprentissage."]);
+UI_TRANSLATIONS.is.push(["Мама, я все выучил!","Ég hef lært þetta allt!"],["ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ:","SKRIFAÐU ORÐIÐ INN Í SETNINGUNA:"],["ПЕРЕВЕДИТЕ НА НЕМЕЦКИЙ","ÞÝDDU Á ÞÝSKU"],["ПЕРЕВЕДИТЕ НА ФРАНЦУЗСКИЙ","ÞÝDDU Á FRÖNSKU"],["ПЕРЕВЕДИТЕ НА ИСЛАНДСКИЙ","ÞÝDDU Á ÍSLENSKU"],["Правильный ответ","Rétt svar"],["Ваш ответ","Þitt svar"],["✗ Ошибка","✗ Rangt"],["✓ Правильно!","✓ Rétt!"],["Прогресс обучения","Námsframvinda"],["Это слово пришло из повторения","Þetta orð kemur úr upprifjun"],["Слово перенесено в выученные","Orð merkt sem lært"],["Больше не будет появляться в обучении.","Það birtist ekki aftur í náminu."]);
+
+
+UI_TRANSLATIONS.uk.push(["Предложение на русском","Речення російською"],["Слово для перевода на русском","Слово для перекладу російською"],["Английский шаблон","Шаблон англійською"],["Пропущенное слово","Пропущене слово"],["Уровень английского","Рівень англійської"],["Заполни все обязательные поля.","Заповни всі обов’язкові поля."],["Пожалуйста, укажи {word} ровно один раз в английском шаблоне.","Будь ласка, вкажи {word} рівно один раз у шаблоні."]);
+UI_TRANSLATIONS.en.push(["Предложение на русском","Sentence in Russian"],["Слово для перевода на русском","Russian word prompt"],["Английский шаблон","English template"],["Пропущенное слово","Missing word"],["Уровень английского","English level"],["Заполни все обязательные поля.","Fill in all required fields."],["Пожалуйста, закрой дверь.","Please close the door."]);
+UI_TRANSLATIONS.de.push(["Предложение на русском","Satz auf Russisch"],["Слово для перевода на русском","Russischer Übersetzungshinweis"],["Английский шаблон","Englische Vorlage"],["Пропущенное слово","Fehlendes Wort"],["Уровень английского","Englisches Niveau"],["Заполни все обязательные поля.","Bitte fülle alle Pflichtfelder aus."]);
+UI_TRANSLATIONS.fr.push(["Предложение на русском","Phrase en russe"],["Слово для перевода на русском","Mot russe à traduire"],["Английский шаблон","Modèle anglais"],["Пропущенное слово","Mot manquant"],["Уровень английского","Niveau d’anglais"],["Заполни все обязательные поля.","Veuillez remplir tous les champs obligatoires."]);
+UI_TRANSLATIONS.is.push(["Предложение на русском","Setning á rússnesku"],["Слово для перевода на русском","Rússneskt orð til þýðingar"],["Английский шаблон","Ensk setningagerð"],["Пропущенное слово","Orðið sem vantar"],["Уровень английского","Enskustig"],["Заполни все обязательные поля.","Vinsamlegast fylltu út alla reiti."]);
+
+function Localized({ language, children }) {
+  const dictionary = Object.fromEntries(UI_TRANSLATIONS[language] || []);
+  function translate(value) {
+    if (typeof value !== "string") return value;
+    const trimmed = value.trim();
+    return dictionary[trimmed] ? value.replace(trimmed, dictionary[trimmed]) : value;
+  }
+  function walk(node) {
+    if (typeof node === "string") return translate(node);
+    if (Array.isArray(node)) return Children.map(node, walk);
+    if (!node || typeof node !== "object" || !node.props) return node;
+    const props = { ...node.props };
+    ["placeholder", "title", "aria-label"].forEach((key) => {
+      if (typeof props[key] === "string") props[key] = translate(props[key]);
+    });
+    if (props.children !== undefined) props.children = walk(props.children);
+    return cloneElement(node, props);
+  }
+  return <>{walk(children)}</>;
+}
+
+const STUDY_LANGUAGES = ["en", "de", "fr", "is"];
+const STUDY_NAMES = { en: "🇬🇧 English", de: "🇩🇪 Deutsch", fr: "🇫🇷 Français", is: "🇮🇸 Íslenska" };
+
 export default function App() {
+  // Язык интерфейса временно закреплён на русском.
+  const interfaceLanguage = "ru";
+  const [studyLanguage, setStudyLanguage] = useState(() => {
+    const saved = localStorage.getItem("trainer-study-language");
+    return STUDY_LANGUAGES.includes(saved) ? saved : "en";
+  });
+  const [languageSettingsOpen, setLanguageSettingsOpen] = useState(false);
+  const languageSettingsRef = useRef(null);
+
+  useEffect(() => {
+    // Удаляем влияние старой сохранённой настройки языка интерфейса.
+    localStorage.setItem("trainer-interface", "ru");
+  }, []);
+
+  useEffect(() => {
+    if (!languageSettingsOpen) return undefined;
+    function closeOnOutsideClick(event) {
+      if (!languageSettingsRef.current?.contains(event.target)) setLanguageSettingsOpen(false);
+    }
+    function closeOnEscape(event) {
+      if (event.key === "Escape") setLanguageSettingsOpen(false);
+    }
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("mousedown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [languageSettingsOpen]);
   const [sentences, setSentences] = useState(loadSentences);
   const [page, setPage] = useState("study");
   const [showStats, setShowStats] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState("A1");
   const [statsLevel, setStatsLevel] = useState("A1");
-  const [learningData, setLearningData] = useState(loadLearningData);
+  const [learningData, setLearningData] = useState(() => loadLearningDataForLanguage(studyLanguage));
   const [activeWordKey, setActiveWordKey] = useState(null);
   const [audioEnabled, setAudioEnabled] = useState(() => {
     try {
@@ -1255,7 +1354,20 @@ export default function App() {
       return true;
     }
   });
-  const levels = ["A1", "A2", "B1", "B2", "C1"];
+  const levels = studyLanguage === "en" ? ["A1", "A2", "B1", "B2", "C1"] : ["A1"];
+
+  // Язык интерфейса временно закреплён на русском; язык обучения выбирается отдельно.
+  function handleStudyLanguageChange(event) {
+    const nextLanguage = event.currentTarget.value;
+    if (!STUDY_LANGUAGES.includes(nextLanguage)) return;
+    setStudyLanguage(nextLanguage);
+    localStorage.setItem("trainer-study-language", nextLanguage);
+    setLearningData(loadLearningDataForLanguage(nextLanguage));
+    setActiveWordKey(null);
+    setSelectedLevel("A1");
+    setStatsLevel("A1");
+    setShowStats(false);
+  }
 
   function toggleAudio() {
     setAudioEnabled((enabled) => {
@@ -1272,7 +1384,8 @@ export default function App() {
     });
   }
 
-  const filteredSentences = sentences.filter((sentence) => sentence && sentence.level === selectedLevel);
+  const activeSentences = studyLanguage === "en" ? sentences : (LANGUAGE_SENTENCES[studyLanguage] || []);
+  const filteredSentences = activeSentences.filter((sentence) => sentence && sentence.level === selectedLevel);
   const candidate = selectNextSentence(filteredSentences, learningData);
   const sentence = activeWordKey
     ? filteredSentences.find((item) => normalizeWord(item.word) === activeWordKey) || candidate
@@ -1284,13 +1397,13 @@ export default function App() {
     learningData.words[word] && learningData.words[word].status === "MASTERED"
   ).length;
   const sentenceByWord = new Map();
-  sentences.forEach((item) => {
+  activeSentences.forEach((item) => {
     if (!item || typeof item !== "object") return;
     const key = normalizeWord(item.word);
     if (key && !sentenceByWord.has(key)) sentenceByWord.set(key, item);
   });
   const levelProgress = levels.map((level) => {
-    const words = new Set(sentences
+    const words = new Set(activeSentences
       .filter((item) => item && item.level === level)
       .map((item) => normalizeWord(item.word))
       .filter(Boolean));
@@ -1342,11 +1455,11 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem(LEARNING_STORAGE_KEY, JSON.stringify(learningData));
+      localStorage.setItem(studyLanguage === "en" ? LEARNING_STORAGE_KEY : `${LEARNING_STORAGE_KEY}-${studyLanguage}`, JSON.stringify(learningData));
     } catch (error) {
       console.error("Не удалось сохранить прогресс:", error);
     }
-  }, [learningData]);
+  }, [learningData, studyLanguage]);
 
   function completeWord(word, isCorrect) {
     const key = normalizeWord(word);
@@ -1392,16 +1505,76 @@ export default function App() {
   }
 
   return (
+    <Localized language={interfaceLanguage}>
     <div className="app-shell">
       <header className="app-header">
         <div className="brand">
           <div className="brand-icon">Aa</div>
           <div>
-            <h1>English Word Trainer</h1>
+            <h1>{"Тренажёр слов"}</h1>
             <p>Мама, я все выучил!</p>
           </div>
         </div>
         <div className="header-actions">
+          <div className="language-settings" ref={languageSettingsRef}>
+            <button
+              type="button"
+              className="language-settings-trigger"
+              onClick={() => setLanguageSettingsOpen((open) => !open)}
+              aria-label="Настройки языков"
+              aria-expanded={languageSettingsOpen}
+              title="Настройки языков"
+            >
+              <span className="language-settings-flag" aria-hidden="true">
+                <svg viewBox="0 0 60 36" role="img" focusable="false">
+                  {studyLanguage === "de" ? (
+                    <>
+                      <rect width="60" height="12" fill="#000000" />
+                      <rect y="12" width="60" height="12" fill="#dd0000" />
+                      <rect y="24" width="60" height="12" fill="#ffce00" />
+                    </>
+                  ) : studyLanguage === "fr" ? (
+                    <>
+                      <rect width="20" height="36" fill="#002395" />
+                      <rect x="20" width="20" height="36" fill="#ffffff" />
+                      <rect x="40" width="20" height="36" fill="#ed2939" />
+                    </>
+                  ) : studyLanguage === "is" ? (
+                    <>
+                      <rect width="60" height="36" fill="#003897" />
+                      <path d="M18 0 V36 M0 18 H60" stroke="#ffffff" strokeWidth="10" />
+                      <path d="M18 0 V36 M0 18 H60" stroke="#d72828" strokeWidth="4" />
+                    </>
+                  ) : (
+                    <>
+                      <rect width="60" height="36" rx="4" fill="#17356b" />
+                      <path d="M0 0 L60 36 M60 0 L0 36" stroke="#ffffff" strokeWidth="8" />
+                      <path d="M0 0 L60 36 M60 0 L0 36" stroke="#c8102e" strokeWidth="3.5" />
+                      <path d="M30 0 V36 M0 18 H60" stroke="#ffffff" strokeWidth="12" />
+                      <path d="M30 0 V36 M0 18 H60" stroke="#c8102e" strokeWidth="6.5" />
+                    </>
+                  )}
+                </svg>
+              </span>
+              
+            </button>
+            {languageSettingsOpen && (
+              <div className="language-settings-menu">
+                <label className="language-select">
+                  <span>Интерфейс</span>
+                  <select value="ru" disabled>
+                    <option value="ru">🇷🇺 Русский</option>
+                  </select>
+                </label>
+                <label className="language-select">
+                  <span>Изучаю</span>
+                  <select value={studyLanguage} onChange={handleStudyLanguageChange}>
+                    {STUDY_LANGUAGES.map((lang) => <option key={lang} value={lang}>{STUDY_NAMES[lang]}</option>)}
+                  </select>
+                </label>
+              </div>
+            )}
+          </div>
           <nav className="main-nav">
             <button
               type="button"
@@ -1447,8 +1620,10 @@ export default function App() {
       <main className="main-content">
         {page === "study" ? (
           <StudyPage
-            key={selectedLevel + ":" + (sentence ? normalizeWord(sentence.word) : "empty")}
+            key={studyLanguage + ":" + selectedLevel + ":" + (sentence ? normalizeWord(sentence.word) : "empty")}
             sentence={sentence}
+            interfaceLanguage={interfaceLanguage}
+            studyLanguage={studyLanguage}
             audioEnabled={audioEnabled}
             selectedLevel={selectedLevel}
             setSelectedLevel={changeLevel}
@@ -1470,10 +1645,11 @@ export default function App() {
             setStatsLevel={setStatsLevel}
           />
         ) : (
-          <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} />
+          <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} interfaceLanguage={interfaceLanguage} />
         )}
       </main>
       <footer className="app-footer">English Word Trainer · MVP v1</footer>
     </div>
+    </Localized>
   );
 }
