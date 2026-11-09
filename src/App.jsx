@@ -24,11 +24,11 @@ function loadSentences() {
             sentence.id != null &&
             typeof sentence.word === "string" &&
             sentence.word.trim().length > 0 &&
-            !/\\s/.test(sentence.word) &&
+            !/\s/.test(sentence.word) &&
             typeof sentence.level === "string" &&
             typeof sentence.russian === "string" &&
             typeof sentence.englishTemplate === "string" &&
-            (sentence.englishTemplate.match(/\\{word\\}/g) || []).length === 1
+            (sentence.englishTemplate.match(/\{word\}/g) || []).length === 1
         );
         const savedById = new Map();
 
