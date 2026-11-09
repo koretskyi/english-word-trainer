@@ -1155,85 +1155,49 @@ function AdminPage({ sentences, onSave, onDelete }) {
 
 
 
-        {safeSentences.map((sentence) => (
+        {["A1", "A2", "B1", "B2", "C1"].map((level) => {
+          const levelSentences = safeSentences.filter(
+            (sentence) => (sentence.level || "B1") === level
+          );
+          if (levelSentences.length === 0) return null;
 
-          <article className="sentence-item" key={sentence.id}>
-
-            <div>
-
-              <strong>{sentence.russian}</strong>
-
-
-
-              <p className="sentence-item-english">
-
-                {sentence.englishTemplate.replace(
-
-                  "{word}",
-
-                  `[${sentence.word}]`
-
-                )}
-
-              </p>
-
-
-
-              <span className="muted">{sentence.level}</span>
-
-            </div>
-
-
-
-            <div className="sentence-item-actions">
-
-              <button
-
-                className="button button-secondary"
-
-                onClick={() => editSentence(sentence)}
-
-              >
-
-                Изменить
-
-              </button>
-
-
-
-              <button
-
-                className="button button-danger"
-
-                onClick={() => {
-
-                  if (window.confirm("Удалить это предложение?")) {
-
-                    onDelete(sentence.id);
-
-
-
-                    if (editingId === sentence.id) {
-
-                      resetForm();
-
-                    }
-
-                  }
-
-                }}
-
-              >
-
-                Удалить
-
-              </button>
-
-            </div>
-
-          </article>
-
-        ))}
+          return (
+            <div className="admin-level-group" key={level}>
+              <h3 className="admin-level-heading">
+                {level} <span>({levelSentences.length})</span>
+              </h3>
+              {levelSentences.map((sentence) => (
+                <article className="sentence-item" key={sentence.id}>
+                  <div>
+                    <strong>{sentence.russian}</strong>
+                    <p className="sentence-item-english">
+                      {(sentence.englishTemplate || "").replace(
+                        "{word}",
+                        `[${sentence.word || ""}]`
+                      )}
+                    </p>
+                  </div>
+                  <div className="sentence-item-actions">
+                    <button className="button button-secondary" onClick={() => editSentence(sentence)}>
+                      Изменить
+                    </button>
+                    <button
+                      className="button button-danger"
+                      onClick={() => {
+                        if (window.confirm("Удалить это предложение?")) {
+                          onDelete(sentence.id);
+                          if (editingId === sentence.id) resetForm();
+                        }
+                      }}
+                    >
+                      Удалить
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          );
+        })}
 
       </section>
 
