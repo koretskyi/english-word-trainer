@@ -497,6 +497,9 @@ function StudyPage({
   // Озвучка правильного слова запускается непосредственно после верного ответа.
 
   const parts = sentence ? sentence.englishTemplate.split("{word}") : [];
+  const selectedLevelReviewCount = reviewWords.filter(
+    (item) => item.level === selectedLevel
+  ).length;
   const levelSelector = (
     <div className="level-selector">
       <label htmlFor="study-level">Уровень:</label>
@@ -504,7 +507,17 @@ function StudyPage({
         onChange={(event) => setSelectedLevel(event.target.value)}>
         {levels.map((level) => <option key={level} value={level}>{level}</option>)}
       </select>
-
+      <button
+        type="button"
+        className="level-review-shortcut"
+        onClick={() => setShowStats(true)}
+        aria-label={`Открыть статистику: ${selectedLevelReviewCount} слов на повторении уровня ${selectedLevel}`}
+        title={`Слова на повторении уровня ${selectedLevel}`}
+      >
+        <span aria-hidden="true">↻</span>
+        <strong>{selectedLevelReviewCount}</strong>
+        <span>на повторении</span>
+      </button>
     </div>
   );
 
