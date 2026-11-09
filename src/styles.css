@@ -126,14 +126,23 @@ button:disabled {
 
 .nav-button {
   padding: 10px 14px;
-  border: 0;
+  border: 1px solid var(--border);
   border-radius: 9px;
-  background: transparent;
+  background: #f8faff;
   color: #4e5a70;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.nav-button:hover {
+  background: #eef2ff;
+  border-color: #c7d2fe;
 }
 
 .nav-button.active {
   background: #e9eeff;
+  border-color: #c7d2fe;
   color: var(--primary);
   font-weight: 700;
 }
