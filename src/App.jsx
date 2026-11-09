@@ -1506,13 +1506,7 @@ export default function App() {
               title="Настройки языков"
             >
               <span className="language-settings-flag" aria-hidden="true">
-                <svg viewBox="0 0 60 36" role="img" focusable="false">
-                  <rect width="60" height="36" rx="4" fill="#17356b" />
-                  <path d="M0 0 L60 36 M60 0 L0 36" stroke="#fff" strokeWidth="8" />
-                  <path d="M0 0 L60 36 M60 0 L0 36" stroke="#c8102e" strokeWidth="3.5" />
-                  <path d="M30 0 V36 M0 18 H60" stroke="#fff" strokeWidth="12" />
-                  <path d="M30 0 V36 M0 18 H60" stroke="#c8102e" strokeWidth="6.5" />
-                </svg>
+                {studyLanguage === "de" ? "🇩🇪" : studyLanguage === "fr" ? "🇫🇷" : studyLanguage === "is" ? "🇮🇸" : "🇬🇧"}
               </span>
               
             </button>
