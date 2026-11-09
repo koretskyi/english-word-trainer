@@ -360,10 +360,11 @@ function speakEnglish(text) {
   const utterance = new SpeechSynthesisUtterance(text);
   const voices = window.speechSynthesis.getVoices();
   const englishVoices = voices.filter((voice) => /^en(-|_)/i.test(voice.lang));
-  const femaleVoice = englishVoices.find((voice) =>
-    /female|samantha|ava|jenny|aria|zira|susan|karen|victoria|google uk english female/i.test(voice.name)
-  );
-  const preferredVoice = femaleVoice ||
+  // Сначала выбираем именно Microsoft Jenny; остальные голоса — только запасной вариант.
+  const preferredVoice =
+    englishVoices.find((voice) => /microsoft.*jenny|jenny.*microsoft/i.test(voice.name)) ||
+    englishVoices.find((voice) => /jenny/i.test(voice.name)) ||
+    englishVoices.find((voice) => /aria|samantha|ava|zira|susan|karen|victoria|female/i.test(voice.name)) ||
     englishVoices.find((voice) => /^en-US/i.test(voice.lang)) ||
     englishVoices.find((voice) => /^en-GB/i.test(voice.lang)) ||
     englishVoices[0];
