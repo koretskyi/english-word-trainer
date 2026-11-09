@@ -502,7 +502,6 @@ function StudyPage({
         onChange={(event) => setSelectedLevel(event.target.value)}>
         {levels.map((level) => <option key={level} value={level}>{level}</option>)}
       </select>
-      <span>{masteredCount} / {totalWords} выучено на {selectedLevel}</span>
 
     </div>
   );
@@ -632,9 +631,34 @@ function StudyPage({
     <section className={"panel study-panel" + (checked && correct ? " answer-correct" : "")}>
       {levelSelector}
       {statsPanel}
-      <div className="card-topline">
-        <span>Прогресс обучения</span>
-        <span className="level-badge">{sentence.level}</span>
+      <div className="learning-progress-card">
+        <div className="learning-progress-top">
+          <div>
+            <span className="learning-progress-kicker">ТВОЙ ПРОГРЕСС</span>
+            <div className="learning-progress-title">Уровень {selectedLevel}</div>
+          </div>
+          <span className="level-badge">{sentence.level}</span>
+        </div>
+        <div className="learning-progress-stats">
+          <strong>{totalWords ? Math.round((masteredCount / totalWords) * 100) : 0}%</strong>
+          <span>{masteredCount} из {totalWords} слов освоено</span>
+        </div>
+        <div
+          className="learning-progress-track"
+          role="progressbar"
+          aria-label={`Прогресс уровня ${selectedLevel}`}
+          aria-valuemin={0}
+          aria-valuemax={totalWords}
+          aria-valuenow={masteredCount}
+        >
+          <div className="learning-progress-fill" style={{
+            width: (totalWords ? (masteredCount / totalWords) * 100 : 0) + "%",
+          }} />
+        </div>
+        <div className="learning-progress-footer">
+          <span>Продолжай в том же духе!</span>
+          <span>{totalWords - masteredCount} осталось</span>
+        </div>
       </div>
       {isReview && (
         <div className="review-card-progress">
@@ -642,12 +666,6 @@ function StudyPage({
           <ReviewLadder stage={reviewStage} />
         </div>
       )}
-      <div className="progress-track">
-        <div className="progress-fill" style={{
-          width: (totalWords ? (masteredCount / totalWords) * 100 : 0) + "%",
-          backgroundColor: "#A8E64A",
-        }} />
-      </div>
       <p className="eyebrow">ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ</p>
       <h2 className="russian-sentence">{sentence.russian}</h2>
       <div className="english-section">
