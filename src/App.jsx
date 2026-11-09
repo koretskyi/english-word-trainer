@@ -1266,11 +1266,16 @@ export default function App() {
       word: sentenceByWord.get(key)?.word || key,
       level: sentenceByWord.get(key)?.level || "—",
       stage: state.stage,
-      remaining: Math.max(0, state.dueAt - learningData.completedCount),
       dueAt: state.dueAt,
       order: state.order || 0,
     }))
-    .sort((a, b) => (a.remaining - b.remaining) || (a.order - b.order));
+    .sort((a, b) => (a.dueAt - b.dueAt) || (a.order - b.order))
+    .map((item, index, items) => ({
+      ...item,
+      // Считаем место слова в очереди: готовые слова идут 1, 2, 3...
+      remaining: Math.max(0, item.dueAt - learningData.completedCount) +
+        items.slice(0, index).filter((previous) => previous.dueAt === item.dueAt).length + 1,
+    }));
 
   useEffect(() => {
     try {
