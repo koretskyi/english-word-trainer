@@ -1315,6 +1315,24 @@ const STUDY_NAMES = { en: "🇬🇧 English", de: "🇩🇪 Deutsch", fr: "🇫�
 export default function App() {
   const [interfaceLanguage, setInterfaceLanguage] = useState(() => localStorage.getItem("trainer-interface") || "ru");
   const [studyLanguage, setStudyLanguage] = useState(() => localStorage.getItem("trainer-study-language") || "en");
+  const [languageSettingsOpen, setLanguageSettingsOpen] = useState(false);
+  const languageSettingsRef = useRef(null);
+
+  useEffect(() => {
+    if (!languageSettingsOpen) return undefined;
+    function closeOnOutsideClick(event) {
+      if (!languageSettingsRef.current?.contains(event.target)) setLanguageSettingsOpen(false);
+    }
+    function closeOnEscape(event) {
+      if (event.key === "Escape") setLanguageSettingsOpen(false);
+    }
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("mousedown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [languageSettingsOpen]);
   const [sentences, setSentences] = useState(loadSentences);
   const [page, setPage] = useState("study");
   const [showStats, setShowStats] = useState(false);
@@ -1478,9 +1496,34 @@ export default function App() {
           </div>
         </div>
         <div className="header-actions">
-          <div className="language-selectors">
-            <label className="language-select"><span>Интерфейс</span><select value={interfaceLanguage} onChange={(event) => { setInterfaceLanguage(event.target.value); localStorage.setItem("trainer-interface", event.target.value); }}>{INTERFACE_LANGUAGES.map((lang) => <option key={lang} value={lang}>{INTERFACE_NAMES[lang]}</option>)}</select></label>
-            <label className="language-select"><span>Изучаю</span><select value={studyLanguage} onChange={(event) => { setStudyLanguage(event.target.value); localStorage.setItem("trainer-study-language", event.target.value); setLearningData(loadLearningDataForLanguage(event.target.value)); setActiveWordKey(null); setSelectedLevel("A1"); setStatsLevel("A1"); setShowStats(false); }}>{STUDY_LANGUAGES.map((lang) => <option key={lang} value={lang}>{STUDY_NAMES[lang]}</option>)}</select></label>
+          <div className="language-settings" ref={languageSettingsRef}>
+            <button
+              type="button"
+              className="language-settings-trigger"
+              onClick={() => setLanguageSettingsOpen((open) => !open)}
+              aria-label="Настройки языков"
+              aria-expanded={languageSettingsOpen}
+              title="Настройки языков"
+            >
+              <span className="language-settings-flag" aria-hidden="true">{{ en: "🇬🇧", de: "🇩🇪", fr: "🇫🇷", is: "🇮🇸" }[studyLanguage] || "🇬🇧"}</span>
+              <span className="language-settings-caret" aria-hidden="true">⌄</span>
+            </button>
+            {languageSettingsOpen && (
+              <div className="language-settings-menu">
+                <label className="language-select">
+                  <span>Интерфейс</span>
+                  <select value={interfaceLanguage} onChange={(event) => { setInterfaceLanguage(event.target.value); localStorage.setItem("trainer-interface", event.target.value); }}>
+                    {INTERFACE_LANGUAGES.map((lang) => <option key={lang} value={lang}>{INTERFACE_NAMES[lang]}</option>)}
+                  </select>
+                </label>
+                <label className="language-select">
+                  <span>Изучаю</span>
+                  <select value={studyLanguage} onChange={(event) => { setStudyLanguage(event.target.value); localStorage.setItem("trainer-study-language", event.target.value); setLearningData(loadLearningDataForLanguage(event.target.value)); setActiveWordKey(null); setSelectedLevel("A1"); setStatsLevel("A1"); setShowStats(false); }}>
+                    {STUDY_LANGUAGES.map((lang) => <option key={lang} value={lang}>{STUDY_NAMES[lang]}</option>)}
+                  </select>
+                </label>
+              </div>
+            )}
           </div>
           <nav className="main-nav">
             <button
