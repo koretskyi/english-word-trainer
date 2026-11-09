@@ -1270,3 +1270,97 @@ button:disabled {
     padding: 12px 13px;
   }
 }
+
+
+/* Более заметный счётчик повторения и вкладки уровней в статистике */
+.level-review-shortcut strong {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 27px;
+  height: 27px;
+  padding: 0 7px;
+  border-radius: 8px;
+  background: #0f766e;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 850;
+  box-shadow: 0 1px 2px rgb(15 118 110 / 18%);
+}
+
+.stats-review-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.stats-review-title-row h4 {
+  margin: 0;
+}
+
+.stats-review-total {
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: #e0f2fe;
+  color: #075985;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.stats-level-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 16px;
+}
+
+.stats-level-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border: 1px solid #dbe4ee;
+  border-radius: 9px;
+  background: #f8fafc;
+  color: #475569;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.stats-level-tab span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 21px;
+  height: 21px;
+  padding: 0 5px;
+  border-radius: 7px;
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-level-tab:hover {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.stats-level-tab.active {
+  border-color: #0284c7;
+  background: #e0f2fe;
+  color: #075985;
+  box-shadow: 0 0 0 1px #bae6fd inset;
+}
+
+.stats-level-tab.active span {
+  background: #0284c7;
+  color: #ffffff;
+}
