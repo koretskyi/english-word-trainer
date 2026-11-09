@@ -554,26 +554,37 @@ function StudyPage({
       {reviewWords.length === 0 ? (
         <p>Пока нет слов на повторении.</p>
       ) : (
-        <ol className="stats-review-list">
-          {reviewWords.map((item, index) => (
-            <li key={item.key} className="review-word-item">
-              <div className="review-word-heading">
-                <span className="review-word-number">{index + 1}</span>
-                <strong className="review-word-name">{item.word}</strong>
-                <span className="review-word-level">{item.level}</span>
-              </div>
-              <ReviewLadder stage={item.stage} compact />
-              <span className="review-word-due">
-                До появления: <strong>{Math.max(1, item.remaining)}</strong>{" "}
-                {Math.max(1, item.remaining) === 1
-                  ? "карточка"
-                  : Math.max(1, item.remaining) >= 2 && Math.max(1, item.remaining) <= 4
-                    ? "карточки"
-                    : "карточек"}
-              </span>
-            </li>
-          ))}
-        </ol>
+        ["A1", "A2", "B1", "B2", "C1"].map((level) => {
+          const levelWords = reviewWords.filter((item) => item.level === level);
+          if (levelWords.length === 0) return null;
+          return (
+            <section className="stats-review-level" key={level}>
+              <h5 className="stats-review-level-heading">
+                {level} <span>({levelWords.length})</span>
+              </h5>
+              <ol className="stats-review-list">
+                {levelWords.map((item, index) => (
+                  <li key={item.key} className="review-word-item">
+                    <div className="review-word-heading">
+                      <span className="review-word-number">{index + 1}</span>
+                      <strong className="review-word-name">{item.word}</strong>
+                      <span className="review-word-level">{item.level}</span>
+                    </div>
+                    <ReviewLadder stage={item.stage} compact />
+                    <span className="review-word-due">
+                      До появления: <strong>{Math.max(1, item.remaining)}</strong>{" "}
+                      {Math.max(1, item.remaining) === 1
+                        ? "карточка"
+                        : Math.max(1, item.remaining) >= 2 && Math.max(1, item.remaining) <= 4
+                          ? "карточки"
+                          : "карточек"}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          );
+        })
       )}
     </div>
   ) : null;
