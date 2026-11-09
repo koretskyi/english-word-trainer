@@ -632,16 +632,9 @@ function StudyPage({
       {levelSelector}
       {statsPanel}
       <div className="learning-progress-card">
-        <div className="learning-progress-top">
-          <div>
-            <span className="learning-progress-kicker">ТВОЙ ПРОГРЕСС</span>
-            <div className="learning-progress-title">Уровень {selectedLevel}</div>
-          </div>
-          <span className="level-badge">{sentence.level}</span>
-        </div>
-        <div className="learning-progress-stats">
+        <div className="learning-progress-heading">
+          <span>Прогресс обучения</span>
           <strong>{totalWords ? Math.round((masteredCount / totalWords) * 100) : 0}%</strong>
-          <span>{masteredCount} из {totalWords} слов освоено</span>
         </div>
         <div
           className="learning-progress-track"
@@ -655,10 +648,7 @@ function StudyPage({
             width: (totalWords ? (masteredCount / totalWords) * 100 : 0) + "%",
           }} />
         </div>
-        <div className="learning-progress-footer">
-          <span>Продолжай в том же духе!</span>
-          <span>{totalWords - masteredCount} осталось</span>
-        </div>
+        <div className="learning-progress-caption">{masteredCount} из {totalWords} слов освоено</div>
       </div>
       {isReview && (
         <div className="review-card-progress">
