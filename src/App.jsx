@@ -272,7 +272,7 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
   function handleChange(index, rawValue) {
     const character = [...rawValue].slice(-1)[0] || "";
 
-    if (character && !/^\\p{L}$/u.test(character)) {
+    if (character && !/^\p{L}$/u.test(character)) {
       return;
     }
 
