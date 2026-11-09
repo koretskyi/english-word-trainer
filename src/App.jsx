@@ -525,10 +525,20 @@ function StudyPage({
           {reviewWords.map((item) => (
             <li key={item.key} className="review-word-item">
               <strong className="review-word-name">{item.word}</strong>
-              <span className="review-word-stage">{item.level} · этап {item.stage} из 6</span>
-              <span className="review-word-countdown">
-                {item.remaining === 0 ? "Готово к повтору" : <>Повтор через <strong className="review-word-number">{item.remaining}</strong> карточек</>}
-              </span>
+              <span className="review-word-level">{item.level}</span>
+              <div
+                className="review-word-progress"
+                role="progressbar"
+                aria-label={`Прогресс изучения слова ${item.word}`}
+                aria-valuemin={0}
+                aria-valuemax={6}
+                aria-valuenow={item.stage - 1}
+              >
+                <div
+                  className="review-word-progress-fill"
+                  style={{ width: `${((item.stage - 1) / 5) * 100}%` }}
+                />
+              </div>
             </li>
           ))}
         </ul>
