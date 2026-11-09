@@ -629,6 +629,7 @@ button:disabled {
 
 .level-review-shortcut strong {
   color: #0f766e;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
@@ -1272,22 +1273,7 @@ button:disabled {
 }
 
 
-/* Более заметный счётчик повторения и вкладки уровней в статистике */
-.level-review-shortcut strong {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 27px;
-  height: 27px;
-  padding: 0 7px;
-  border-radius: 8px;
-  background: #0f766e;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 850;
-  box-shadow: 0 1px 2px rgb(15 118 110 / 18%);
-}
-
+/* Вкладки уровней в статистике */
 .stats-review-title-row {
   display: flex;
   align-items: center;
