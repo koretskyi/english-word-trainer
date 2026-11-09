@@ -768,3 +768,111 @@ button:disabled {
   font-weight: 800 !important;
   opacity: 1 !important;
 }
+
+
+/* Панель общей статистики обучения */
+.stats-panel {
+  margin: 0 0 22px;
+  padding: 22px;
+}
+
+.stats-panel h3 {
+  margin: 0 0 16px;
+}
+
+.stats-panel h4 {
+  margin: 22px 0 12px;
+  font-size: 15px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  padding: 14px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fbfcff;
+}
+
+.stat-card span,
+.stat-card small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.stat-card strong {
+  color: var(--primary);
+  font-size: 27px;
+  line-height: 1.1;
+}
+
+.level-progress-list {
+  display: grid;
+  gap: 13px;
+}
+
+.level-progress-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.level-progress-heading span {
+  color: var(--muted);
+}
+
+.level-progress-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #edf0f6;
+}
+
+.level-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: #a8e64a;
+  transition: width 180ms ease;
+}
+
+.stats-review-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stats-review-list .review-word-item {
+  min-width: 0;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stats-review-list {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-panel {
+    padding: 18px 14px;
+  }
+}
