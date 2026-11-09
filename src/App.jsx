@@ -441,6 +441,7 @@ function StudyPage({
   const [checked, setChecked] = useState(false);
   const [successVisible, setSuccessVisible] = useState(false);
   const [audioFinished, setAudioFinished] = useState(false);
+  const [dontKnowClicked, setDontKnowClicked] = useState(false);
   const [markedKnown, setMarkedKnown] = useState(false);
   const targetLetters = sentence ? [...sentence.word] : [];
   const correct = Boolean(sentence) && targetLetters.length > 0 &&
@@ -554,14 +555,19 @@ function StudyPage({
         } else {
           setAudioFinished(true);
         }
+      } else if (audioEnabled) {
+        // При ошибке произносим правильное английское слово.
+        speakEnglish(sentence.word);
       }
     }
   }
 
   function dontKnow() {
     if (!sentence || checked) return;
+    setDontKnowClicked(true);
     setChecked(true);
     onComplete(sentence.word, false);
+    if (audioEnabled) speakEnglish(sentence.word);
   }
 
   function knowWord() {
@@ -625,7 +631,12 @@ function StudyPage({
             </div>
           ) : (
             <div className={"feedback " + (correct ? "correct" : "incorrect")}>
-              {!correct && !markedKnown ? (
+              {dontKnowClicked ? (
+                <div className="dont-know-answer">
+                  <span className="answer-comparison-label">Правильный ответ</span>
+                  <div className="answer-comparison-line correct-word-line">{sentence.word}</div>
+                </div>
+              ) : !correct && !markedKnown ? (
                 <>
                   <strong className="incorrect-feedback-title">✗ Ошибка</strong>
                   <div className="incorrect-answer-comparison" aria-label="Правильный ответ и твой вариант">
