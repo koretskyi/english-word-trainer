@@ -736,6 +736,10 @@ button:disabled {
   text-align: center;
 }
 
+.dont-know-answer {
+  margin-top: 15px;
+}
+
 .correct-word-line {
   color: #A8E64A;
 }
