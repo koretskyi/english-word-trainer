@@ -552,15 +552,23 @@ function StudyPage({
       {reviewWords.length === 0 ? (
         <p>Пока нет слов на повторении.</p>
       ) : (
-        <ul className="stats-review-list">
-          {reviewWords.map((item) => (
+        <ol className="stats-review-list">
+          {reviewWords.map((item, index) => (
             <li key={item.key} className="review-word-item">
-              <strong className="review-word-name">{item.word}</strong>
-              <span className="review-word-level">{item.level}</span>
+              <div className="review-word-heading">
+                <span className="review-word-number">{index + 1}</span>
+                <strong className="review-word-name">{item.word}</strong>
+                <span className="review-word-level">{item.level}</span>
+              </div>
               <ReviewLadder stage={item.stage} compact />
+              <span className="review-word-due">
+                {item.remaining === 0
+                  ? "Уже готово к повторению"
+                  : `Появится через ${item.remaining} ${item.remaining === 1 ? "карточку" : item.remaining >= 2 && item.remaining <= 4 ? "карточки" : "карточек"}`}
+              </span>
             </li>
           ))}
-        </ul>
+        </ol>
       )}
     </div>
   ) : null;
