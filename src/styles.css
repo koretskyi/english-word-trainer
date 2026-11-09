@@ -370,6 +370,17 @@ button:disabled {
   line-height: 1.5;
 }
 
+.feedback.marked-known {
+  background: #d9f99d;
+  border: 1px solid #bef264;
+  color: #365314;
+}
+
+.feedback.marked-known strong,
+.feedback.marked-known p {
+  color: #365314;
+}
+
 .feedback.correct strong {
   color: #15803d;
 }
