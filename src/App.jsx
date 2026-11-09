@@ -468,6 +468,7 @@ function ReviewLadder({ stage = 1, compact = false }) {
 // Страница обучения с интервальным повторением.
 function StudyPage({
   sentence,
+  interfaceLanguage,
   studyLanguage,
   audioEnabled,
   selectedLevel,
@@ -639,9 +640,9 @@ function StudyPage({
   // В режиме статистики не показываем карточку обучения.
   if (showStats) {
     return (
-      <section className="stats-only-view">
-        {statsPanel}
-      </section>
+      <Localized language={interfaceLanguage}>
+        <section className="stats-only-view">{statsPanel}</section>
+      </Localized>
     );
   }
 
@@ -688,6 +689,7 @@ function StudyPage({
 
   if (!sentence) {
     return (
+      <Localized language={interfaceLanguage}>
       <section className="panel">
         {levelSelector}
         {statsPanel}
@@ -816,6 +818,7 @@ function StudyPage({
         </div>
       </div>
     </section>
+    </Localized>
   );
 }
 
@@ -840,7 +843,7 @@ const EMPTY_FORM = {
 
 // Локальная админка.
 
-function AdminPage({ sentences, onSave, onDelete }) {
+function AdminPage({ sentences, onSave, onDelete, interfaceLanguage }) {
   const safeSentences = Array.isArray(sentences)
     ? sentences.filter((sentence) => sentence && typeof sentence === "object")
     : [];
@@ -994,6 +997,7 @@ function AdminPage({ sentences, onSave, onDelete }) {
 
   return (
 
+    <Localized language={interfaceLanguage}>
     <div className="admin-layout">
 
       <section className="panel">
@@ -1508,6 +1512,7 @@ export default function App() {
           <StudyPage
             key={studyLanguage + ":" + selectedLevel + ":" + (sentence ? normalizeWord(sentence.word) : "empty")}
             sentence={sentence}
+            interfaceLanguage={interfaceLanguage}
             studyLanguage={studyLanguage}
             audioEnabled={audioEnabled}
             selectedLevel={selectedLevel}
@@ -1530,7 +1535,7 @@ export default function App() {
             setStatsLevel={setStatsLevel}
           />
         ) : (
-          <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} />
+          <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} interfaceLanguage={interfaceLanguage} />
         )}
       </main>
       <footer className="app-footer">English Word Trainer · MVP v1</footer>
