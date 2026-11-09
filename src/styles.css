@@ -876,3 +876,59 @@ button:disabled {
     padding: 18px 14px;
   }
 }
+
+
+/* Успешный ответ показывается внутри карточки, без отдельного полноэкранного окна */
+.feedback.correct {
+  position: relative;
+  min-height: 112px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  text-align: center;
+}
+
+.feedback.correct .correct-inline-message {
+  position: relative;
+  z-index: 2;
+  display: block;
+  margin: 0;
+  color: #15803d;
+  font-size: 30px;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.feedback-fireworks {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.feedback-fireworks .fireworks {
+  position: absolute;
+  inset: 0;
+}
+
+.feedback-fireworks .confetti {
+  position: absolute;
+  inset: 0;
+}
+
+.feedback-fireworks .confetti span {
+  animation-name: feedback-confetti-fall;
+}
+
+@keyframes feedback-confetti-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -12px, 0) rotate(0deg);
+  }
+  10% { opacity: 1; }
+  100% {
+    opacity: 0;
+    transform: translate3d(18px, 145px, 0) rotate(720deg);
+  }
+}
