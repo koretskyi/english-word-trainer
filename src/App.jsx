@@ -1514,7 +1514,7 @@ export default function App() {
                   <path d="M30 0 V36 M0 18 H60" stroke="#c8102e" strokeWidth="6.5" />
                 </svg>
               </span>
-              <span className="language-settings-caret" aria-hidden="true">⌄</span>
+              
             </button>
             {languageSettingsOpen && (
               <div className="language-settings-menu">
