@@ -1142,3 +1142,92 @@ button:disabled {
     font-size: 17px;
   }
 }
+
+
+/* Карточка общего прогресса обучения */
+.learning-progress-card {
+  margin: 16px 0 28px;
+  padding: 18px 20px 16px;
+  border: 1px solid #dfe7f5;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f8faff 0%, #f3f7ff 55%, #f5fbea 100%);
+  box-shadow: 0 5px 18px rgb(42 65 110 / 5%);
+}
+
+.learning-progress-top,
+.learning-progress-stats,
+.learning-progress-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.learning-progress-kicker {
+  color: #78849a;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.learning-progress-title {
+  margin-top: 3px;
+  color: #24324b;
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.learning-progress-stats {
+  justify-content: flex-start;
+  align-items: baseline;
+  margin: 16px 0 10px;
+}
+
+.learning-progress-stats strong {
+  color: #3157d5;
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.learning-progress-stats span {
+  color: #64718a;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.learning-progress-track {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #e4eaf4;
+  box-shadow: inset 0 1px 2px rgb(30 48 85 / 7%);
+}
+
+.learning-progress-fill {
+  height: 100%;
+  min-width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #8bcf35 0%, #b5e85c 55%, #62c98b 100%);
+  box-shadow: 0 1px 5px rgb(104 180 63 / 25%);
+  transition: width 450ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.learning-progress-footer {
+  margin-top: 9px;
+  color: #8792a5;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .learning-progress-card {
+    margin: 12px 0 24px;
+    padding: 15px 14px 13px;
+    border-radius: 13px;
+  }
+  .learning-progress-stats strong {
+    font-size: 27px;
+  }
+}
