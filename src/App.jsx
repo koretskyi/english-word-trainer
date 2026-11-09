@@ -447,9 +447,9 @@ function StudyPage({
     };
   }, [audioEnabled, sentence?.id, sentence?.word, sentence?.englishTemplate]);
 
-  // После правильного ответа отдельно произносим само выучиваемое слово.
+  // После неправильного ответа произносим правильное слово.
   useEffect(() => {
-    if (!audioEnabled || !checked || !correct || !sentence?.word) return undefined;
+    if (!audioEnabled || !checked || correct || !sentence?.word) return undefined;
     const timer = setTimeout(() => {
       speakEnglish(sentence.word);
     }, 250);
