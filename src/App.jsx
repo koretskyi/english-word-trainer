@@ -428,12 +428,13 @@ function StudyPage({
   reviewWords,
   stats,
   levelProgress,
+  showStats,
+  setShowStats,
   isReview,
   onKnow,
 }) {
   const [answer, setAnswer] = useState(() => createInitialAnswer(sentence));
   const [checked, setChecked] = useState(false);
-  const [showStats, setShowStats] = useState(false);
   const [markedKnown, setMarkedKnown] = useState(false);
   const wordGapRef = useRef(null);
   const [fireworksOrigin, setFireworksOrigin] = useState({ x: 0, y: 0 });
@@ -503,10 +504,7 @@ function StudyPage({
         {levels.map((level) => <option key={level} value={level}>{level}</option>)}
       </select>
       <span>{masteredCount} / {totalWords} выучено на {selectedLevel}</span>
-      <button className="button button-secondary button-review-list" type="button"
-        onClick={() => setShowStats((value) => !value)}>
-        {showStats ? "Скрыть статистику" : "Статистика"}
-      </button>
+
     </div>
   );
 
@@ -1275,6 +1273,7 @@ function AdminPage({ sentences, onSave, onDelete }) {
 export default function App() {
   const [sentences, setSentences] = useState(loadSentences);
   const [page, setPage] = useState("study");
+  const [showStats, setShowStats] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState("A1");
   const [learningData, setLearningData] = useState(loadLearningData);
   const [activeWordKey, setActiveWordKey] = useState(null);
@@ -1422,6 +1421,11 @@ export default function App() {
               onClick={() => setPage("study")}>Обучение</button>
             <button className={page === "admin" ? "nav-button active" : "nav-button"}
               onClick={() => setPage("admin")}>Админка</button>
+            <button className={showStats ? "nav-button active" : "nav-button"}
+              onClick={() => {
+                setPage("study");
+                setShowStats((value) => !value);
+              }}>Статистика</button>
           </nav>
           <button
             className={"sound-toggle" + (audioEnabled ? "" : " sound-toggle-off")}
@@ -1454,6 +1458,8 @@ export default function App() {
             reviewWords={reviewWords}
             stats={learningData.stats || { totalAnswers: 0, correctAnswers: 0, streak: 0, daily: { date: getLocalDateKey(), count: 0 } }}
             levelProgress={levelProgress}
+            showStats={showStats}
+            setShowStats={setShowStats}
           />
         ) : (
           <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} />
