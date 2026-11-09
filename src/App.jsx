@@ -562,10 +562,10 @@ function StudyPage({
               </div>
               <ReviewLadder stage={item.stage} compact />
               <span className="review-word-due">
-                До появления: <strong>{item.remaining}</strong>{" "}
-                {item.remaining === 1
+                До появления: <strong>{Math.max(1, item.remaining)}</strong>{" "}
+                {Math.max(1, item.remaining) === 1
                   ? "карточка"
-                  : item.remaining >= 2 && item.remaining <= 4
+                  : Math.max(1, item.remaining) >= 2 && Math.max(1, item.remaining) <= 4
                     ? "карточки"
                     : "карточек"}
               </span>
