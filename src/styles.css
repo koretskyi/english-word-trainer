@@ -1363,3 +1363,36 @@ button:disabled {
   background: #0284c7;
   color: #ffffff;
 }
+
+
+.language-selectors {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.language-select {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+.language-select select {
+  max-width: 150px;
+  min-width: 120px;
+  padding: 8px 26px 8px 9px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #f8faff;
+  color: #26334b;
+  font-size: 12px;
+  cursor: pointer;
+}
+@media (max-width: 760px) {
+  .app-header { align-items: flex-start; flex-direction: column; }
+  .header-actions { width: 100%; flex-wrap: wrap; justify-content: space-between; }
+  .language-selectors { width: 100%; }
+  .language-select { flex: 1; min-width: 0; }
+  .language-select select { width: 100%; max-width: none; }
+}
