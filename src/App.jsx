@@ -1,5 +1,5 @@
 import { SENTENCES } from "./sentences.js";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Children, cloneElement, useCallback, useEffect, useRef, useState } from "react";
 import { LANGUAGE_SENTENCES } from "./languages.js";
 
 
@@ -1258,6 +1258,36 @@ function AdminPage({ sentences, onSave, onDelete }) {
 
 
 // Главный компонент приложения.
+
+const UI_TRANSLATIONS = {
+  uk: [["Интерфейс","Інтерфейс"],["Изучаю","Вивчаю"],["Обучение","Навчання"],["Админка","Адмінка"],["Статистика","Статистика"],["Уровень:","Рівень:"],["Не знаю","Не знаю"],["Я знаю","Я знаю"],["Статистика обучения","Статистика навчання"],["Слов изучено сегодня","Слів вивчено сьогодні"],["Правильных подряд","Правильних поспіль"],["Точность ответов","Точність відповідей"],["Слов на повторении","Слів на повторенні"],["Прогресс по уровням","Прогрес за рівнями"],["Добавить предложение","Додати речення"],["Редактировать предложение","Редагувати речення"],["Предложения","Речення"],["Изменить","Змінити"],["Удалить","Видалити"],["Отмена","Скасувати"],["Сохранить изменения","Зберегти зміни"],["ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ","ПЕРЕКЛАДІТЬ ЦІЛЬОВОЮ МОВОЮ"]],
+  en: [["Интерфейс","Interface"],["Изучаю","Learning"],["Обучение","Study"],["Админка","Admin"],["Статистика","Statistics"],["Уровень:","Level:"],["Не знаю","I don't know"],["Я знаю","I know"],["Статистика обучения","Learning statistics"],["Слов изучено сегодня","Words learned today"],["Правильных подряд","Correct in a row"],["Точность ответов","Answer accuracy"],["Слов на повторении","Words to review"],["Прогресс по уровням","Progress by level"],["Добавить предложение","Add sentence"],["Редактировать предложение","Edit sentence"],["Предложения","Sentences"],["Изменить","Edit"],["Удалить","Delete"],["Отмена","Cancel"],["Сохранить изменения","Save changes"],["ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ","TRANSLATE INTO ENGLISH"]],
+  de: [["Интерфейс","Oberfläche"],["Изучаю","Ich lerne"],["Обучение","Lernen"],["Админка","Verwaltung"],["Статистика","Statistik"],["Уровень:","Niveau:"],["Не знаю","Weiß ich nicht"],["Я знаю","Ich weiß"],["Статистика обучения","Lernstatistik"],["Слов изучено сегодня","Heute gelernte Wörter"],["Правильных подряд","Richtige Antworten in Folge"],["Точность ответов","Antwortgenauigkeit"],["Слов на повторении","Wörter zur Wiederholung"],["Прогресс по уровням","Fortschritt nach Niveau"],["Добавить предложение","Satz hinzufügen"],["Редактировать предложение","Satz bearbeiten"],["Предложения","Sätze"],["Изменить","Bearbeiten"],["Удалить","Löschen"],["Отмена","Abbrechen"],["Сохранить изменения","Änderungen speichern"],["ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ","ÜBERSETZE IN DIE ZIELSPRACHE"]],
+  fr: [["Интерфейс","Interface"],["Изучаю","J’apprends"],["Обучение","Apprentissage"],["Админка","Administration"],["Статистика","Statistiques"],["Уровень:","Niveau :"],["Не знаю","Je ne sais pas"],["Я знаю","Je sais"],["Статистика обучения","Statistiques d’apprentissage"],["Слов изучено сегодня","Mots appris aujourd’hui"],["Правильных подряд","Bonnes réponses consécutives"],["Точность ответов","Précision des réponses"],["Слов на повторении","Mots à réviser"],["Прогресс по уровням","Progression par niveau"],["Добавить предложение","Ajouter une phrase"],["Редактировать предложение","Modifier la phrase"],["Предложения","Phrases"],["Изменить","Modifier"],["Удалить","Supprimer"],["Отмена","Annuler"],["Сохранить изменения","Enregistrer"],["ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ","TRADUISEZ DANS LA LANGUE ÉTUDIÉE"]],
+  is: [["Интерфейс","Viðmót"],["Изучаю","Ég læri"],["Обучение","Nám"],["Админка","Stjórnborð"],["Статистика","Tölfræði"],["Уровень:","Stig:"],["Не знаю","Ég veit ekki"],["Я знаю","Ég kann þetta"],["Статистика обучения","Námstölfræði"],["Слов изучено сегодня","Orð lærð í dag"],["Правильных подряд","Rétt svör í röð"],["Точность ответов","Nákvæmni svara"],["Слов на повторении","Orð til upprifjunar"],["Прогресс по уровням","Framvinda eftir stigum"],["Добавить предложение","Bæta við setningu"],["Редактировать предложение","Breyta setningu"],["Предложения","Setningar"],["Изменить","Breyta"],["Удалить","Eyða"],["Отмена","Hætta við"],["Сохранить изменения","Vista breytingar"],["ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ","ÞÝDDU Á MARKMÁLI"]]
+};
+
+function Localized({ language, children }) {
+  const dictionary = Object.fromEntries(UI_TRANSLATIONS[language] || []);
+  function translate(value) {
+    if (typeof value !== "string") return value;
+    const trimmed = value.trim();
+    return dictionary[trimmed] ? value.replace(trimmed, dictionary[trimmed]) : value;
+  }
+  function walk(node) {
+    if (typeof node === "string") return translate(node);
+    if (Array.isArray(node)) return Children.map(node, walk);
+    if (!node || typeof node !== "object" || !node.props) return node;
+    const props = { ...node.props };
+    ["placeholder", "title", "aria-label"].forEach((key) => {
+      if (typeof props[key] === "string") props[key] = translate(props[key]);
+    });
+    if (props.children !== undefined) props.children = walk(props.children);
+    return cloneElement(node, props);
+  }
+  return <>{walk(children)}</>;
+}
+
 const INTERFACE_LANGUAGES = ["uk", "en", "de", "fr", "is", "ru"];
 const STUDY_LANGUAGES = ["en", "de", "fr", "is"];
 const INTERFACE_NAMES = { uk: "🇺🇦 Українська", en: "🇬🇧 English", de: "🇩🇪 Deutsch", fr: "🇫🇷 Français", is: "🇮🇸 Íslenska", ru: "🇷🇺 Русский" };
@@ -1418,6 +1448,7 @@ export default function App() {
   }
 
   return (
+    <Localized language={interfaceLanguage}>
     <div className="app-shell">
       <header className="app-header">
         <div className="brand">
@@ -1505,5 +1536,6 @@ export default function App() {
       </main>
       <footer className="app-footer">English Word Trainer · MVP v1</footer>
     </div>
+    </Localized>
   );
 }
