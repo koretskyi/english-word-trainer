@@ -733,6 +733,10 @@ const EMPTY_FORM = {
 // Локальная админка.
 
 function AdminPage({ sentences, onSave, onDelete }) {
+  const safeSentences = Array.isArray(sentences)
+    ? sentences.filter((sentence) => sentence && typeof sentence === "object")
+    : [];
+
 
   const [form, setForm] = useState({ ...EMPTY_FORM });
 
@@ -1139,11 +1143,11 @@ function AdminPage({ sentences, onSave, onDelete }) {
 
       <section className="panel">
 
-        <h2>Все предложения ({sentences.length})</h2>
+        <h2>Все предложения ({safeSentences.length})</h2>
 
 
 
-        {sentences.length === 0 && (
+        {safeSentences.length === 0 && (
 
           <p className="muted">Предложений пока нет.</p>
 
@@ -1151,7 +1155,7 @@ function AdminPage({ sentences, onSave, onDelete }) {
 
 
 
-        {sentences.map((sentence) => (
+        {safeSentences.map((sentence) => (
 
           <article className="sentence-item" key={sentence.id}>
 
