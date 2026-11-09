@@ -1,5 +1,6 @@
 import { SENTENCES } from "./sentences.js";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { LANGUAGE_SENTENCES } from "./languages.js";
 
 
 
@@ -1240,7 +1241,14 @@ function AdminPage({ sentences, onSave, onDelete }) {
 
 
 // Главный компонент приложения.
+const INTERFACE_LANGUAGES = ["uk", "en", "de", "fr", "is", "ru"];
+const STUDY_LANGUAGES = ["en", "de", "fr", "is"];
+const INTERFACE_NAMES = { uk: "🇺🇦 Українська", en: "🇬🇧 English", de: "🇩🇪 Deutsch", fr: "🇫🇷 Français", is: "🇮🇸 Íslenska", ru: "🇷🇺 Русский" };
+const STUDY_NAMES = { en: "🇬🇧 English", de: "🇩🇪 Deutsch", fr: "🇫🇷 Français", is: "🇮🇸 Íslenska" };
+
 export default function App() {
+  const [interfaceLanguage, setInterfaceLanguage] = useState(() => localStorage.getItem("trainer-interface") || "ru");
+  const [studyLanguage, setStudyLanguage] = useState(() => localStorage.getItem("trainer-study-language") || "en");
   const [sentences, setSentences] = useState(loadSentences);
   const [page, setPage] = useState("study");
   const [showStats, setShowStats] = useState(false);
@@ -1272,7 +1280,8 @@ export default function App() {
     });
   }
 
-  const filteredSentences = sentences.filter((sentence) => sentence && sentence.level === selectedLevel);
+  const activeSentences = studyLanguage === "en" ? sentences : (LANGUAGE_SENTENCES[studyLanguage] || []);
+  const filteredSentences = activeSentences.filter((sentence) => sentence && sentence.level === selectedLevel);
   const candidate = selectNextSentence(filteredSentences, learningData);
   const sentence = activeWordKey
     ? filteredSentences.find((item) => normalizeWord(item.word) === activeWordKey) || candidate
@@ -1284,13 +1293,13 @@ export default function App() {
     learningData.words[word] && learningData.words[word].status === "MASTERED"
   ).length;
   const sentenceByWord = new Map();
-  sentences.forEach((item) => {
+  activeSentences.forEach((item) => {
     if (!item || typeof item !== "object") return;
     const key = normalizeWord(item.word);
     if (key && !sentenceByWord.has(key)) sentenceByWord.set(key, item);
   });
   const levelProgress = levels.map((level) => {
-    const words = new Set(sentences
+    const words = new Set(activeSentences
       .filter((item) => item && item.level === level)
       .map((item) => normalizeWord(item.word))
       .filter(Boolean));
@@ -1397,11 +1406,15 @@ export default function App() {
         <div className="brand">
           <div className="brand-icon">Aa</div>
           <div>
-            <h1>English Word Trainer</h1>
+            <h1>{studyLanguage === "en" ? "English Word Trainer" : studyLanguage === "de" ? "Deutsch Trainer" : studyLanguage === "fr" ? "Français Trainer" : "Íslenskuþjálfari"}</h1>
             <p>Мама, я все выучил!</p>
           </div>
         </div>
         <div className="header-actions">
+          <div className="language-selectors">
+            <label className="language-select"><span>Интерфейс</span><select value={interfaceLanguage} onChange={(event) => { setInterfaceLanguage(event.target.value); localStorage.setItem("trainer-interface", event.target.value); }}>{INTERFACE_LANGUAGES.map((lang) => <option key={lang} value={lang}>{INTERFACE_NAMES[lang]}</option>)}</select></label>
+            <label className="language-select"><span>Изучаю</span><select value={studyLanguage} onChange={(event) => { setStudyLanguage(event.target.value); localStorage.setItem("trainer-study-language", event.target.value); setActiveWordKey(null); setSelectedLevel("A1"); setShowStats(false); }}>{STUDY_LANGUAGES.map((lang) => <option key={lang} value={lang}>{STUDY_NAMES[lang]}</option>)}</select></label>
+          </div>
           <nav className="main-nav">
             <button
               type="button"
