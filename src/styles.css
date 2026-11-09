@@ -650,7 +650,7 @@ button:disabled {
 /* Заголовок и сравнение ответов после ошибки */
 .incorrect-feedback-title {
   display: block;
-  margin: 0 0 18px;
+  margin: 0 0 33px;
   color: #c62828;
   font-size: 20px;
   text-align: center;
@@ -675,13 +675,13 @@ button:disabled {
 
 .answer-comparison-label {
   position: absolute;
-  right: 0;
+  left: 0;
   top: 50%;
   transform: translateY(-50%);
   color: #68738a;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
-  text-align: right;
+  text-align: left;
 }
 
 .answer-comparison-line {
@@ -714,7 +714,7 @@ button:disabled {
     transform: none;
     width: 100%;
     margin-bottom: 2px;
-    text-align: center;
+    text-align: left;
   }
 
   .answer-comparison-row {
