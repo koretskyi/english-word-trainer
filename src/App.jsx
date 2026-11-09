@@ -722,8 +722,6 @@ const EMPTY_FORM = {
 
   word: "",
 
-  revealPositions: "",
-
   level: "B1",
 
 };
@@ -788,12 +786,6 @@ function AdminPage({ sentences, onSave, onDelete }) {
       englishTemplate: sentence.englishTemplate,
 
       word: sentence.word,
-
-      revealPositions: (sentence.revealIndices || [])
-
-        .map((position) => position + 1)
-
-        .join(", "),
 
       level: sentence.level || "B1",
 
@@ -867,46 +859,6 @@ function AdminPage({ sentences, onSave, onDelete }) {
 
 
 
-    const positions = form.revealPositions.trim()
-
-      ? form.revealPositions
-
-          .split(",")
-
-          .map((item) => Number(item.trim()) - 1)
-
-      : [];
-
-
-
-    if (
-
-      positions.some(
-
-        (position) =>
-
-          !Number.isInteger(position) ||
-
-          position < 0 ||
-
-          position >= [...word].length
-
-      )
-
-    ) {
-
-      setError(
-
-        `Номера открытых букв должны быть от 1 до ${[...word].length}.`
-
-      );
-
-      return;
-
-    }
-
-
-
     onSave({
 
       id: editingId || createId(),
@@ -917,8 +869,6 @@ function AdminPage({ sentences, onSave, onDelete }) {
       englishTemplate,
 
       word,
-
-      revealIndices: [...new Set(positions)],
 
       level: form.level,
 
@@ -1039,27 +989,7 @@ function AdminPage({ sentences, onSave, onDelete }) {
 
           <label>
 
-            Позиции открытых букв (нумерация с 1)
-
-            <input
-
-              value={form.revealPositions}
-
-              onChange={(event) =>
-
-                update("revealPositions", event.target.value)
-
-              }
-
-              placeholder="Например: 3 или 1, 4"
-
-            />
-
-          </label>
-
-
-
-          <label>
+            <label>
 
             Уровень английского
 
