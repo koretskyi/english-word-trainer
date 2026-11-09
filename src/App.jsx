@@ -1314,7 +1314,10 @@ const STUDY_NAMES = { en: "🇬🇧 English", de: "🇩🇪 Deutsch", fr: "🇫�
 
 export default function App() {
   const [interfaceLanguage, setInterfaceLanguage] = useState(() => localStorage.getItem("trainer-interface") || "ru");
-  const [studyLanguage, setStudyLanguage] = useState(() => localStorage.getItem("trainer-study-language") || "en");
+  const [studyLanguage, setStudyLanguage] = useState(() => {
+    const saved = localStorage.getItem("trainer-study-language");
+    return STUDY_LANGUAGES.includes(saved) ? saved : "en";
+  });
   const [languageSettingsOpen, setLanguageSettingsOpen] = useState(false);
   const languageSettingsRef = useRef(null);
 
@@ -1348,6 +1351,27 @@ export default function App() {
     }
   });
   const levels = studyLanguage === "en" ? ["A1", "A2", "B1", "B2", "C1"] : ["A1"];
+
+  // These settings are intentionally independent: changing the study deck
+  // must never change the language used to translate the application UI.
+  function handleInterfaceLanguageChange(event) {
+    const nextLanguage = event.currentTarget.value;
+    if (!INTERFACE_LANGUAGES.includes(nextLanguage)) return;
+    setInterfaceLanguage(nextLanguage);
+    localStorage.setItem("trainer-interface", nextLanguage);
+  }
+
+  function handleStudyLanguageChange(event) {
+    const nextLanguage = event.currentTarget.value;
+    if (!STUDY_LANGUAGES.includes(nextLanguage)) return;
+    setStudyLanguage(nextLanguage);
+    localStorage.setItem("trainer-study-language", nextLanguage);
+    setLearningData(loadLearningDataForLanguage(nextLanguage));
+    setActiveWordKey(null);
+    setSelectedLevel("A1");
+    setStatsLevel("A1");
+    setShowStats(false);
+  }
 
   function toggleAudio() {
     setAudioEnabled((enabled) => {
@@ -1542,13 +1566,13 @@ export default function App() {
               <div className="language-settings-menu">
                 <label className="language-select">
                   <span>Интерфейс</span>
-                  <select value={interfaceLanguage} onChange={(event) => { setInterfaceLanguage(event.target.value); localStorage.setItem("trainer-interface", event.target.value); }}>
+                  <select value={interfaceLanguage} onChange={handleInterfaceLanguageChange}>
                     {INTERFACE_LANGUAGES.map((lang) => <option key={lang} value={lang}>{INTERFACE_NAMES[lang]}</option>)}
                   </select>
                 </label>
                 <label className="language-select">
                   <span>Изучаю</span>
-                  <select value={studyLanguage} onChange={(event) => { setStudyLanguage(event.target.value); localStorage.setItem("trainer-study-language", event.target.value); setLearningData(loadLearningDataForLanguage(event.target.value)); setActiveWordKey(null); setSelectedLevel("A1"); setStatsLevel("A1"); setShowStats(false); }}>
+                  <select value={studyLanguage} onChange={handleStudyLanguageChange}>
                     {STUDY_LANGUAGES.map((lang) => <option key={lang} value={lang}>{STUDY_NAMES[lang]}</option>)}
                   </select>
                 </label>
