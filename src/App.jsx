@@ -174,7 +174,7 @@ function createInitialAnswer(sentence) {
 // Каждая буква слова находится в отдельном поле ввода.
 
 
-function WordGap({ sentence, value, onChange, disabled, containerRef }) {
+function WordGap({ sentence, value, onChange, disabled, containerRef, showMistakes = false }) {
   const letters = [...sentence.word];
   // Открываем одну случайную букву на каждые полные 3 буквы слова.
   // Выбор фиксируется на время показа карточки и меняется при переходе к новой.
@@ -290,6 +290,8 @@ function WordGap({ sentence, value, onChange, disabled, containerRef }) {
     >
       {letters.map((letter, index) => {
         const isOpened = opened.has(index);
+        const isMistake = showMistakes && Boolean(value[index]) &&
+          value[index].toLowerCase() !== letter.toLowerCase();
 
         return (
           <input
@@ -328,14 +330,14 @@ function WordGap({ sentence, value, onChange, disabled, containerRef }) {
               lineHeight: 1.2,
               border: "none",
               borderBottom: `2px solid ${
-                isOpened ? "#15803d" : "#3157d5"
+                isMistake ? "#dc2626" : isOpened ? "#15803d" : "#3157d5"
               }`,
               borderRadius: 0,
-              backgroundColor: isOpened
-                ? "#e7f6eb"
-                : "#f0f3ff",
-              color: isOpened ? "#15803d" : "#172033",
-              fontWeight: isOpened ? 700 : 400,
+              backgroundColor: isMistake
+                ? "#fee2e2"
+                : isOpened ? "#e7f6eb" : "#f0f3ff",
+              color: isMistake ? "#dc2626" : isOpened ? "#15803d" : "#172033",
+              fontWeight: isMistake || isOpened ? 700 : 400,
               outlineOffset: "1px",
               opacity: 1,
             }}
@@ -377,7 +379,7 @@ function StudyPage({
 
   useEffect(() => {
     if (!checked) return undefined;
-    const timer = setTimeout(onAdvance, correct ? 1000 : 900);
+    const timer = setTimeout(onAdvance, correct ? 1000 : 2000);
     return () => clearTimeout(timer);
   }, [checked, correct, onAdvance]);
 
@@ -524,7 +526,8 @@ function StudyPage({
           <div className="english-sentence">
             <span>{parts[0]}</span>
             <WordGap key={`${sentence.id}-${sentence.word}`} sentence={sentence} value={answer}
-              onChange={handleAnswerChange} disabled={checked} containerRef={wordGapRef} />
+              onChange={handleAnswerChange} disabled={checked} containerRef={wordGapRef}
+              showMistakes={checked && !correct} />
             <span>{parts.slice(1).join("{word}")}</span>
           </div>
           {!checked ? (
@@ -538,7 +541,10 @@ function StudyPage({
             </div>
           ) : (
             <div className={"feedback " + (correct ? "correct" : "incorrect")}>
-              <strong>{markedKnown ? "✓ Слово перенесено в выученные" : correct ? "✓ Правильно!" : "✗ Правильный ответ: " + sentence.word}</strong>
+              <strong>{markedKnown ? "✓ Слово перенесено в выученные" : correct ? "✓ Правильно!" : "✗ Ошибка"}</strong>
+              {!correct && !markedKnown && (
+                <div className="incorrect-answer-word">{sentence.word}</div>
+              )}
               <p>{sentence.englishTemplate.replace("{word}", sentence.word)}</p>
               <p>{markedKnown ? "Больше не будет появляться в обучении." : correct ? "Ответ засчитан." : "Слово вернётся через 5 других карточек."}</p>
             </div>
