@@ -1039,3 +1039,106 @@ button:disabled {
   opacity: 0.7;
   font-size: 0.85em;
 }
+
+
+/* Лестница освоения слова на повторении */
+.review-card-progress {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0 18px;
+  padding: 14px 16px;
+  border: 1px solid #dcecc7;
+  border-radius: 12px;
+  background: #f7fbea;
+}
+
+.review-origin-label {
+  color: #58752e;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.review-ladder {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.review-ladder-caption {
+  color: #536044;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.review-ladder-steps {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.review-ladder-step {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #d9dfd0;
+  border-radius: 50%;
+  background: #eef0eb;
+  filter: grayscale(1);
+  opacity: 0.38;
+  font-size: 19px;
+  transition: opacity 180ms ease, transform 180ms ease, background 180ms ease;
+}
+
+.review-ladder-step.reached {
+  border-color: #c6e69b;
+  background: #e9f7d7;
+  filter: none;
+  opacity: 1;
+}
+
+.review-ladder-step:last-child.reached {
+  transform: scale(1.12);
+}
+
+.review-ladder-count {
+  color: #58752e;
+  font-size: 13px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.review-ladder-compact {
+  width: 100%;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.review-ladder-compact .review-ladder-steps {
+  gap: 4px;
+}
+
+.review-ladder-compact .review-ladder-step {
+  width: 25px;
+  height: 25px;
+  font-size: 15px;
+}
+
+.review-ladder-compact .review-ladder-count {
+  font-size: 12px;
+}
+
+@media (max-width: 480px) {
+  .review-ladder:not(.review-ladder-compact) {
+    gap: 8px;
+  }
+  .review-ladder:not(.review-ladder-compact) .review-ladder-steps {
+    gap: 4px;
+  }
+  .review-ladder:not(.review-ladder-compact) .review-ladder-step {
+    width: 30px;
+    height: 30px;
+    font-size: 17px;
+  }
+}
