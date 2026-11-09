@@ -646,3 +646,12 @@ button:disabled {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Крупный салатовый ответ после ошибки */
+.incorrect-answer-word {
+  margin: 8px 0 12px;
+  color: #A8E64A;
+  font-size: 20px;
+  line-height: 1.3;
+  font-weight: 800;
+}
