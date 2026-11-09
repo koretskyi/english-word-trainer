@@ -440,6 +440,7 @@ function StudyPage({
   const [answer, setAnswer] = useState(() => createInitialAnswer(sentence));
   const [checked, setChecked] = useState(false);
   const [successVisible, setSuccessVisible] = useState(false);
+  const [audioFinished, setAudioFinished] = useState(false);
   const [markedKnown, setMarkedKnown] = useState(false);
   const targetLetters = sentence ? [...sentence.word] : [];
   const correct = Boolean(sentence) && targetLetters.length > 0 &&
@@ -448,10 +449,10 @@ function StudyPage({
     );
 
   useEffect(() => {
-    if (!checked || (correct && !successVisible)) return undefined;
+    if (!checked || (correct && !audioFinished)) return undefined;
     const timer = setTimeout(onAdvance, correct ? 1000 : 4000);
     return () => clearTimeout(timer);
-  }, [checked, correct, successVisible, onAdvance]);
+  }, [checked, correct, audioFinished, onAdvance]);
 
   const englishText = sentence
     ? sentence.englishTemplate.replace("{word}", sentence.word)
@@ -545,11 +546,13 @@ function StudyPage({
       setChecked(true);
       onComplete(sentence.word, isRight);
       if (isRight) {
+        // Показываем надпись и салюты сразу, не дожидаясь окончания озвучки.
+        setSuccessVisible(true);
         if (audioEnabled) {
-          const started = speakEnglish(englishText, () => setSuccessVisible(true));
-          if (!started) setSuccessVisible(true);
+          const started = speakEnglish(englishText, () => setAudioFinished(true));
+          if (!started) setAudioFinished(true);
         } else {
-          setSuccessVisible(true);
+          setAudioFinished(true);
         }
       }
     }
