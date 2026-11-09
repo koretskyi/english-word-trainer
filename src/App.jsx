@@ -67,7 +67,21 @@ function normalizeWord(word) {
   return String(word || "").trim().toLowerCase();
 }
 
+function getLocalDateKey() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function loadLearningData() {
+  const emptyStats = {
+    totalAnswers: 0,
+    correctAnswers: 0,
+    streak: 0,
+    daily: { date: getLocalDateKey(), count: 0 },
+  };
   try {
     const saved = localStorage.getItem(LEARNING_STORAGE_KEY);
     if (saved) {
@@ -77,13 +91,18 @@ function loadLearningData() {
           version: 1,
           completedCount: Number(parsed.completedCount) || 0,
           words: parsed.words,
+          stats: {
+            ...emptyStats,
+            ...(parsed.stats || {}),
+            daily: parsed.stats?.daily || emptyStats.daily,
+          },
         };
       }
     }
   } catch (error) {
     console.error("Ошибка загрузки прогресса:", error);
   }
-  return { version: 1, completedCount: 0, words: {} };
+  return { version: 1, completedCount: 0, words: {}, stats: emptyStats };
 }
 
 function selectNextSentence(sentences, learningData) {
@@ -144,7 +163,24 @@ function recordWordAnswer(previous, word, isCorrect) {
     }
   }
 
-  return { version: 1, completedCount, words };
+  const previousStats = previous.stats || {
+    totalAnswers: 0,
+    correctAnswers: 0,
+    streak: 0,
+    daily: { date: getLocalDateKey(), count: 0 },
+  };
+  const today = getLocalDateKey();
+  const dailyCount = previousStats.daily?.date === today
+    ? (Number(previousStats.daily.count) || 0) + 1
+    : 1;
+  const stats = {
+    totalAnswers: (Number(previousStats.totalAnswers) || 0) + 1,
+    correctAnswers: (Number(previousStats.correctAnswers) || 0) + (isCorrect ? 1 : 0),
+    streak: isCorrect ? (Number(previousStats.streak) || 0) + 1 : 0,
+    daily: { date: today, count: dailyCount },
+  };
+
+  return { version: 1, completedCount, words, stats };
 }
 
 function createId() {
@@ -390,12 +426,14 @@ function StudyPage({
   totalWords,
   completedCount,
   reviewWords,
+  stats,
+  levelProgress,
   isReview,
   onKnow,
 }) {
   const [answer, setAnswer] = useState(() => createInitialAnswer(sentence));
   const [checked, setChecked] = useState(false);
-  const [showReviewWords, setShowReviewWords] = useState(false);
+  const [showStats, setShowStats] = useState(false);
   const [markedKnown, setMarkedKnown] = useState(false);
   const wordGapRef = useRef(null);
   const [fireworksOrigin, setFireworksOrigin] = useState({ x: 0, y: 0 });
@@ -466,29 +504,65 @@ function StudyPage({
       </select>
       <span>{masteredCount} / {totalWords} выучено на {selectedLevel}</span>
       <button className="button button-secondary button-review-list" type="button"
-        onClick={() => setShowReviewWords((value) => !value)}>
-        Слова на повторении ({reviewWords.length})
+        onClick={() => setShowStats((value) => !value)}>
+        {showStats ? "Скрыть статистику" : "Статистика"}
       </button>
     </div>
   );
 
-  const reviewWordsPanel = showReviewWords ? (
-    <div className="panel review-words-panel">
-      <h3>Слова в алгоритме повторения</h3>
+  const accuracy = stats.totalAnswers
+    ? Math.round((stats.correctAnswers / stats.totalAnswers) * 100)
+    : 0;
+
+  const statsPanel = showStats ? (
+    <div className="panel review-words-panel stats-panel">
+      <h3>Статистика обучения</h3>
+      <div className="stats-grid">
+        <div className="stat-card">
+          <span>Слов изучено сегодня</span>
+          <strong>{stats.daily?.date === getLocalDateKey() ? stats.daily.count : 0}</strong>
+        </div>
+        <div className="stat-card">
+          <span>Правильных подряд</span>
+          <strong>{stats.streak}</strong>
+        </div>
+        <div className="stat-card">
+          <span>Точность ответов</span>
+          <strong>{accuracy}%</strong>
+          <small>{stats.correctAnswers} из {stats.totalAnswers}</small>
+        </div>
+        <div className="stat-card">
+          <span>Слов на повторении</span>
+          <strong>{reviewWords.length}</strong>
+        </div>
+      </div>
+
+      <h4>Прогресс по уровням</h4>
+      <div className="level-progress-list">
+        {levelProgress.map((item) => (
+          <div className="level-progress-item" key={item.level}>
+            <div className="level-progress-heading">
+              <strong>{item.level}</strong>
+              <span>{item.mastered} / {item.total} ({item.percent}%)</span>
+            </div>
+            <div className="level-progress-track">
+              <div className="level-progress-fill" style={{ width: `${item.percent}%` }} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <h4>Слова на повторении</h4>
       {reviewWords.length === 0 ? (
         <p>Пока нет слов на повторении.</p>
       ) : (
-        <ul>
+        <ul className="stats-review-list">
           {reviewWords.map((item) => (
             <li key={item.key} className="review-word-item">
               <strong className="review-word-name">{item.word}</strong>
-              <span className="review-word-stage">Этап {item.stage} из 6</span>
+              <span className="review-word-stage">{item.level} · этап {item.stage} из 6</span>
               <span className="review-word-countdown">
-                {item.remaining === 0 ? (
-                  "Готово к повтору"
-                ) : (
-                  <>Отображение через <strong className="review-word-number">{item.remaining}</strong> карточек</>
-                )}
+                {item.remaining === 0 ? "Готово к повтору" : <>Повтор через <strong className="review-word-number">{item.remaining}</strong> карточек</>}
               </span>
             </li>
           ))}
@@ -534,7 +608,7 @@ function StudyPage({
     return (
       <section className="panel">
         {levelSelector}
-        {reviewWordsPanel}
+        {statsPanel}
         <h2>На уровне {selectedLevel} пока нет доступных карточек</h2>
         <p>Новые слова закончились, а слова на повторение ещё не подошли по интервалу.</p>
         <p>Выполнено ответов: {completedCount}. Переключи уровень или добавь слова через админку.</p>
@@ -575,7 +649,7 @@ function StudyPage({
         </div>
       )}
       {levelSelector}
-      {reviewWordsPanel}
+      {statsPanel}
       <div className="card-topline">
         <span>Прогресс обучения</span>
         <span className="level-badge">{sentence.level}</span>
@@ -1245,11 +1319,27 @@ export default function App() {
     const key = normalizeWord(item.word);
     if (key && !sentenceByWord.has(key)) sentenceByWord.set(key, item);
   });
+  const levelProgress = levels.map((level) => {
+    const words = new Set(sentences
+      .filter((item) => item && item.level === level)
+      .map((item) => normalizeWord(item.word))
+      .filter(Boolean));
+    const mastered = Array.from(words).filter((word) =>
+      learningData.words[word]?.status === "MASTERED"
+    ).length;
+    return {
+      level,
+      total: words.size,
+      mastered,
+      percent: words.size ? Math.round((mastered / words.size) * 100) : 0,
+    };
+  });
   const reviewWords = Object.entries(learningData.words)
-    .filter(([key, state]) => state.status === "REVIEW" && levelWords.has(key))
+    .filter(([key, state]) => state.status === "REVIEW" && sentenceByWord.has(key))
     .map(([key, state]) => ({
       key,
       word: sentenceByWord.get(key)?.word || key,
+      level: sentenceByWord.get(key)?.level || "—",
       stage: state.stage,
       remaining: Math.max(0, state.dueAt - learningData.completedCount),
       dueAt: state.dueAt,
@@ -1362,6 +1452,8 @@ export default function App() {
             totalWords={totalWords}
             completedCount={learningData.completedCount}
             reviewWords={reviewWords}
+            stats={learningData.stats || { totalAnswers: 0, correctAnswers: 0, streak: 0, daily: { date: getLocalDateKey(), count: 0 } }}
+            levelProgress={levelProgress}
           />
         ) : (
           <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} />
