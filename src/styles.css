@@ -629,6 +629,7 @@ button:disabled {
 
 .level-review-shortcut strong {
   color: #0f766e;
+  font-size: 16px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
