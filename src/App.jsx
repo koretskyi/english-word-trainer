@@ -614,18 +614,6 @@ function StudyPage({
               showMistakes={checked && !correct} />
             <span>{parts.slice(1).join("{word}")}</span>
           </div>
-          <button
-            className="button button-secondary"
-            type="button"
-            onClick={() => {
-              if (audioEnabled) speakEnglish(englishText);
-            }}
-            disabled={!audioEnabled}
-            aria-label="Повторить английское предложение"
-            style={{ marginTop: "10px" }}
-          >
-            🔊 Повторить
-          </button>
           {!checked ? (
             <div className="form-actions">
               <button className="button button-secondary button-dont-know" type="button"
