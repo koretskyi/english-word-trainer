@@ -550,7 +550,7 @@ function StudyPage({
         ))}
       </div>
 
-      <h4>Слова на повторении</h4>
+      <h4>Слова на повторении ({reviewWords.length})</h4>
       {reviewWords.length === 0 ? (
         <p>Пока нет слов на повторении.</p>
       ) : (
