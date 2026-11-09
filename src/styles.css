@@ -90,6 +90,35 @@ button:disabled {
   flex-wrap: wrap;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sound-toggle {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: #f8faff;
+  font-size: 20px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.sound-toggle:hover {
+  background: #e9eeff;
+  border-color: #c7d2fe;
+}
+
+.sound-toggle-off {
+  background: #f3f4f6;
+  filter: grayscale(1);
+}
+
 .form-actions {
   gap: 14px;
   margin-top: 22px;
@@ -434,8 +463,13 @@ button:disabled {
     padding: 16px;
   }
 
-  .main-nav {
+  .header-actions {
     width: 100%;
+    justify-content: space-between;
+  }
+
+  .main-nav {
+    flex: 1;
   }
 
   .nav-button {
