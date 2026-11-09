@@ -511,7 +511,7 @@ function StudyPage({
       </select>
       <button
         type="button"
-        className="level-review-shortcut"
+        className={`level-review-shortcut${isReview ? " is-review-active" : ""}`}
         onClick={() => {
           setStatsLevel(selectedLevel);
           setShowStats(true);
