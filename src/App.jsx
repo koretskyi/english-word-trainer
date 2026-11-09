@@ -1259,7 +1259,7 @@ export default function App() {
       percent: words.size ? Math.round((mastered / words.size) * 100) : 0,
     };
   });
-  const reviewWords = Object.entries(learningData.words)
+  const reviewQueue = Object.entries(learningData.words)
     .filter(([key, state]) => state.status === "REVIEW" && sentenceByWord.has(key))
     .map(([key, state]) => ({
       key,
@@ -1269,13 +1269,23 @@ export default function App() {
       dueAt: state.dueAt,
       order: state.order || 0,
     }))
-    .sort((a, b) => (a.dueAt - b.dueAt) || (a.order - b.order))
-    .map((item, index, items) => ({
-      ...item,
-      // Считаем место слова в очереди: готовые слова идут 1, 2, 3...
-      remaining: Math.max(0, item.dueAt - learningData.completedCount) +
-        items.slice(0, index).filter((previous) => previous.dueAt === item.dueAt).length + 1,
-    }));
+    .sort((a, b) => (a.dueAt - b.dueAt) || (a.order - b.order));
+  const readyReviewCount = reviewQueue.filter(
+    (item) => item.dueAt <= learningData.completedCount
+  ).length;
+  const reviewWords = reviewQueue.map((item, index, items) => {
+    const readyBefore = items.slice(0, index).filter(
+      (previous) => previous.dueAt <= learningData.completedCount
+    ).length;
+    const sameFutureDueBefore = items.slice(0, index).filter(
+      (previous) => previous.dueAt === item.dueAt &&
+        previous.dueAt > learningData.completedCount
+    ).length;
+    const remaining = item.dueAt <= learningData.completedCount
+      ? readyBefore + 1
+      : item.dueAt - learningData.completedCount + readyReviewCount + sameFutureDueBefore;
+    return { ...item, remaining };
+  });
 
   useEffect(() => {
     try {
