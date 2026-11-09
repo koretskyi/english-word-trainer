@@ -997,7 +997,8 @@ function AdminPage({ sentences, onSave, onDelete, interfaceLanguage }) {
 
   return (
 
-    <div className="admin-layout">
+    <Localized language={interfaceLanguage}>
+    <div className="admin-layout">
 
       <section className="panel">
 
@@ -1251,6 +1252,7 @@ function AdminPage({ sentences, onSave, onDelete, interfaceLanguage }) {
       </section>
 
     </div>
+    </Localized>
 
   );
 
