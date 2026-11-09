@@ -639,7 +639,7 @@ function StudyPage({
               )}
             </div>
           ) : (
-            <div className={"feedback " + (correct ? "correct" : "incorrect")}>
+            <div className={"feedback " + (correct ? "correct" : "incorrect") + (markedKnown ? " marked-known" : "")}>
               {dontKnowClicked ? (
                 <div className="answer-comparison-row dont-know-answer">
                   <span className="answer-comparison-label">Правильный ответ</span>
