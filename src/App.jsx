@@ -350,6 +350,32 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
 
 
 
+// Озвучивание английского предложения встроенным синтезом речи браузера.
+function speakEnglish(text) {
+  if (!text || !("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
+    return false;
+  }
+
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  const voices = window.speechSynthesis.getVoices();
+  const englishVoices = voices.filter((voice) => /^en(-|_)/i.test(voice.lang));
+  const femaleVoice = englishVoices.find((voice) =>
+    /female|samantha|ava|jenny|aria|zira|susan|karen|victoria|google uk english female/i.test(voice.name)
+  );
+  const preferredVoice = femaleVoice ||
+    englishVoices.find((voice) => /^en-US/i.test(voice.lang)) ||
+    englishVoices.find((voice) => /^en-GB/i.test(voice.lang)) ||
+    englishVoices[0];
+
+  if (preferredVoice) utterance.voice = preferredVoice;
+  utterance.lang = preferredVoice?.lang || "en-US";
+  utterance.rate = 0.9;
+  utterance.pitch = 1.08;
+  window.speechSynthesis.speak(utterance);
+  return true;
+}
+
 // Страница обучения с интервальным повторением.
 function StudyPage({
   sentence,
@@ -382,6 +408,38 @@ function StudyPage({
     const timer = setTimeout(onAdvance, correct ? 1000 : 4000);
     return () => clearTimeout(timer);
   }, [checked, correct, onAdvance]);
+
+  const englishText = sentence
+    ? sentence.englishTemplate.replace("{word}", sentence.word)
+    : "";
+
+  // Озвучиваем предложение один раз при открытии новой карточки.
+  useEffect(() => {
+    if (!englishText) return undefined;
+
+    let cancelled = false;
+    let fallbackTimer;
+
+    const play = () => {
+      if (cancelled) return;
+      speakEnglish(englishText);
+    };
+
+    const voices = window.speechSynthesis?.getVoices?.() || [];
+    if (voices.length) {
+      fallbackTimer = setTimeout(play, 180);
+    } else if ("speechSynthesis" in window) {
+      window.speechSynthesis.addEventListener("voiceschanged", play, { once: true });
+      fallbackTimer = setTimeout(play, 700);
+    }
+
+    return () => {
+      cancelled = true;
+      clearTimeout(fallbackTimer);
+      window.speechSynthesis?.removeEventListener?.("voiceschanged", play);
+      window.speechSynthesis?.cancel?.();
+    };
+  }, [sentence?.id, sentence?.word, sentence?.englishTemplate]);
 
   const parts = sentence ? sentence.englishTemplate.split("{word}") : [];
   const levelSelector = (
@@ -530,6 +588,15 @@ function StudyPage({
               showMistakes={checked && !correct} />
             <span>{parts.slice(1).join("{word}")}</span>
           </div>
+          <button
+            className="button button-secondary"
+            type="button"
+            onClick={() => speakEnglish(englishText)}
+            aria-label="Повторить английское предложение"
+            style={{ marginTop: "10px" }}
+          >
+            🔊 Повторить
+          </button>
           {!checked ? (
             <div className="form-actions">
               <button className="button button-secondary button-dont-know" type="button"
