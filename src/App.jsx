@@ -466,6 +466,7 @@ function StudyPage({
   showStats,
   setShowStats,
   isReview,
+  reviewStage,
   onKnow,
 }) {
   const [answer, setAnswer] = useState(() => createInitialAnswer(sentence));
