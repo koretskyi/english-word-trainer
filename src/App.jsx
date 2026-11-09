@@ -1307,19 +1307,23 @@ function Localized({ language, children }) {
   return <>{walk(children)}</>;
 }
 
-const INTERFACE_LANGUAGES = ["uk", "en", "de", "fr", "is", "ru"];
 const STUDY_LANGUAGES = ["en", "de", "fr", "is"];
-const INTERFACE_NAMES = { uk: "🇺🇦 Українська", en: "🇬🇧 English", de: "🇩🇪 Deutsch", fr: "🇫🇷 Français", is: "🇮🇸 Íslenska", ru: "🇷🇺 Русский" };
 const STUDY_NAMES = { en: "🇬🇧 English", de: "🇩🇪 Deutsch", fr: "🇫🇷 Français", is: "🇮🇸 Íslenska" };
 
 export default function App() {
-  const [interfaceLanguage, setInterfaceLanguage] = useState(() => localStorage.getItem("trainer-interface") || "ru");
+  // Язык интерфейса временно закреплён на русском.
+  const interfaceLanguage = "ru";
   const [studyLanguage, setStudyLanguage] = useState(() => {
     const saved = localStorage.getItem("trainer-study-language");
     return STUDY_LANGUAGES.includes(saved) ? saved : "en";
   });
   const [languageSettingsOpen, setLanguageSettingsOpen] = useState(false);
   const languageSettingsRef = useRef(null);
+
+  useEffect(() => {
+    // Удаляем влияние старой сохранённой настройки языка интерфейса.
+    localStorage.setItem("trainer-interface", "ru");
+  }, []);
 
   useEffect(() => {
     if (!languageSettingsOpen) return undefined;
@@ -1352,15 +1356,7 @@ export default function App() {
   });
   const levels = studyLanguage === "en" ? ["A1", "A2", "B1", "B2", "C1"] : ["A1"];
 
-  // These settings are intentionally independent: changing the study deck
-  // must never change the language used to translate the application UI.
-  function handleInterfaceLanguageChange(event) {
-    const nextLanguage = event.currentTarget.value;
-    if (!INTERFACE_LANGUAGES.includes(nextLanguage)) return;
-    setInterfaceLanguage(nextLanguage);
-    localStorage.setItem("trainer-interface", nextLanguage);
-  }
-
+  // Язык интерфейса временно закреплён на русском; язык обучения выбирается отдельно.
   function handleStudyLanguageChange(event) {
     const nextLanguage = event.currentTarget.value;
     if (!STUDY_LANGUAGES.includes(nextLanguage)) return;
@@ -1515,7 +1511,7 @@ export default function App() {
         <div className="brand">
           <div className="brand-icon">Aa</div>
           <div>
-            <h1>{studyLanguage === "en" ? "English Word Trainer" : studyLanguage === "de" ? "Deutsch Trainer" : studyLanguage === "fr" ? "Français Trainer" : "Íslenskuþjálfari"}</h1>
+            <h1>{"Тренажёр слов"}</h1>
             <p>Мама, я все выучил!</p>
           </div>
         </div>
@@ -1566,8 +1562,8 @@ export default function App() {
               <div className="language-settings-menu">
                 <label className="language-select">
                   <span>Интерфейс</span>
-                  <select value={interfaceLanguage} onChange={handleInterfaceLanguageChange}>
-                    {INTERFACE_LANGUAGES.map((lang) => <option key={lang} value={lang}>{INTERFACE_NAMES[lang]}</option>)}
+                  <select value="ru" disabled>
+                    <option value="ru">🇷🇺 Русский</option>
                   </select>
                 </label>
                 <label className="language-select">
