@@ -422,6 +422,8 @@ function StudyPage({
 
     const play = () => {
       if (cancelled) return;
+      clearTimeout(fallbackTimer);
+      window.speechSynthesis?.removeEventListener?.("voiceschanged", play);
       speakEnglish(englishText);
     };
 
