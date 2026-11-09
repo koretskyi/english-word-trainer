@@ -387,13 +387,17 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
 
 
 // Озвучивание английского предложения встроенным синтезом речи браузера.
-function speakEnglish(text) {
+function speakEnglish(text, onFinished) {
   if (!text || !("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
     return false;
   }
 
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
+  if (onFinished) {
+    utterance.onend = onFinished;
+    utterance.onerror = onFinished;
+  }
   const voices = window.speechSynthesis.getVoices();
   const englishVoices = voices.filter((voice) => /^en(-|_)/i.test(voice.lang));
   // Сначала выбираем именно Microsoft Jenny; остальные голоса — только запасной вариант.
@@ -435,6 +439,7 @@ function StudyPage({
 }) {
   const [answer, setAnswer] = useState(() => createInitialAnswer(sentence));
   const [checked, setChecked] = useState(false);
+  const [successVisible, setSuccessVisible] = useState(false);
   const [markedKnown, setMarkedKnown] = useState(false);
   const wordGapRef = useRef(null);
   const [fireworksOrigin, setFireworksOrigin] = useState({ x: 0, y: 0 });
@@ -445,55 +450,17 @@ function StudyPage({
     );
 
   useEffect(() => {
-    if (!checked) return undefined;
+    if (!checked || (correct && !successVisible)) return undefined;
     const timer = setTimeout(onAdvance, correct ? 1000 : 4000);
     return () => clearTimeout(timer);
-  }, [checked, correct, onAdvance]);
+  }, [checked, correct, successVisible, onAdvance]);
 
   const englishText = sentence
     ? sentence.englishTemplate.replace("{word}", sentence.word)
     : "";
 
-  // Озвучиваем предложение один раз при открытии новой карточки.
-  useEffect(() => {
-    // При выключенном звуке не обращаемся к SpeechSynthesis,
-    // не запрашиваем голоса и не создаём таймеры/обработчики.
-    if (!audioEnabled || !englishText || !("speechSynthesis" in window)) return undefined;
-
-    let cancelled = false;
-    let fallbackTimer;
-
-    const play = () => {
-      if (cancelled) return;
-      clearTimeout(fallbackTimer);
-      window.speechSynthesis?.removeEventListener?.("voiceschanged", play);
-      speakEnglish(englishText);
-    };
-
-    const voices = window.speechSynthesis?.getVoices?.() || [];
-    if (voices.length) {
-      fallbackTimer = setTimeout(play, 180);
-    } else if ("speechSynthesis" in window) {
-      window.speechSynthesis.addEventListener("voiceschanged", play, { once: true });
-      fallbackTimer = setTimeout(play, 700);
-    }
-
-    return () => {
-      cancelled = true;
-      clearTimeout(fallbackTimer);
-      window.speechSynthesis?.removeEventListener?.("voiceschanged", play);
-      window.speechSynthesis?.cancel?.();
-    };
-  }, [audioEnabled, sentence?.id, sentence?.word, sentence?.englishTemplate]);
-
-  // После неправильного ответа произносим правильное слово.
-  useEffect(() => {
-    if (!audioEnabled || !checked || correct || !sentence?.word) return undefined;
-    const timer = setTimeout(() => {
-      speakEnglish(sentence.word);
-    }, 250);
-    return () => clearTimeout(timer);
-  }, [audioEnabled, checked, correct, sentence?.word]);
+  // При открытии карточки ничего не озвучиваем.
+  // Озвучка правильного слова запускается непосредственно после верного ответа.
 
   const parts = sentence ? sentence.englishTemplate.split("{word}") : [];
   const levelSelector = (
@@ -586,6 +553,14 @@ function StudyPage({
       }
       setChecked(true);
       onComplete(sentence.word, isRight);
+      if (isRight) {
+        if (audioEnabled) {
+          const started = speakEnglish(sentence.word, () => setSuccessVisible(true));
+          if (!started) setSuccessVisible(true);
+        } else {
+          setSuccessVisible(true);
+        }
+      }
     }
   }
 
@@ -616,7 +591,7 @@ function StudyPage({
 
   return (
     <section className={"panel study-panel" + (checked && correct ? " answer-correct" : "")}>
-      {checked && correct && (
+      {checked && correct && successVisible && (
         <div className="correct-overlay">
           <div
             className="fireworks"
