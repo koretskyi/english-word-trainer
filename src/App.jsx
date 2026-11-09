@@ -661,7 +661,7 @@ function StudyPage({
               <strong>✓ Слово перенесено в выученные</strong>
               <p>Больше не будет появляться в обучении.</p>
             </div>
-          ) : null}}
+          ) : null}
         </div>
       </div>
     </section>
