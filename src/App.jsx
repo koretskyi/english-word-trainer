@@ -1506,7 +1506,35 @@ export default function App() {
               title="Настройки языков"
             >
               <span className="language-settings-flag" aria-hidden="true">
-                {studyLanguage === "de" ? "🇩🇪" : studyLanguage === "fr" ? "🇫🇷" : studyLanguage === "is" ? "🇮🇸" : "🇬🇧"}
+                <svg viewBox="0 0 60 36" role="img" focusable="false">
+                  {studyLanguage === "de" ? (
+                    <>
+                      <rect width="60" height="12" fill="#000000" />
+                      <rect y="12" width="60" height="12" fill="#dd0000" />
+                      <rect y="24" width="60" height="12" fill="#ffce00" />
+                    </>
+                  ) : studyLanguage === "fr" ? (
+                    <>
+                      <rect width="20" height="36" fill="#002395" />
+                      <rect x="20" width="20" height="36" fill="#ffffff" />
+                      <rect x="40" width="20" height="36" fill="#ed2939" />
+                    </>
+                  ) : studyLanguage === "is" ? (
+                    <>
+                      <rect width="60" height="36" fill="#003897" />
+                      <path d="M18 0 V36 M0 18 H60" stroke="#ffffff" strokeWidth="10" />
+                      <path d="M18 0 V36 M0 18 H60" stroke="#d72828" strokeWidth="4" />
+                    </>
+                  ) : (
+                    <>
+                      <rect width="60" height="36" rx="4" fill="#17356b" />
+                      <path d="M0 0 L60 36 M60 0 L0 36" stroke="#ffffff" strokeWidth="8" />
+                      <path d="M0 0 L60 36 M60 0 L0 36" stroke="#c8102e" strokeWidth="3.5" />
+                      <path d="M30 0 V36 M0 18 H60" stroke="#ffffff" strokeWidth="12" />
+                      <path d="M30 0 V36 M0 18 H60" stroke="#c8102e" strokeWidth="6.5" />
+                    </>
+                  )}
+                </svg>
               </span>
               
             </button>
