@@ -647,13 +647,35 @@ button:disabled {
   }
 }
 
-/* Крупный салатовый ответ после ошибки */
-.incorrect-answer-word {
+/* Сравнение правильного и пользовательского ответа после ошибки */
+.incorrect-answer-comparison {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
   margin: 8px 0 12px;
-  color: #A8E64A;
+}
+
+.answer-comparison-line {
   font-size: 20px;
-  line-height: 1.3;
+  line-height: 1.35;
   font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.correct-word-line {
+  color: #A8E64A;
+}
+
+.user-word-line {
+  color: #dc2626;
+}
+
+.user-word-letter-mistake {
+  text-decoration-line: underline;
+  text-decoration-color: #dc2626;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 
 /* Явное выделение неверно введённых букв после проверки */
