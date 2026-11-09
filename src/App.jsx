@@ -106,6 +106,23 @@ function loadLearningData() {
   return { version: 1, completedCount: 0, words: {}, stats: emptyStats };
 }
 
+function loadLearningDataForLanguage(language) {
+  if (language === "en") return loadLearningData();
+  try {
+    const saved = localStorage.getItem(LEARNING_STORAGE_KEY + "-" + language);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.version === 1 && parsed.words && typeof parsed.words === "object") return parsed;
+    }
+  } catch (error) {
+    console.error("Could not load saved language progress:", error);
+  }
+  return {
+    version: 1, completedCount: 0, words: {},
+    stats: { totalAnswers: 0, correctAnswers: 0, streak: 0, daily: { date: getLocalDateKey(), count: 0 } }
+  };
+}
+
 function selectNextSentence(sentences, learningData) {
   const unique = new Map();
   sentences.forEach((sentence) => {
@@ -1254,7 +1271,7 @@ export default function App() {
   const [showStats, setShowStats] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState("A1");
   const [statsLevel, setStatsLevel] = useState("A1");
-  const [learningData, setLearningData] = useState(loadLearningData);
+  const [learningData, setLearningData] = useState(() => loadLearningDataForLanguage(studyLanguage));
   const [activeWordKey, setActiveWordKey] = useState(null);
   const [audioEnabled, setAudioEnabled] = useState(() => {
     try {
@@ -1351,11 +1368,11 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem(LEARNING_STORAGE_KEY, JSON.stringify(learningData));
+      localStorage.setItem(studyLanguage === "en" ? LEARNING_STORAGE_KEY : `${LEARNING_STORAGE_KEY}-${studyLanguage}`, JSON.stringify(learningData));
     } catch (error) {
       console.error("Не удалось сохранить прогресс:", error);
     }
-  }, [learningData]);
+  }, [learningData, studyLanguage]);
 
   function completeWord(word, isCorrect) {
     const key = normalizeWord(word);
@@ -1413,7 +1430,7 @@ export default function App() {
         <div className="header-actions">
           <div className="language-selectors">
             <label className="language-select"><span>Интерфейс</span><select value={interfaceLanguage} onChange={(event) => { setInterfaceLanguage(event.target.value); localStorage.setItem("trainer-interface", event.target.value); }}>{INTERFACE_LANGUAGES.map((lang) => <option key={lang} value={lang}>{INTERFACE_NAMES[lang]}</option>)}</select></label>
-            <label className="language-select"><span>Изучаю</span><select value={studyLanguage} onChange={(event) => { setStudyLanguage(event.target.value); localStorage.setItem("trainer-study-language", event.target.value); setActiveWordKey(null); setSelectedLevel("A1"); setShowStats(false); }}>{STUDY_LANGUAGES.map((lang) => <option key={lang} value={lang}>{STUDY_NAMES[lang]}</option>)}</select></label>
+            <label className="language-select"><span>Изучаю</span><select value={studyLanguage} onChange={(event) => { setStudyLanguage(event.target.value); localStorage.setItem("trainer-study-language", event.target.value); setLearningData(loadLearningDataForLanguage(event.target.value)); setActiveWordKey(null); setSelectedLevel("A1"); setStatsLevel("A1"); setShowStats(false); }}>{STUDY_LANGUAGES.map((lang) => <option key={lang} value={lang}>{STUDY_NAMES[lang]}</option>)}</select></label>
           </div>
           <nav className="main-nav">
             <button
