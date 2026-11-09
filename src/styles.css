@@ -621,6 +621,18 @@ button:disabled {
   border-color: #b8c8dc;
 }
 
+.level-review-shortcut.is-review-active {
+  border-color: #a3cf75;
+  background: #edf7e5;
+  color: #426b20;
+  box-shadow: 0 0 0 1px #d8edc7 inset;
+}
+
+.level-review-shortcut.is-review-active > span:first-child,
+.level-review-shortcut.is-review-active strong {
+  color: #4d7c25;
+}
+
 .level-review-shortcut > span:first-child {
   color: #0f766e;
   font-size: 17px;
