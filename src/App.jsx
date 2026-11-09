@@ -441,8 +441,6 @@ function StudyPage({
   const [checked, setChecked] = useState(false);
   const [successVisible, setSuccessVisible] = useState(false);
   const [markedKnown, setMarkedKnown] = useState(false);
-  const wordGapRef = useRef(null);
-  const [fireworksOrigin, setFireworksOrigin] = useState({ x: 0, y: 0 });
   const targetLetters = sentence ? [...sentence.word] : [];
   const correct = Boolean(sentence) && targetLetters.length > 0 &&
     targetLetters.every((letter, position) =>
@@ -544,13 +542,6 @@ function StudyPage({
       const isRight = targetLetters.every((letter, position) =>
         (nextAnswer[position] || "").toLowerCase() === letter.toLowerCase()
       );
-      if (isRight && wordGapRef.current) {
-        const rect = wordGapRef.current.getBoundingClientRect();
-        setFireworksOrigin({
-          x: rect.left + rect.width / 2,
-          y: rect.top + rect.height / 2,
-        });
-      }
       setChecked(true);
       onComplete(sentence.word, isRight);
       if (isRight) {
@@ -591,36 +582,6 @@ function StudyPage({
 
   return (
     <section className={"panel study-panel" + (checked && correct ? " answer-correct" : "")}>
-      {checked && correct && successVisible && (
-        <div className="correct-overlay">
-          <div
-            className="fireworks"
-            aria-hidden="true"
-            style={{
-              "--fireworks-x": `${fireworksOrigin.x}px`,
-              "--fireworks-y": `${fireworksOrigin.y}px`,
-            }}
-          >
-            <span className="firework firework-one" />
-            <span className="firework firework-two" />
-            <span className="firework firework-three" />
-          </div>
-          <div className="confetti" aria-hidden="true">
-            {Array.from({ length: 42 }, (_, index) => (
-              <span
-                key={index}
-                style={{
-                  left: `${(index * 37) % 100}%`,
-                  animationDelay: `${(index % 12) * 0.035}s`,
-                  "--fall-duration": `${1.05 + (index % 6) * 0.1}s`,
-                  "--confetti-rotation": `${index * 137}deg`,
-                }}
-              />
-            ))}
-          </div>
-          <div className="correct-message">✓ Правильно!</div>
-        </div>
-      )}
       {levelSelector}
       {statsPanel}
       <div className="card-topline">
@@ -646,7 +607,7 @@ function StudyPage({
           <div className="english-sentence">
             <span>{parts[0]}</span>
             <WordGap key={`${sentence.id}-${sentence.word}`} sentence={sentence} value={answer}
-              onChange={handleAnswerChange} disabled={checked} containerRef={wordGapRef}
+              onChange={handleAnswerChange} disabled={checked}
               showMistakes={checked && !correct} />
             <span>{parts.slice(1).join("{word}")}</span>
           </div>
@@ -697,11 +658,36 @@ function StudyPage({
                     </div>
                   </div>
                 </>
+              ) : markedKnown ? (
+                <>
+                  <strong>✓ Слово перенесено в выученные</strong>
+                  <p>Больше не будет появляться в обучении.</p>
+                </>
               ) : (
                 <>
-                  <strong>{markedKnown ? "✓ Слово перенесено в выученные" : "✓ Правильно!"}</strong>
-                  <p>{sentence.englishTemplate.replace("{word}", sentence.word)}</p>
-                  <p>{markedKnown ? "Больше не будет появляться в обучении." : "Ответ засчитан."}</p>
+                  {successVisible && (
+                    <div className="feedback-fireworks" aria-hidden="true">
+                      <div className="fireworks" style={{ "--fireworks-x": "50%", "--fireworks-y": "50%" }}>
+                        <span className="firework firework-one" />
+                        <span className="firework firework-two" />
+                        <span className="firework firework-three" />
+                      </div>
+                      <div className="confetti">
+                        {Array.from({ length: 42 }, (_, index) => (
+                          <span
+                            key={index}
+                            style={{
+                              left: `${(index * 37) % 100}%`,
+                              animationDelay: `${(index % 12) * 0.035}s`,
+                              "--fall-duration": `${1.05 + (index % 6) * 0.1}s`,
+                              "--confetti-rotation": `${index * 137}deg`,
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <strong className="correct-inline-message">✓ Правильно!</strong>
                 </>
               )}
             </div>
