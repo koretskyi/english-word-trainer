@@ -689,7 +689,6 @@ function StudyPage({
 
   if (!sentence) {
     return (
-      <Localized language={interfaceLanguage}>
       <section className="panel">
         {levelSelector}
         {statsPanel}
@@ -701,6 +700,7 @@ function StudyPage({
   }
 
   return (
+    <Localized language={interfaceLanguage}>
     <section className={"panel study-panel" + (checked && correct ? " answer-correct" : "")}>
       {levelSelector}
       {statsPanel}
@@ -997,7 +997,6 @@ function AdminPage({ sentences, onSave, onDelete, interfaceLanguage }) {
 
   return (
 
-    <Localized language={interfaceLanguage}>
     <div className="admin-layout">
 
       <section className="panel">
