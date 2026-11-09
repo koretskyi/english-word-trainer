@@ -562,9 +562,12 @@ function StudyPage({
               </div>
               <ReviewLadder stage={item.stage} compact />
               <span className="review-word-due">
-                {item.remaining === 0
-                  ? "Уже готово к повторению"
-                  : `Появится через ${item.remaining} ${item.remaining === 1 ? "карточку" : item.remaining >= 2 && item.remaining <= 4 ? "карточки" : "карточек"}`}
+                До появления: <strong>{item.remaining}</strong>{" "}
+                {item.remaining === 1
+                  ? "карточка"
+                  : item.remaining >= 2 && item.remaining <= 4
+                    ? "карточки"
+                    : "карточек"}
               </span>
             </li>
           ))}
