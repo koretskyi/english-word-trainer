@@ -542,20 +542,29 @@ function StudyPage({
           ) : (
             <div className={"feedback " + (correct ? "correct" : "incorrect")}>
               {!correct && !markedKnown ? (
-                <div className="incorrect-answer-comparison" aria-label="Правильный ответ и твой вариант">
-                  <div className="answer-comparison-line correct-word-line">{sentence.word}</div>
-                  <div className="answer-comparison-line user-word-line">
-                    {targetLetters.map((letter, index) => {
-                      const userLetter = answer[index] || "";
-                      const isMistake = userLetter.toLowerCase() !== letter.toLowerCase();
-                      return (
-                        <span key={index} className={isMistake ? "user-word-letter-mistake" : ""}>
-                          {userLetter || "_"}
-                        </span>
-                      );
-                    })}
+                <>
+                  <strong className="incorrect-feedback-title">✗ Ошибка</strong>
+                  <div className="incorrect-answer-comparison" aria-label="Правильный ответ и твой вариант">
+                    <div className="answer-comparison-row">
+                      <span className="answer-comparison-label">Правильный ответ</span>
+                      <div className="answer-comparison-line correct-word-line">{sentence.word}</div>
+                    </div>
+                    <div className="answer-comparison-row">
+                      <span className="answer-comparison-label">Ваш ответ</span>
+                      <div className="answer-comparison-line user-word-line">
+                        {targetLetters.map((letter, index) => {
+                          const userLetter = answer[index] || "";
+                          const isMistake = userLetter.toLowerCase() !== letter.toLowerCase();
+                          return (
+                            <span key={index} className={isMistake ? "user-word-letter-mistake" : ""}>
+                              {userLetter || "_"}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </>
               ) : (
                 <>
                   <strong>{markedKnown ? "✓ Слово перенесено в выученные" : "✓ Правильно!"}</strong>
