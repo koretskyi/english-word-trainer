@@ -23,7 +23,12 @@ function loadSentences() {
             typeof sentence === "object" &&
             sentence.id != null &&
             typeof sentence.word === "string" &&
-            typeof sentence.level === "string"
+            sentence.word.trim().length > 0 &&
+            !/\\s/.test(sentence.word) &&
+            typeof sentence.level === "string" &&
+            typeof sentence.russian === "string" &&
+            typeof sentence.englishTemplate === "string" &&
+            (sentence.englishTemplate.match(/\\{word\\}/g) || []).length === 1
         );
         const savedById = new Map();
 
@@ -82,19 +87,57 @@ function loadLearningData() {
     streak: 0,
     daily: { date: getLocalDateKey(), count: 0 },
   };
+  const asCount = (value) => {
+    const number = Number(value);
+    return Number.isFinite(number) && number >= 0 ? Math.floor(number) : 0;
+  };
+
   try {
     const saved = localStorage.getItem(LEARNING_STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (parsed && parsed.version === 1 && parsed.words) {
+      if (
+        parsed &&
+        parsed.version === 1 &&
+        parsed.words &&
+        typeof parsed.words === "object" &&
+        !Array.isArray(parsed.words)
+      ) {
+        const words = Object.fromEntries(
+          Object.entries(parsed.words).filter(([key, state]) =>
+            key.trim().length > 0 &&
+            state &&
+            typeof state === "object" &&
+            !Array.isArray(state) &&
+            ["REVIEW", "MASTERED", "NEW"].includes(state.status) &&
+            (state.status !== "REVIEW" ||
+              (Number.isFinite(Number(state.stage)) &&
+                Number(state.stage) >= 1 &&
+                Number(state.stage) <= REVIEW_INTERVALS.length &&
+                Number.isFinite(Number(state.dueAt)) &&
+                Number(state.dueAt) >= 0))
+          )
+        );
+        const savedStats = parsed.stats && typeof parsed.stats === "object"
+          ? parsed.stats
+          : {};
+        const daily = savedStats.daily &&
+          typeof savedStats.daily.date === "string"
+          ? {
+              date: savedStats.daily.date,
+              count: asCount(savedStats.daily.count),
+            }
+          : emptyStats.daily;
+
         return {
           version: 1,
-          completedCount: Number(parsed.completedCount) || 0,
-          words: parsed.words,
+          completedCount: asCount(parsed.completedCount),
+          words,
           stats: {
-            ...emptyStats,
-            ...(parsed.stats || {}),
-            daily: parsed.stats?.daily || emptyStats.daily,
+            totalAnswers: asCount(savedStats.totalAnswers),
+            correctAnswers: asCount(savedStats.correctAnswers),
+            streak: asCount(savedStats.streak),
+            daily,
           },
         };
       }
@@ -104,7 +147,6 @@ function loadLearningData() {
   }
   return { version: 1, completedCount: 0, words: {}, stats: emptyStats };
 }
-
 function selectNextSentence(sentences, learningData) {
   const unique = new Map();
   sentences.forEach((sentence) => {
@@ -487,9 +529,10 @@ function StudyPage({
 
   useEffect(() => {
     if (!checked || (correct && !audioFinished)) return undefined;
-    const timer = setTimeout(onAdvance, correct ? 1000 : 4000);
+    const advanceDelay = correct || markedKnown ? 1000 : 4000;
+    const timer = setTimeout(onAdvance, advanceDelay);
     return () => clearTimeout(timer);
-  }, [checked, correct, audioFinished, onAdvance]);
+  }, [checked, correct, markedKnown, audioFinished, onAdvance]);
 
   const englishText = sentence
     ? sentence.englishTemplate.replace("{word}", sentence.word)
@@ -1315,9 +1358,6 @@ export default function App() {
       order: state.order || 0,
     }))
     .sort((a, b) => (a.dueAt - b.dueAt) || (a.order - b.order));
-  const readyReviewCount = reviewQueue.filter(
-    (item) => item.dueAt <= learningData.completedCount
-  ).length;
   const reviewWords = reviewQueue.map((item, index, items) => {
     const readyBefore = items.slice(0, index).filter(
       (previous) => previous.dueAt <= learningData.completedCount
@@ -1326,9 +1366,12 @@ export default function App() {
       (previous) => previous.dueAt === item.dueAt &&
         previous.dueAt > learningData.completedCount
     ).length;
+    // Each answered card advances completedCount, including reviews already due.
+    // Therefore ready reviews are already included in the distance to a future dueAt.
+    // Add one because the displayed number includes the card on which this word appears.
     const remaining = item.dueAt <= learningData.completedCount
       ? readyBefore + 1
-      : item.dueAt - learningData.completedCount + readyReviewCount + sameFutureDueBefore;
+      : item.dueAt - learningData.completedCount + sameFutureDueBefore + 1;
     return { ...item, remaining };
   });
 
