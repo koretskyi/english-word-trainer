@@ -420,7 +420,9 @@ function speakEnglish(text, onFinished) {
 const REVIEW_STAGE_ICONS = ["🌱", "🌿", "🌳", "⭐", "🏆", "👑"];
 
 function ReviewLadder({ stage = 1, compact = false }) {
-  const currentStage = Math.min(6, Math.max(1, Number(stage) || 1));
+  // Stage 6 is the final interval still waiting for a successful answer.
+  // Keep the last icon empty until that final review is passed.
+  const currentStage = Math.min(5, Math.max(1, Number(stage) || 1));
   return (
     <div
       className={compact ? "review-ladder review-ladder-compact" : "review-ladder"}
