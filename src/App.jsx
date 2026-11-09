@@ -379,7 +379,7 @@ function StudyPage({
 
   useEffect(() => {
     if (!checked) return undefined;
-    const timer = setTimeout(onAdvance, correct ? 1000 : 3000);
+    const timer = setTimeout(onAdvance, correct ? 1000 : 4000);
     return () => clearTimeout(timer);
   }, [checked, correct, onAdvance]);
 
@@ -541,12 +541,28 @@ function StudyPage({
             </div>
           ) : (
             <div className={"feedback " + (correct ? "correct" : "incorrect")}>
-              <strong>{markedKnown ? "✓ Слово перенесено в выученные" : correct ? "✓ Правильно!" : "✗ Ошибка"}</strong>
-              {!correct && !markedKnown && (
-                <div className="incorrect-answer-word">{sentence.word}</div>
+              {!correct && !markedKnown ? (
+                <div className="incorrect-answer-comparison" aria-label="Правильный ответ и твой вариант">
+                  <div className="answer-comparison-line correct-word-line">{sentence.word}</div>
+                  <div className="answer-comparison-line user-word-line">
+                    {targetLetters.map((letter, index) => {
+                      const userLetter = answer[index] || "";
+                      const isMistake = userLetter.toLowerCase() !== letter.toLowerCase();
+                      return (
+                        <span key={index} className={isMistake ? "user-word-letter-mistake" : ""}>
+                          {userLetter || "_"}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <strong>{markedKnown ? "✓ Слово перенесено в выученные" : "✓ Правильно!"}</strong>
+                  <p>{sentence.englishTemplate.replace("{word}", sentence.word)}</p>
+                  <p>{markedKnown ? "Больше не будет появляться в обучении." : "Ответ засчитан."}</p>
+                </>
               )}
-              <p>{sentence.englishTemplate.replace("{word}", sentence.word)}</p>
-              <p>{markedKnown ? "Больше не будет появляться в обучении." : correct ? "Ответ засчитан." : "Слово вернётся через 5 других карточек."}</p>
             </div>
           )}
         </div>
