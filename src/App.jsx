@@ -405,7 +405,7 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
 
 
 // Озвучивание английского предложения встроенным синтезом речи браузера.
-function speakEnglish(text, onFinished) {
+function speakEnglish(text, onFinished, language = "en") {
   if (!text || !("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
     return false;
   }
@@ -417,18 +417,15 @@ function speakEnglish(text, onFinished) {
     utterance.onerror = onFinished;
   }
   const voices = window.speechSynthesis.getVoices();
-  const englishVoices = voices.filter((voice) => /^en(-|_)/i.test(voice.lang));
+  const languageVoices = voices.filter((voice) => new RegExp("^" + language + "(-|_)", "i").test(voice.lang));
   // Сначала выбираем именно Microsoft Jenny; остальные голоса — только запасной вариант.
-  const preferredVoice =
-    englishVoices.find((voice) => /microsoft.*jenny|jenny.*microsoft/i.test(voice.name)) ||
-    englishVoices.find((voice) => /jenny/i.test(voice.name)) ||
-    englishVoices.find((voice) => /aria|samantha|ava|zira|susan|karen|victoria|female/i.test(voice.name)) ||
-    englishVoices.find((voice) => /^en-US/i.test(voice.lang)) ||
-    englishVoices.find((voice) => /^en-GB/i.test(voice.lang)) ||
-    englishVoices[0];
+  const preferredVoice = languageVoices.find((voice) => language === "en" && /microsoft.*jenny|jenny.*microsoft/i.test(voice.name)) ||
+    languageVoices.find((voice) => language === "en" && /jenny/i.test(voice.name)) ||
+    languageVoices.find((voice) => /aria|samantha|ava|zira|susan|karen|victoria|female/i.test(voice.name)) ||
+    languageVoices[0];
 
   if (preferredVoice) utterance.voice = preferredVoice;
-  utterance.lang = preferredVoice?.lang || "en-US";
+  utterance.lang = preferredVoice?.lang || ({ en: "en-US", de: "de-DE", fr: "fr-FR", is: "is-IS" }[language] || "en-US");
   utterance.rate = 0.9;
   utterance.pitch = 1.08;
   window.speechSynthesis.speak(utterance);
@@ -471,6 +468,7 @@ function ReviewLadder({ stage = 1, compact = false }) {
 // Страница обучения с интервальным повторением.
 function StudyPage({
   sentence,
+  studyLanguage,
   audioEnabled,
   selectedLevel,
   setSelectedLevel,
@@ -661,14 +659,14 @@ function StudyPage({
         // Показываем надпись и салюты сразу, не дожидаясь окончания озвучки.
         setSuccessVisible(true);
         if (audioEnabled) {
-          const started = speakEnglish(englishText, () => setAudioFinished(true));
+          const started = speakEnglish(englishText, () => setAudioFinished(true), studyLanguage);
           if (!started) setAudioFinished(true);
         } else {
           setAudioFinished(true);
         }
       } else if (audioEnabled) {
         // При ошибке произносим правильное английское слово.
-        speakEnglish(sentence.word);
+        speakEnglish(sentence.word, undefined, studyLanguage);
       }
     }
   }
@@ -729,7 +727,7 @@ function StudyPage({
           <ReviewLadder stage={reviewStage} />
         </div>
       )}
-      <p className="eyebrow">ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ</p>
+      <p className="eyebrow">{studyLanguage === "en" ? "ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ" : studyLanguage === "de" ? "ПЕРЕВЕДИТЕ НА НЕМЕЦКИЙ" : studyLanguage === "fr" ? "ПЕРЕВЕДИТЕ НА ФРАНЦУЗСКИЙ" : "ПЕРЕВЕДИТЕ НА ИСЛАНДСКИЙ"}</p>
       <h2 className="russian-sentence">{sentence.russian}</h2>
       <div className="english-section">
         <p className="study-instruction">ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ: <strong className="target-translation" style={{ fontSize: "18px" }}>{sentence.russianWord || "—"}</strong></p>
@@ -1508,8 +1506,9 @@ export default function App() {
       <main className="main-content">
         {page === "study" ? (
           <StudyPage
-            key={selectedLevel + ":" + (sentence ? normalizeWord(sentence.word) : "empty")}
+            key={studyLanguage + ":" + selectedLevel + ":" + (sentence ? normalizeWord(sentence.word) : "empty")}
             sentence={sentence}
+            studyLanguage={studyLanguage}
             audioEnabled={audioEnabled}
             selectedLevel={selectedLevel}
             setSelectedLevel={changeLevel}
