@@ -140,9 +140,6 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
       onStatus: setAutoVoiceStatus,
       onError: (message) => {
         setSpeechError(message);
-        window.setTimeout(() => {
-          if (!manualInputRef.current && result !== "correct") startAutomaticListening();
-        }, 700);
       },
       onText: (recognizedText) => {
         if (manualInputRef.current || result === "correct") return;
