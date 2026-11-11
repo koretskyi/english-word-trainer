@@ -253,6 +253,9 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
         <button className="button button-secondary" type="button" onClick={startListening} disabled={listening || result === "correct"}>
           <span aria-hidden="true">🎙️</span> {listening ? "Слушаю..." : "Ответить голосом"}
         </button>
+        <button className="button button-secondary" type="button" onClick={nextCard}>
+          Не знаю
+        </button>
       </div>
 
       {speechError && <p className="audition-speech-error" role="status">{speechError}</p>}
