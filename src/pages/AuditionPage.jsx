@@ -188,9 +188,20 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
 
       <div className="audition-mask" aria-label="Английское предложение с пропущенными буквами">
         {maskedTokens.map((token) => (
-          <span key={token.id} className={token.isWord ? "audition-mask-word" : "audition-mask-punctuation"}>
-            {token.value}
-          </span>
+          token.isWord ? (
+            <span key={token.id} className="audition-mask-word">
+              {[...token.value].map((letter, index) => (
+                <span
+                  key={index}
+                  className={letter === "•" ? "audition-letter" : "audition-letter audition-letter-open"}
+                >
+                  {letter}
+                </span>
+              ))}
+            </span>
+          ) : (
+            <span key={token.id} className="audition-mask-punctuation">{token.value}</span>
+          )
         ))}
       </div>
 
