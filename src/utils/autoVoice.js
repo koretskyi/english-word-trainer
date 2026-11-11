@@ -4,11 +4,13 @@ export function startAutoVoiceCapture({ onStatus, onText, onError, silenceMs = 1
   let audioContext = null;
   let animationFrame = null;
   let stopped = false;
+  let cancelled = false;
   let speechStartedAt = 0;
   let lastSoundAt = 0;
   let chunks = [];
 
   const stop = () => {
+    cancelled = true;
     stopped = true;
     if (animationFrame !== null) cancelAnimationFrame(animationFrame);
     if (recorder && recorder.state !== "inactive") recorder.stop();
@@ -45,7 +47,7 @@ export function startAutoVoiceCapture({ onStatus, onText, onError, silenceMs = 1
       recorder.onstop = async () => {
         stream?.getTracks().forEach((track) => track.stop());
         if (audioContext && audioContext.state !== "closed") audioContext.close().catch(() => {});
-        if (stopped && !chunks.length) return;
+        if (cancelled) return;
         const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
         chunks = [];
         if (!blob.size) {
