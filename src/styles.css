@@ -1411,6 +1411,25 @@ button:disabled {
   display: inline-flex;
 }
 
+.audition-countdown {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 110px;
+  margin: 4px 0 22px;
+  color: var(--primary);
+  font-size: clamp(64px, 12vw, 104px);
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  animation: audition-countdown-pop 0.25s ease-out;
+}
+
+@keyframes audition-countdown-pop {
+  from { opacity: 0.35; transform: scale(0.72); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 .audition-audio-actions {
   display: flex;
   justify-content: center;
