@@ -207,6 +207,13 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
           }
 
           const currentWordIndex = wordIndex++;
+          if (!wordInputRefs.current[currentWordIndex]) {
+            wordInputRefs.current[currentWordIndex] = { current: null };
+          }
+          if (!wordInputRefs.current[currentWordIndex + 1]) {
+            wordInputRefs.current[currentWordIndex + 1] = { current: null };
+          }
+          const thisWordRef = wordInputRefs.current[currentWordIndex];
           const nextWordRef = wordInputRefs.current[currentWordIndex + 1];
 
           return (
@@ -217,12 +224,8 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
               onChange={(nextValue) => updateWordAnswer(token, nextValue)}
               disabled={result === "correct"}
               autoFocus={currentWordIndex === 0}
-              nextInputRef={{
-                current: null,
-                setCurrentInput: (element) => {
-                  wordInputRefs.current[currentWordIndex] = element;
-                },
-              }}
+              firstInputRef={thisWordRef}
+              nextInputRef={nextWordRef}
               showMistakes={result === "incorrect"}
             />
           );
