@@ -364,7 +364,6 @@ function StudyPage({
 
   useEffect(() => {
     if (!sentence || !audioEnabled || showStats) return undefined;
-    manualInputRef.current = false;
     setVoiceError("");
     const started = speakEnglish(sentence.word, startAutomaticListening);
     if (!started) startAutomaticListening();
