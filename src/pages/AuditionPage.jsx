@@ -313,7 +313,12 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
         </button>
       </div>
 
-      {dontKnowCountdown !== null && (\n        <div className="audition-countdown" role="status" aria-live="assertive">\n          {dontKnowCountdown}\n        </div>\n      )}\n      {speechError && <p className="audition-speech-error" role="status">{speechError}</p>
+      {dontKnowCountdown !== null && (
+        <div className="audition-countdown" role="status" aria-live="assertive">
+          {dontKnowCountdown}
+        </div>
+      )}
+      {speechError && <p className="audition-speech-error" role="status">{speechError}</p>
       {voiceAnswer && (
         <p className="audition-voice-answer">Распознано: {voiceAnswer}</p>
       )}
