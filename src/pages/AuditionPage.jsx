@@ -251,7 +251,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
               sentence={{ id: `${sentence.id}-${token.id}`, word: token.value }}
               value={wordAnswers[token.id] || Array([...token.value].length).fill("")}
               onChange={(nextValue) => updateWordAnswer(token, nextValue)}
-              disabled={result === "correct"}
+              disabled={result === "correct" || dontKnowCountdown !== null}
               autoFocus={currentWordIndex === 0}
               firstInputRef={thisWordRef}
               nextInputRef={nextWordRef}
