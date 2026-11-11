@@ -138,7 +138,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   }, [result, filteredSentences.length]);
 
   function startAutomaticListening() {
-    if (manualInputRef.current || result === "correct" || !englishText) return;
+    if (manualInputRef.current || !englishText) return;
     autoVoiceRef.current?.stop();
     const capture = startAutoVoiceCapture({
       onStatus: setAutoVoiceStatus,
@@ -164,13 +164,13 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   }
 
   function playSentenceAndListen() {
-    if (manualInputRef.current || !englishText || result === "correct") return;
+    if (manualInputRef.current || !englishText) return;
     window.clearTimeout(retryTimerRef.current);
     autoVoiceRef.current?.stop();
     setSpeechError("");
     setAutoVoiceStatus("speaking");
     const ok = speakAuditionSentence(englishText,
-      () => { if (!manualInputRef.current && result !== "correct") startAutomaticListening(); },
+      () => { if (!manualInputRef.current) startAutomaticListening(); },
       () => { setAutoVoiceStatus("idle"); setSpeechError("Не удалось озвучить предложение."); }
     );
     if (!ok) {
