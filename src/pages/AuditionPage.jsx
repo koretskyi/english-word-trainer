@@ -8,8 +8,7 @@ function getSentenceText(sentence) {
     .replace(/\\s+([.,!?;:])/g, "$1");
 }
 
-// Разбиваем предложение на слова и знаки препинания.
-// Маскировку букв выполняет общий WordGap — тот же, что и в режиме «Слова».
+// Маскируем каждое слово общим WordGap — тем же компонентом, что и в режиме «Слова».
 function createAuditionMask(text) {
   return (text.match(/[A-Za-z]+(?:['’][A-Za-z]+)?|[^A-Za-z]+/g) || []).map((part, tokenIndex) => ({
     id: `token-${tokenIndex}`,
@@ -23,8 +22,8 @@ function normalizeSentence(value) {
     .normalize("NFKC")
     .toLowerCase()
     .replace(/[’‘]/g, "'")
-    .replace(/[^\p{L}\p{N}'-]+/gu, " ")
-    .replace(/\s+/g, " ")
+    .replace(/[^\\p{L}\\p{N}'-]+/gu, " ")
+    .replace(/\\s+/g, " ")
     .trim();
 }
 
@@ -60,26 +59,36 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     [sentences, selectedLevel]
   );
   const [cardIndex, setCardIndex] = useState(0);
-  const [answer, setAnswer] = useState("");
+  const [voiceAnswer, setVoiceAnswer] = useState("");
   const [result, setResult] = useState("");
   const [listening, setListening] = useState(false);
   const [speechError, setSpeechError] = useState("");
   const recognitionRef = useRef(null);
+  const wordInputRefs = useRef([]);
   const sentence = filteredSentences.length
     ? filteredSentences[cardIndex % filteredSentences.length]
     : null;
   const englishText = getSentenceText(sentence);
   const [maskedTokens, setMaskedTokens] = useState(() => createAuditionMask(englishText));
+  const [wordAnswers, setWordAnswers] = useState({});
+
+  const wordTokens = maskedTokens.filter((token) => token.isWord);
+  const allLettersEntered = wordTokens.length > 0 && wordTokens.every((token) => {
+    const letters = wordAnswers[token.id] || [];
+    return letters.length === [...token.value].length && letters.every(Boolean);
+  });
 
   useEffect(() => {
     setCardIndex(0);
   }, [selectedLevel]);
 
   useEffect(() => {
-    setAnswer("");
+    setVoiceAnswer("");
     setResult("");
     setSpeechError("");
+    setWordAnswers({});
     setMaskedTokens(createAuditionMask(englishText));
+    wordInputRefs.current = [];
   }, [sentence?.id, englishText]);
 
   useEffect(() => {
@@ -95,10 +104,39 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     recognitionRef.current?.stop?.();
   }, []);
 
+  function validateSentence(text) {
+    if (!text.trim()) return;
+    setVoiceAnswer(text);
+    setResult(normalizeSentence(text) === normalizeSentence(englishText) ? "correct" : "incorrect");
+    recognitionRef.current?.stop?.();
+  }
+
+  function updateWordAnswer(token, nextValue) {
+    const nextAnswers = { ...wordAnswers, [token.id]: nextValue };
+    setWordAnswers(nextAnswers);
+    setVoiceAnswer("");
+    setResult("");
+
+    const assembled = maskedTokens.map((part) => {
+      if (!part.isWord) return part.value;
+      return (nextAnswers[part.id] || []).join("");
+    }).join("");
+
+    const complete = wordTokens.every((word) => {
+      const letters = nextAnswers[word.id] || [];
+      return letters.length === [...word.value].length && letters.every(Boolean);
+    });
+
+    if (complete) {
+      setResult(normalizeSentence(assembled) === normalizeSentence(englishText) ? "correct" : "incorrect");
+      recognitionRef.current?.stop?.();
+    }
+  }
+
   function startListening() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      setSpeechError("Распознавание речи не поддерживается этим браузером. Можно ввести предложение вручную.");
+      setSpeechError("Распознавание речи не поддерживается этим браузером.");
       return;
     }
 
@@ -113,13 +151,12 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     };
     recognition.onresult = (event) => {
       const transcript = event.results?.[0]?.[0]?.transcript || "";
-      setAnswer(transcript);
-      setResult("");
+      validateSentence(transcript);
     };
     recognition.onerror = (event) => {
       setSpeechError(event.error === "not-allowed"
         ? "Разреши доступ к микрофону в браузере."
-        : "Не удалось распознать речь. Попробуй ещё раз или введи предложение.");
+        : "Не удалось распознать речь. Попробуй ещё раз.");
     };
     recognition.onend = () => setListening(false);
     recognitionRef.current = recognition;
@@ -129,17 +166,6 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     } catch {
       setListening(false);
       setSpeechError("Не удалось запустить микрофон. Попробуй ещё раз.");
-    }
-  }
-
-  function checkAnswer(event) {
-    event?.preventDefault?.();
-    if (!sentence || !answer.trim()) return;
-    if (normalizeSentence(answer) === normalizeSentence(englishText)) {
-      setResult("correct");
-      recognitionRef.current?.stop?.();
-    } else {
-      setResult("incorrect");
     }
   }
 
@@ -157,6 +183,8 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     );
   }
 
+  let wordIndex = 0;
+
   return (
     <section className="panel audition-panel">
       <div className="audition-toolbar">
@@ -173,19 +201,32 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
       <h2 className="russian-sentence audition-translation">{sentence.russian}</h2>
 
       <div className="audition-mask" aria-label="Английское предложение с пропущенными буквами">
-        {maskedTokens.map((token) => (
-          token.isWord ? (
+        {maskedTokens.map((token) => {
+          if (!token.isWord) {
+            return <span key={token.id}>{token.value}</span>;
+          }
+
+          const currentWordIndex = wordIndex++;
+          const nextWordRef = wordInputRefs.current[currentWordIndex + 1];
+
+          return (
             <WordGap
-              key={token.id}
-              sentence={{ id: token.id, word: token.value }}
-              value={[]}
-              onChange={() => {}}
-              disabled
+              key={`${sentence.id}-${token.id}`}
+              sentence={{ id: `${sentence.id}-${token.id}`, word: token.value }}
+              value={wordAnswers[token.id] || Array([...token.value].length).fill("")}
+              onChange={(nextValue) => updateWordAnswer(token, nextValue)}
+              disabled={result === "correct"}
+              autoFocus={currentWordIndex === 0}
+              nextInputRef={{
+                current: null,
+                setCurrentInput: (element) => {
+                  wordInputRefs.current[currentWordIndex] = element;
+                },
+              }}
+              showMistakes={result === "incorrect"}
             />
-          ) : (
-            <span key={token.id}>{token.value}</span>
-          )
-        ))}
+          );
+        })}
       </div>
 
       <div className="audition-audio-actions">
@@ -198,41 +239,21 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
       </div>
 
       {speechError && <p className="audition-speech-error" role="status">{speechError}</p>}
+      {voiceAnswer && (
+        <p className="audition-voice-answer">Распознано: {voiceAnswer}</p>
+      )}
 
-      <form className="audition-answer-form" onSubmit={checkAnswer}>
-        <label htmlFor="audition-answer">Произнеси или напечатай всё предложение целиком:</label>
-        <textarea
-          id="audition-answer"
-          rows={3}
-          value={answer}
-          onChange={(event) => {
-            setAnswer(event.target.value);
-            if (result) setResult("");
-          }}
-          placeholder="Type the complete English sentence..."
-          disabled={result === "correct"}
-          autoComplete="off"
-          spellCheck={false}
-        />
-        {result === "correct" ? (
-          <div className="audition-feedback audition-feedback-correct" role="status">
-            <strong>✓ Правильно! Всё предложение без ошибок.</strong>
-            <button className="button button-primary" type="button" onClick={nextCard}>Следующее предложение</button>
-          </div>
-        ) : (
-          <>
-            {result === "incorrect" && (
-              <div className="audition-feedback audition-feedback-incorrect" role="alert">
-                <strong>Не совсем. Проверь все слова и их порядок.</strong>
-                <span>Попробуй ещё раз — карточка засчитывается только при полном совпадении.</span>
-              </div>
-            )}
-            <button className="button button-primary audition-check-button" type="submit" disabled={!answer.trim()}>
-              Проверить предложение
-            </button>
-          </>
-        )}
-      </form>
+      {result === "correct" ? (
+        <div className="audition-feedback audition-feedback-correct" role="status">
+          <strong>✓ Правильно! Всё предложение без ошибок.</strong>
+          <button className="button button-primary" type="button" onClick={nextCard}>Следующее предложение</button>
+        </div>
+      ) : result === "incorrect" ? (
+        <div className="audition-feedback audition-feedback-incorrect" role="alert">
+          <strong>Не совсем. Проверь все буквы и их порядок.</strong>
+          <span>Исправь ошибки прямо в ячейках предложения.</span>
+        </div>
+      ) : null}
     </section>
   );
 }
