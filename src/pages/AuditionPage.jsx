@@ -5,7 +5,7 @@ function getSentenceText(sentence) {
   if (!sentence) return "";
   return (sentence.englishTemplate || "")
     .replace("{word}", sentence.word || "")
-    .replace(/\\s+([.,!?;:])/g, "$1");
+    .replace(/\s+([.,!?;:])/g, "$1");
 }
 
 // Маскируем каждое слово общим WordGap — тем же компонентом, что и в режиме «Слова».
@@ -22,8 +22,8 @@ function normalizeSentence(value) {
     .normalize("NFKC")
     .toLowerCase()
     .replace(/[’‘]/g, "'")
-    .replace(/[^\\p{L}\\p{N}'-]+/gu, " ")
-    .replace(/\\s+/g, " ")
+    .replace(/[^\p{L}\p{N}'-]+/gu, " ")
+    .replace(/\s+/g, " ")
     .trim();
 }
 
@@ -73,11 +73,6 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   const [wordAnswers, setWordAnswers] = useState({});
 
   const wordTokens = maskedTokens.filter((token) => token.isWord);
-  const allLettersEntered = wordTokens.length > 0 && wordTokens.every((token) => {
-    const letters = wordAnswers[token.id] || [];
-    return letters.length === [...token.value].length && letters.every(Boolean);
-  });
-
   useEffect(() => {
     setCardIndex(0);
   }, [selectedLevel]);
