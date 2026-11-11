@@ -264,7 +264,6 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
       </div>
 
       <p className="eyebrow">ПРОСЛУШАЙ И ВОССТАНОВИ ПРЕДЛОЖЕНИЕ</p>
-      <h2 className="russian-sentence audition-translation">{sentence.russian}</h2>
 
       <div className="audition-mask" aria-label="Английское предложение с пропущенными буквами">
         {maskedTokens.map((token) => {
