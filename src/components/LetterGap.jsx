@@ -1,20 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 
-function WordGap({ sentence, value, onChange, disabled, containerRef, showMistakes = false, autoFocus = true, firstInputRef, nextInputRef }) {
+export function createWordGapOpenedPositions(word) {
+  const letters = [...word];
+  const count = Math.floor(letters.length / 3);
+  const positions = letters.map((_, index) => index);
+
+  for (let i = positions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [positions[i], positions[j]] = [positions[j], positions[i]];
+  }
+
+  return positions.slice(0, count);
+}
+
+function WordGap({ sentence, value, onChange, disabled, containerRef, showMistakes = false, autoFocus = true, firstInputRef, nextInputRef, openedPositions }) {
   const letters = [...sentence.word];
   // Открываем одну случайную букву на каждые полные 3 буквы слова.
   // Выбор фиксируется на время показа карточки и меняется при переходе к новой.
-  const [opened] = useState(() => {
-    const count = Math.floor(letters.length / 3);
-    const positions = letters.map((_, index) => index);
-
-    for (let i = positions.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [positions[i], positions[j]] = [positions[j], positions[i]];
-    }
-
-    return new Set(positions.slice(0, count));
-  });
+  const [localOpened] = useState(() => new Set(createWordGapOpenedPositions(sentence.word)));
+  const opened = openedPositions ? new Set(openedPositions) : localOpened;
   const inputRefs = useRef([]);
 
   // Открытые буквы показываются как подсказки,
