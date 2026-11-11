@@ -1520,3 +1520,38 @@ button:disabled {
     width: 100%;
   }
 }
+
+
+/* Automatic voice input status */
+.auto-voice-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  width: fit-content;
+  margin: 10px 0 14px;
+  padding: 8px 12px;
+  border: 1px solid #fecaca;
+  border-radius: 999px;
+  background: #fff1f2;
+  color: #b91c1c;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.auto-voice-dot {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 9px;
+  border-radius: 50%;
+  background: #64748b;
+}
+
+.auto-voice-dot.is-listening {
+  background: #dc2626;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.14);
+  animation: auto-voice-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes auto-voice-pulse {
+  50% { box-shadow: 0 0 0 7px rgba(220, 38, 38, 0.04); }
+}
