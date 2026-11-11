@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import WordGap from "../components/LetterGap.jsx";
+import CorrectFeedback from "../components/CorrectFeedback.jsx";
 
 function getSentenceText(sentence) {
   if (!sentence) return "";
   return (sentence.englishTemplate || "")
     .replace("{word}", sentence.word || "")
-    .replace(/\s+([.,!?;:])/g, "$1");
+    .replace(/\s+([.,!?;:])/g, "$1")
+    .replace(/\s*\.$/, "");
 }
 
 // Маскируем каждое слово общим WordGap — тем же компонентом, что и в режиме «Слова».
@@ -85,6 +87,15 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     setMaskedTokens(createAuditionMask(englishText));
     wordInputRefs.current = [];
   }, [sentence?.id, englishText]);
+
+  // Как и в режиме «Слова»: после правильного ответа автоматически открываем следующую карточку.
+  useEffect(() => {
+    if (result !== "correct") return undefined;
+    const timer = window.setTimeout(() => {
+      setCardIndex((current) => (current + 1) % Math.max(1, filteredSentences.length));
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, [result, filteredSentences.length]);
 
   useEffect(() => {
     if (audioEnabled && englishText) {
@@ -171,7 +182,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
 
   if (!sentence) {
     return (
-      <section className="panel audition-panel">
+      <section className={"panel audition-panel study-panel" + (result === "correct" ? " answer-correct" : "")}>
         <h2>Аудирование</h2>
         <p>На уровне {selectedLevel} пока нет предложений для аудирования.</p>
       </section>
@@ -242,9 +253,8 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
       )}
 
       {result === "correct" ? (
-        <div className="audition-feedback audition-feedback-correct" role="status">
-          <strong>✓ Правильно! Всё предложение без ошибок.</strong>
-          <button className="button button-primary" type="button" onClick={nextCard}>Следующее предложение</button>
+        <div className="feedback correct" role="status">
+          <CorrectFeedback />
         </div>
       ) : result === "incorrect" ? (
         <div className="audition-feedback audition-feedback-incorrect" role="alert">
