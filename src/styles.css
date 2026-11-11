@@ -1526,22 +1526,55 @@ button:disabled {
 .auto-voice-indicator {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 12px;
   width: fit-content;
-  margin: 10px 0 14px;
-  padding: 8px 12px;
-  border: 1px solid #fecaca;
-  border-radius: 999px;
+  margin: 12px 0 18px;
+  padding: 13px 18px;
+  border: 2px solid #fecaca;
+  border-radius: 14px;
   background: #fff1f2;
   color: #b91c1c;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.audition-speech-error,
+.audition-voice-answer {
+  margin: 10px 0 18px;
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.audition-speech-error {
+  color: #b45309;
+}
+
+.audition-voice-answer {
+  padding: 14px 16px;
+  border: 1px solid #fca5a5;
+  border-radius: 12px;
+  background: #fff5f5;
+  color: #991b1b;
+}
+
+.audition-feedback-incorrect {
+  gap: 12px;
+  padding: 18px 20px;
+  font-size: 19px;
+  line-height: 1.5;
+}
+
+.audition-feedback-incorrect strong {
+  font-size: 21px;
 }
 
 .auto-voice-dot {
-  width: 9px;
-  height: 9px;
-  flex: 0 0 9px;
+  width: 13px;
+  height: 13px;
+  flex: 0 0 13px;
   border-radius: 50%;
   background: #64748b;
 }
