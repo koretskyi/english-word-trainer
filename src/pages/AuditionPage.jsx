@@ -144,7 +144,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
       onStatus: setAutoVoiceStatus,
       onError: setSpeechError,
       onText: (recognizedText) => {
-        if (manualInputRef.current || result === "correct") return;
+        if (manualInputRef.current) return;
         setVoiceAnswer(recognizedText);
         if (normalizeSentence(recognizedText) === normalizeSentence(englishText)) {
           setSpeechError("");
@@ -154,7 +154,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
           setResult("");
           window.clearTimeout(retryTimerRef.current);
           retryTimerRef.current = window.setTimeout(() => {
-            if (!manualInputRef.current && result !== "correct") startAutomaticListening();
+            if (!manualInputRef.current) startAutomaticListening();
           }, 1000);
         }
       },
