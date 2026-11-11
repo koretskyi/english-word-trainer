@@ -1,6 +1,7 @@
 import { SENTENCES } from "./sentences.js";
 import WordGap from "./components/LetterGap.jsx";
 import CorrectFeedback from "./components/CorrectFeedback.jsx";
+import { startAutoVoiceCapture } from "./utils/autoVoice.js";
 import AuditionPage from "./pages/AuditionPage.jsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -68,6 +69,10 @@ const REVIEW_INTERVALS = [5, 10, 20, 40, 80, 160];
 
 function normalizeWord(word) {
   return String(word || "").trim().toLowerCase();
+}
+
+function normalizeVoiceWord(word) {
+  return String(word || "").normalize("NFKC").toLowerCase().replace(/[^a-z'-]/g, "");
 }
 
 function getLocalDateKey() {
@@ -309,6 +314,10 @@ function StudyPage({
   const [audioFinished, setAudioFinished] = useState(false);
   const [dontKnowClicked, setDontKnowClicked] = useState(false);
   const [markedKnown, setMarkedKnown] = useState(false);
+  const [voiceStatus, setVoiceStatus] = useState("idle");
+  const [voiceError, setVoiceError] = useState("");
+  const autoVoiceRef = useRef(null);
+  const manualInputRef = useRef(false);
   const targetLetters = sentence ? [...sentence.word] : [];
   const correct = Boolean(sentence) && targetLetters.length > 0 &&
     targetLetters.every((letter, position) =>
@@ -325,8 +334,48 @@ function StudyPage({
     ? sentence.englishTemplate.replace("{word}", sentence.word)
     : "";
 
-  // При открытии карточки ничего не озвучиваем.
-  // Озвучка правильного слова запускается непосредственно после верного ответа.
+  function startAutomaticListening() {
+    if (manualInputRef.current || checked || !sentence) return;
+    autoVoiceRef.current?.stop();
+    const capture = startAutoVoiceCapture({
+      onStatus: setVoiceStatus,
+      onError: (message) => setVoiceError(message),
+      onText: (recognizedText) => {
+        if (manualInputRef.current || checked) return;
+        if (normalizeVoiceWord(recognizedText) === normalizeVoiceWord(sentence.word)) {
+          setAnswer([...sentence.word]);
+          setChecked(true);
+          onComplete(sentence.word, true);
+          setSuccessVisible(true);
+          setAudioFinished(true);
+          setVoiceError("");
+        } else {
+          setVoiceError("Ответ не распознан правильно. Повтори ещё раз.");
+          setAnswer(createInitialAnswer(sentence));
+          window.setTimeout(() => {
+            if (!manualInputRef.current && !checked) startAutomaticListening();
+          }, 400);
+        }
+      },
+    });
+    autoVoiceRef.current = capture;
+    capture.start();
+  }
+
+  useEffect(() => {
+    if (!sentence || !audioEnabled || showStats) return undefined;
+    manualInputRef.current = false;
+    setVoiceError("");
+    const started = speakEnglish(sentence.word, startAutomaticListening);
+    if (!started) startAutomaticListening();
+    return () => {
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      autoVoiceRef.current?.stop();
+      autoVoiceRef.current = null;
+      setVoiceStatus("idle");
+    };
+  }, [sentence?.id, audioEnabled, showStats]);
+
 
   const parts = sentence ? sentence.englishTemplate.split("{word}") : [];
   const selectedLevelReviewCount = reviewWords.filter(
@@ -461,6 +510,12 @@ function StudyPage({
 
   function handleAnswerChange(nextAnswer) {
     if (checked) return;
+    if (nextAnswer.some(Boolean)) {
+      manualInputRef.current = true;
+      autoVoiceRef.current?.stop();
+      setVoiceStatus("idle");
+      setVoiceError("");
+    }
     setAnswer(nextAnswer);
     const complete = targetLetters.every((_, position) => Boolean(nextAnswer[position]));
     if (complete) {
@@ -544,6 +599,13 @@ function StudyPage({
       <p className="eyebrow">ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ</p>
       <h2 className="russian-sentence">{sentence.russian}</h2>
       <div className="english-section">
+        {voiceStatus !== "idle" && (
+          <div className="auto-voice-indicator" role="status" aria-live="polite">
+            <span className={voiceStatus === "listening" ? "auto-voice-dot is-listening" : "auto-voice-dot"} />
+            {voiceStatus === "listening" ? "Микрофон активен — слушаю…" : "Распознаю речь…"}
+          </div>
+        )}
+        {voiceError && <p className="audition-speech-error" role="status">{voiceError}</p>}
         <p className="study-instruction">ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ: <strong className="target-translation" style={{ fontSize: "18px" }}>{sentence.russianWord || "—"}</strong></p>
         <div className="answer-area">
           <div className="english-sentence">
