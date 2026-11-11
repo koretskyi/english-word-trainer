@@ -99,16 +99,15 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     wordInputRefs.current = [];
   }, [sentence?.id, englishText]);
 
-  // При «Не знаю» показываем полный ответ и отсчитываем три секунды.
+  // При «Не знаю» временно показываем полный ответ на 3 секунды,
+  // затем снова скрываем буквы и разрешаем пользователю заполнить предложение.
   useEffect(() => {
     if (dontKnowCountdown === null) return undefined;
-    if (dontKnowCountdown === 0) {
-      nextCard();
-      setDontKnowCountdown(null);
-      return undefined;
-    }
     const timer = window.setTimeout(() => {
-      setDontKnowCountdown((current) => current === null ? null : current - 1);
+      setDontKnowCountdown((current) => {
+        if (current === null || current <= 1) return null;
+        return current - 1;
+      });
     }, 1000);
     return () => window.clearTimeout(timer);
   }, [dontKnowCountdown]);
