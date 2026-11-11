@@ -118,10 +118,12 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   useEffect(() => {
     if (dontKnowCountdown === null) return undefined;
     const timer = window.setTimeout(() => {
-      setDontKnowCountdown((current) => {
-        if (current === null || current <= 1) return null;
-        return current - 1;
-      });
+      if (dontKnowCountdown <= 1) {
+        setDontKnowCountdown(null);
+        startAutomaticListening();
+      } else {
+        setDontKnowCountdown((current) => current === null ? null : current - 1);
+      }
     }, 1000);
     return () => window.clearTimeout(timer);
   }, [dontKnowCountdown]);
@@ -214,6 +216,8 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   }
 
   function handleDontKnow() {
+    manualInputRef.current = false;
+    window.clearTimeout(retryTimerRef.current);
     autoVoiceRef.current?.stop();
     setAutoVoiceStatus("idle");
     setVoiceAnswer("");
