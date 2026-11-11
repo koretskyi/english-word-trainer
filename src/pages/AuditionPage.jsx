@@ -30,7 +30,7 @@ function normalizeSentence(value) {
     .trim();
 }
 
-function speakAuditionSentence(text, onFinished) {
+function speakAuditionSentence(text, onFinished, onError) {
   if (!text || !("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
     return false;
   }
@@ -39,7 +39,7 @@ function speakAuditionSentence(text, onFinished) {
   const utterance = new SpeechSynthesisUtterance(text);
   if (onFinished) {
     utterance.onend = onFinished;
-    utterance.onerror = onFinished;
+    utterance.onerror = onError;
   }
   const englishVoices = window.speechSynthesis.getVoices()
     .filter((voice) => /^en(-|_)/i.test(voice.lang));
@@ -68,15 +68,12 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   const [cardIndex, setCardIndex] = useState(0);
   const [voiceAnswer, setVoiceAnswer] = useState("");
   const [result, setResult] = useState("");
-  const [listening, setListening] = useState(false);
   const [speechError, setSpeechError] = useState("");
   const [dontKnowCountdown, setDontKnowCountdown] = useState(null);
-  const mediaRecorderRef = useRef(null);
-  const audioChunksRef = useRef([]);
-  const [transcribing, setTranscribing] = useState(false);
   const [autoVoiceStatus, setAutoVoiceStatus] = useState("idle");
   const autoVoiceRef = useRef(null);
   const manualInputRef = useRef(false);
+  const retryTimerRef = useRef(null);
   const wordInputRefs = useRef([]);
   const sentence = filteredSentences.length
     ? filteredSentences[cardIndex % filteredSentences.length]
@@ -138,21 +135,20 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     autoVoiceRef.current?.stop();
     const capture = startAutoVoiceCapture({
       onStatus: setAutoVoiceStatus,
-      onError: (message) => {
-        setSpeechError(message);
-      },
+      onError: setSpeechError,
       onText: (recognizedText) => {
         if (manualInputRef.current || result === "correct") return;
+        setVoiceAnswer(recognizedText);
         if (normalizeSentence(recognizedText) === normalizeSentence(englishText)) {
-          setVoiceAnswer(recognizedText);
           setSpeechError("");
           setResult("correct");
         } else {
-          setVoiceAnswer("");
-          setSpeechError("Ответ не совпал. Повтори ещё раз.");
-          window.setTimeout(() => {
+          setSpeechError("Ответ неправильный. Микрофон включится снова через секунду.");
+          setResult("");
+          window.clearTimeout(retryTimerRef.current);
+          retryTimerRef.current = window.setTimeout(() => {
             if (!manualInputRef.current && result !== "correct") startAutomaticListening();
-          }, 500);
+          }, 1000);
         }
       },
     });
@@ -160,39 +156,42 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     capture.start();
   }
 
-  useEffect(() => {
-    if (audioEnabled && englishText) {
-      const started = speakAuditionSentence(englishText, startAutomaticListening);
-      if (!started) startAutomaticListening();
+  function playSentenceAndListen() {
+    if (manualInputRef.current || !englishText || result === "correct") return;
+    window.clearTimeout(retryTimerRef.current);
+    autoVoiceRef.current?.stop();
+    setSpeechError("");
+    setAutoVoiceStatus("speaking");
+    const ok = speakAuditionSentence(englishText,
+      () => { if (!manualInputRef.current && result !== "correct") startAutomaticListening(); },
+      () => { setAutoVoiceStatus("idle"); setSpeechError("Не удалось озвучить предложение."); }
+    );
+    if (!ok) {
+      setAutoVoiceStatus("idle");
+      setSpeechError("Браузер не поддерживает озвучивание.");
     }
+  }
+
+  useEffect(() => {
+    if (audioEnabled && englishText) playSentenceAndListen();
     return () => {
+      window.clearTimeout(retryTimerRef.current);
       if ("speechSynthesis" in window) window.speechSynthesis.cancel();
       autoVoiceRef.current?.stop();
       autoVoiceRef.current = null;
-      setAutoVoiceStatus("idle");
     };
   }, [sentence?.id, englishText, audioEnabled]);
 
-  useEffect(() => () => {
-    mediaRecorderRef.current?.stream?.getTracks?.().forEach((track) => track.stop());
-    mediaRecorderRef.current?.stop?.();
-  }, []);
-
-  function validateSentence(text) {
-    if (!text.trim()) return;
-    setVoiceAnswer(text);
-    setResult(normalizeSentence(text) === normalizeSentence(englishText) ? "correct" : "incorrect");
-    mediaRecorderRef.current?.stop?.();
-  }
-
   function updateWordAnswer(token, nextValue) {
     manualInputRef.current = true;
+    window.clearTimeout(retryTimerRef.current);
     autoVoiceRef.current?.stop();
     setAutoVoiceStatus("idle");
     const nextAnswers = { ...wordAnswers, [token.id]: nextValue };
     setWordAnswers(nextAnswers);
     setVoiceAnswer("");
     setResult("");
+    window.clearTimeout(retryTimerRef.current);
 
     const assembled = maskedTokens.map((part) => {
       if (!part.isWord) return part.value;
@@ -206,75 +205,12 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
 
     if (complete) {
       setResult(normalizeSentence(assembled) === normalizeSentence(englishText) ? "correct" : "incorrect");
-      mediaRecorderRef.current?.stop?.();
-    }
-  }
-
-  async function startListening() {
-    if (listening) {
-      mediaRecorderRef.current?.stop?.();
-      return;
-    }
-    if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
-      setSpeechError("Запись аудио не поддерживается этим браузером. Попробуй Chrome или Edge.");
-      return;
-    }
-    try {
-      setSpeechError("");
-      setVoiceAnswer("");
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mimeType = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"]
-        .find((type) => MediaRecorder.isTypeSupported(type));
-      const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
-      mediaRecorderRef.current = recorder;
-      audioChunksRef.current = [];
-      recorder.ondataavailable = (event) => {
-        if (event.data?.size) audioChunksRef.current.push(event.data);
-      };
-      recorder.onerror = () => {
-        stream.getTracks().forEach((track) => track.stop());
-        setListening(false);
-        setSpeechError("Не удалось записать звук. Попробуй ещё раз.");
-      };
-      recorder.onstop = async () => {
-        stream.getTracks().forEach((track) => track.stop());
-        setListening(false);
-        const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType || "audio/webm" });
-        audioChunksRef.current = [];
-        if (!blob.size) {
-          setSpeechError("Запись пустая. Попробуй ещё раз.");
-          return;
-        }
-        setTranscribing(true);
-        try {
-          const response = await fetch("/api/transcribe", {
-            method: "POST",
-            headers: { "Content-Type": blob.type },
-            body: blob,
-          });
-          const data = await response.json().catch(() => ({}));
-          if (!response.ok) throw new Error(data.error || data.detail || "Ошибка распознавания речи.");
-          if (!data.text?.trim()) throw new Error("Не удалось разобрать речь. Попробуй ещё раз.");
-          validateSentence(data.text);
-        } catch (error) {
-          setSpeechError(error.message || "Ошибка отправки аудио на распознавание.");
-        } finally {
-          setTranscribing(false);
-        }
-      };
-      recorder.start();
-      setListening(true);
-    } catch (error) {
-      setListening(false);
-      setSpeechError(error.name === "NotAllowedError"
-        ? "Разреши доступ к микрофону в браузере."
-        : "Не удалось включить микрофон. Проверь подключение.");
     }
   }
 
   function handleDontKnow() {
-    if (listening) mediaRecorderRef.current?.stop?.();
-    setListening(false);
+    autoVoiceRef.current?.stop();
+    setAutoVoiceStatus("idle");
     setVoiceAnswer("");
     setResult("");
     setSpeechError("");
@@ -282,7 +218,6 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   }
 
   function nextCard() {
-    mediaRecorderRef.current?.stop?.();
     setCardIndex((current) => (current + 1) % Math.max(1, filteredSentences.length));
   }
 
@@ -348,15 +283,12 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
       {autoVoiceStatus !== "idle" && (
         <div className="auto-voice-indicator" role="status" aria-live="polite">
           <span className={autoVoiceStatus === "listening" ? "auto-voice-dot is-listening" : "auto-voice-dot"} />
-          {autoVoiceStatus === "listening" ? "Микрофон активен — слушаю…" : "Распознаю речь…"}
+          {autoVoiceStatus === "speaking" ? "Слушай предложение…" : autoVoiceStatus === "listening" ? "Микрофон активен — слушаю…" : "Распознаю речь…"}
         </div>
       )}
       <div className="audition-audio-actions">
-        <button className="button button-primary" type="button" onClick={() => speakAuditionSentence(englishText)}>
+        <button className="button button-primary" type="button" onClick={playSentenceAndListen} disabled={result === "correct" || manualInputRef.current}>
           <span aria-hidden="true">🔊</span> Прослушать ещё раз
-        </button>
-        <button className="button button-secondary" type="button" onClick={startListening} disabled={transcribing || result === "correct"}>
-          <span aria-hidden="true">🎙️</span> {transcribing ? "Распознаю..." : listening ? "Остановить и распознать" : "Ответить голосом"}
         </button>
         <button className="button button-secondary" type="button" onClick={handleDontKnow} disabled={dontKnowCountdown !== null}>
           Не знаю
