@@ -182,7 +182,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
 
   if (!sentence) {
     return (
-      <section className={"panel audition-panel study-panel" + (result === "correct" ? " answer-correct" : "")}>
+      <section className="panel audition-panel">
         <h2>Аудирование</h2>
         <p>На уровне {selectedLevel} пока нет предложений для аудирования.</p>
       </section>
@@ -192,7 +192,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   let wordIndex = 0;
 
   return (
-    <section className="panel audition-panel">
+    <section className={"panel audition-panel study-panel" + (result === "correct" ? " answer-correct" : "")}>
       <div className="audition-toolbar">
         <div className="level-selector">
           <label htmlFor="audition-level">Уровень:</label>
