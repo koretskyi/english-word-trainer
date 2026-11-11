@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import WordGap, { createWordGapOpenedPositions } from "../components/LetterGap.jsx";
 import CorrectFeedback from "../components/CorrectFeedback.jsx";
+import { startAutoVoiceCapture } from "../utils/autoVoice.js";
 
 function getSentenceText(sentence) {
   if (!sentence) return "";
@@ -29,13 +30,17 @@ function normalizeSentence(value) {
     .trim();
 }
 
-function speakAuditionSentence(text) {
+function speakAuditionSentence(text, onFinished) {
   if (!text || !("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
     return false;
   }
 
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
+  if (onFinished) {
+    utterance.onend = onFinished;
+    utterance.onerror = onFinished;
+  }
   const englishVoices = window.speechSynthesis.getVoices()
     .filter((voice) => /^en(-|_)/i.test(voice.lang));
   const preferredVoice =
@@ -69,6 +74,9 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const [transcribing, setTranscribing] = useState(false);
+  const [autoVoiceStatus, setAutoVoiceStatus] = useState("idle");
+  const autoVoiceRef = useRef(null);
+  const manualInputRef = useRef(false);
   const wordInputRefs = useRef([]);
   const sentence = filteredSentences.length
     ? filteredSentences[cardIndex % filteredSentences.length]
@@ -90,6 +98,10 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   }, [selectedLevel]);
 
   useEffect(() => {
+    manualInputRef.current = false;
+    autoVoiceRef.current?.stop();
+    autoVoiceRef.current = null;
+    setAutoVoiceStatus("idle");
     setVoiceAnswer("");
     setResult("");
     setSpeechError("");
@@ -121,12 +133,46 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     return () => window.clearTimeout(timer);
   }, [result, filteredSentences.length]);
 
+  function startAutomaticListening() {
+    if (manualInputRef.current || result === "correct" || !englishText) return;
+    autoVoiceRef.current?.stop();
+    const capture = startAutoVoiceCapture({
+      onStatus: setAutoVoiceStatus,
+      onError: (message) => {
+        setSpeechError(message);
+        window.setTimeout(() => {
+          if (!manualInputRef.current && result !== "correct") startAutomaticListening();
+        }, 700);
+      },
+      onText: (recognizedText) => {
+        if (manualInputRef.current || result === "correct") return;
+        if (normalizeSentence(recognizedText) === normalizeSentence(englishText)) {
+          setVoiceAnswer(recognizedText);
+          setSpeechError("");
+          setResult("correct");
+        } else {
+          setVoiceAnswer("");
+          setSpeechError("Ответ не совпал. Повтори ещё раз.");
+          window.setTimeout(() => {
+            if (!manualInputRef.current && result !== "correct") startAutomaticListening();
+          }, 500);
+        }
+      },
+    });
+    autoVoiceRef.current = capture;
+    capture.start();
+  }
+
   useEffect(() => {
     if (audioEnabled && englishText) {
-      speakAuditionSentence(englishText);
+      const started = speakAuditionSentence(englishText, startAutomaticListening);
+      if (!started) startAutomaticListening();
     }
     return () => {
       if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      autoVoiceRef.current?.stop();
+      autoVoiceRef.current = null;
+      setAutoVoiceStatus("idle");
     };
   }, [sentence?.id, englishText, audioEnabled]);
 
@@ -143,6 +189,9 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   }
 
   function updateWordAnswer(token, nextValue) {
+    manualInputRef.current = true;
+    autoVoiceRef.current?.stop();
+    setAutoVoiceStatus("idle");
     const nextAnswers = { ...wordAnswers, [token.id]: nextValue };
     setWordAnswers(nextAnswers);
     setVoiceAnswer("");
@@ -299,6 +348,12 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
         })}
       </div>
 
+      {autoVoiceStatus !== "idle" && (
+        <div className="auto-voice-indicator" role="status" aria-live="polite">
+          <span className={autoVoiceStatus === "listening" ? "auto-voice-dot is-listening" : "auto-voice-dot"} />
+          {autoVoiceStatus === "listening" ? "Микрофон активен — слушаю…" : "Распознаю речь…"}
+        </div>
+      )}
       <div className="audition-audio-actions">
         <button className="button button-primary" type="button" onClick={() => speakAuditionSentence(englishText)}>
           <span aria-hidden="true">🔊</span> Прослушать ещё раз
