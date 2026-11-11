@@ -66,7 +66,9 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   const [listening, setListening] = useState(false);
   const [speechError, setSpeechError] = useState("");
   const [dontKnowCountdown, setDontKnowCountdown] = useState(null);
-  const recognitionRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const [transcribing, setTranscribing] = useState(false);
   const wordInputRefs = useRef([]);
   const sentence = filteredSentences.length
     ? filteredSentences[cardIndex % filteredSentences.length]
@@ -130,14 +132,15 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   }, [sentence?.id, englishText, audioEnabled]);
 
   useEffect(() => () => {
-    recognitionRef.current?.stop?.();
+    mediaRecorderRef.current?.stream?.getTracks?.().forEach((track) => track.stop());
+    mediaRecorderRef.current?.stop?.();
   }, []);
 
   function validateSentence(text) {
     if (!text.trim()) return;
     setVoiceAnswer(text);
     setResult(normalizeSentence(text) === normalizeSentence(englishText) ? "correct" : "incorrect");
-    recognitionRef.current?.stop?.();
+    mediaRecorderRef.current?.stop?.();
   }
 
   function updateWordAnswer(token, nextValue) {
@@ -158,48 +161,83 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
 
     if (complete) {
       setResult(normalizeSentence(assembled) === normalizeSentence(englishText) ? "correct" : "incorrect");
-      recognitionRef.current?.stop?.();
+      mediaRecorderRef.current?.stop?.();
     }
   }
 
-  function startListening() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      setSpeechError("Распознавание речи не поддерживается этим браузером.");
+  async function startListening() {
+    if (listening) {
+      mediaRecorderRef.current?.stop?.();
       return;
     }
-
-    recognitionRef.current?.stop?.();
-    const recognition = new SpeechRecognition();
-    recognition.lang = "en-US";
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-    recognition.onstart = () => {
-      setListening(true);
-      setSpeechError("");
-    };
-    recognition.onresult = (event) => {
-      const transcript = event.results?.[0]?.[0]?.transcript || "";
-      validateSentence(transcript);
-    };
-    recognition.onerror = (event) => {
-      setSpeechError(event.error === "not-allowed"
-        ? "Разреши доступ к микрофону в браузере."
-        : "Не удалось распознать речь. Попробуй ещё раз.");
-    };
-    recognition.onend = () => setListening(false);
-    recognitionRef.current = recognition;
-
-    try {
-      recognition.start();
-    } catch {
-      setListening(false);
-      setSpeechError("Не удалось запустить микрофон. Попробуй ещё раз.");
+    if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
+      setSpeechError("Запись аудио не поддерживается этим браузером. Попробуй Chrome или Edge.");
+      return;
     }
+    try {
+      setSpeechError("");
+      setVoiceAnswer("");
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4"]
+        .find((type) => MediaRecorder.isTypeSupported(type));
+      const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+      audioChunksRef.current = [];
+      recorder.ondataavailable = (event) => {
+        if (event.data?.size) audioChunksRef.current.push(event.data);
+      };
+      recorder.onerror = () => {
+        stream.getTracks().forEach((track) => track.stop());
+        setListening(false);
+        setSpeechError("Не удалось записать звук. Попробуй ещё раз.");
+      };
+      recorder.onstop = async () => {
+        stream.getTracks().forEach((track) => track.stop());
+        setListening(false);
+        const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType || "audio/webm" });
+        audioChunksRef.current = [];
+        if (!blob.size) {
+          setSpeechError("Запись пустая. Попробуй ещё раз.");
+          return;
+        }
+        setTranscribing(true);
+        try {
+          const response = await fetch("/api/transcribe", {
+            method: "POST",
+            headers: { "Content-Type": blob.type },
+            body: blob,
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(data.error || "Ошибка распознавания речи.");
+          if (!data.text?.trim()) throw new Error("Не удалось разобрать речь. Попробуй ещё раз.");
+          validateSentence(data.text);
+        } catch (error) {
+          setSpeechError(error.message || "Ошибка отправки аудио на распознавание.");
+        } finally {
+          setTranscribing(false);
+        }
+      };
+      recorder.start();
+      setListening(true);
+    } catch (error) {
+      setListening(false);
+      setSpeechError(error.name === "NotAllowedError"
+        ? "Разреши доступ к микрофону в браузере."
+        : "Не удалось включить микрофон. Проверь подключение.");
+    }
+  }
+
+  function handleDontKnow() {
+    if (listening) mediaRecorderRef.current?.stop?.();
+    setListening(false);
+    setVoiceAnswer("");
+    setResult("");
+    setSpeechError("");
+    setDontKnowCountdown(3);
   }
 
   function nextCard() {
-    recognitionRef.current?.stop?.();
+    mediaRecorderRef.current?.stop?.();
     setCardIndex((current) => (current + 1) % Math.max(1, filteredSentences.length));
   }
 
@@ -256,7 +294,8 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
               firstInputRef={thisWordRef}
               nextInputRef={nextWordRef}
               showMistakes={result === "incorrect"}
-              openedPositions={openedPositionsByToken[token.id]}\n              revealAll={dontKnowCountdown !== null}
+              openedPositions={openedPositionsByToken[token.id]}
+              revealAll={dontKnowCountdown !== null}
             />
           );
         })}
@@ -266,10 +305,10 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
         <button className="button button-primary" type="button" onClick={() => speakAuditionSentence(englishText)}>
           <span aria-hidden="true">🔊</span> Прослушать ещё раз
         </button>
-        <button className="button button-secondary" type="button" onClick={startListening} disabled={listening || result === "correct"}>
-          <span aria-hidden="true">🎙️</span> {listening ? "Слушаю..." : "Ответить голосом"}
+        <button className="button button-secondary" type="button" onClick={startListening} disabled={transcribing || result === "correct"}>
+          <span aria-hidden="true">🎙️</span> {transcribing ? "Распознаю..." : listening ? "Остановить и распознать" : "Ответить голосом"}
         </button>
-        <button className="button button-secondary" type="button" onClick={nextCard}>
+        <button className="button button-secondary" type="button" onClick={handleDontKnow} disabled={dontKnowCountdown !== null}>
           Не знаю
         </button>
       </div>
