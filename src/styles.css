@@ -1363,3 +1363,150 @@ button:disabled {
   background: #0284c7;
   color: #ffffff;
 }
+
+
+/* Отдельный режим аудирования. Стили режима «Слова» не затрагиваются. */
+.audition-panel {
+  width: min(100%, 900px);
+  margin: 0 auto;
+}
+
+.audition-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.audition-counter {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.audition-translation {
+  margin-bottom: 26px;
+}
+
+.audition-mask {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px 13px;
+  min-height: 78px;
+  margin: 0 0 28px;
+  padding: 22px 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #f8faff;
+  color: #172033;
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.audition-mask-word {
+  white-space: nowrap;
+}
+
+.audition-mask-punctuation {
+  white-space: pre;
+  margin-left: -12px;
+}
+
+.audition-audio-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.audition-answer-form {
+  display: grid;
+  gap: 12px;
+}
+
+.audition-answer-form label {
+  color: #46536a;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.audition-answer-form textarea {
+  width: 100%;
+  min-height: 88px;
+  padding: 14px 15px;
+  border: 1px solid #cfd7e6;
+  border-radius: 11px;
+  background: #fff;
+  color: #172033;
+  font-size: 17px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.audition-answer-form textarea:focus {
+  outline: 3px solid #dbe5ff;
+  border-color: var(--primary);
+}
+
+.audition-check-button {
+  justify-self: start;
+}
+
+.audition-speech-error {
+  margin: -10px 0 18px;
+  color: #b45309;
+  font-size: 13px;
+}
+
+.audition-feedback {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 11px;
+  font-size: 14px;
+}
+
+.audition-feedback-correct {
+  border: 1px solid #bbebc7;
+  background: #f0fbf2;
+  color: #166534;
+}
+
+.audition-feedback-correct .button {
+  justify-self: start;
+}
+
+.audition-feedback-incorrect {
+  border: 1px solid #fecaca;
+  background: #fff5f5;
+  color: #b91c1c;
+}
+
+@media (max-width: 600px) {
+  .audition-panel {
+    padding: 18px 14px;
+  }
+
+  .audition-mask {
+    gap: 6px 10px;
+    padding: 18px 12px;
+    letter-spacing: 0.03em;
+  }
+
+  .audition-audio-actions {
+    flex-direction: column;
+  }
+
+  .audition-audio-actions .button {
+    width: 100%;
+  }
+}
