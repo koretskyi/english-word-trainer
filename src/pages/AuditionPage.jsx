@@ -318,7 +318,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
           {dontKnowCountdown}
         </div>
       )}
-      {speechError && <p className="audition-speech-error" role="status">{speechError}</p>
+      {speechError && <p className="audition-speech-error" role="status">{speechError}</p>}
       {voiceAnswer && (
         <p className="audition-voice-answer">Распознано: {voiceAnswer}</p>
       )}
