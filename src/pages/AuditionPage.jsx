@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import WordGap from "../components/LetterGap.jsx";
+import WordGap, { createWordGapOpenedPositions } from "../components/LetterGap.jsx";
 import CorrectFeedback from "../components/CorrectFeedback.jsx";
 
 function getSentenceText(sentence) {
@@ -75,6 +75,13 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   const [wordAnswers, setWordAnswers] = useState({});
 
   const wordTokens = maskedTokens.filter((token) => token.isWord);
+  // В аудировании заранее создаём независимые подсказки для каждого слова карточки.
+  const openedPositionsByToken = useMemo(
+    () => Object.fromEntries(
+      wordTokens.map((token) => [token.id, createWordGapOpenedPositions(token.value)])
+    ),
+    [sentence?.id, englishText, maskedTokens]
+  );
   useEffect(() => {
     setCardIndex(0);
   }, [selectedLevel]);
@@ -233,6 +240,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
               firstInputRef={thisWordRef}
               nextInputRef={nextWordRef}
               showMistakes={result === "incorrect"}
+              openedPositions={openedPositionsByToken[token.id]}
             />
           );
         })}
