@@ -8,29 +8,14 @@ function getSentenceText(sentence) {
     .replace(/\\s+([.,!?;:])/g, "$1");
 }
 
-// Отдельная маскировка для аудирования. WordGap из режима «Слова» не используется и не меняется.
+// Разбиваем предложение на слова и знаки препинания.
+// Маскировку букв выполняет общий WordGap — тот же, что и в режиме «Слова».
 function createAuditionMask(text) {
-  return (text.match(/[A-Za-z]+(?:['’][A-Za-z]+)?|[^A-Za-z]+/g) || []).map((part, tokenIndex) => {
-    if (!/^[A-Za-z]/.test(part)) {
-      return { id: `punctuation-${tokenIndex}`, value: part, isWord: false };
-    }
-
-    const letters = [...part];
-    const openCount = Math.floor(letters.length / 3);
-    const positions = letters.map((_, index) => index);
-
-    for (let index = positions.length - 1; index > 0; index -= 1) {
-      const randomIndex = Math.floor(Math.random() * (index + 1));
-      [positions[index], positions[randomIndex]] = [positions[randomIndex], positions[index]];
-    }
-
-    const opened = new Set(positions.slice(0, openCount));
-    return {
-      id: `word-${tokenIndex}`,
-      isWord: true,
-      value: letters.map((letter, index) => opened.has(index) ? letter : "•").join(""),
-    };
-  });
+  return (text.match(/[A-Za-z]+(?:['’][A-Za-z]+)?|[^A-Za-z]+/g) || []).map((part, tokenIndex) => ({
+    id: `token-${tokenIndex}`,
+    value: part,
+    isWord: /^[A-Za-z]/.test(part),
+  }));
 }
 
 function normalizeSentence(value) {
