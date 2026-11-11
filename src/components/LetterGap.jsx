@@ -13,7 +13,7 @@ export function createWordGapOpenedPositions(word) {
   return positions.slice(0, count);
 }
 
-function WordGap({ sentence, value, onChange, disabled, containerRef, showMistakes = false, autoFocus = true, firstInputRef, nextInputRef, openedPositions }) {
+function WordGap({ sentence, value, onChange, disabled, containerRef, showMistakes = false, autoFocus = true, firstInputRef, nextInputRef, openedPositions, revealAll = false }) {
   const letters = [...sentence.word];
   // Открываем одну случайную букву на каждые полные 3 буквы слова.
   // Выбор фиксируется на время показа карточки и меняется при переходе к новой.
@@ -121,7 +121,7 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
       }}
     >
       {letters.map((letter, index) => {
-        const isOpened = opened.has(index);
+        const isOpened = revealAll || opened.has(index);
         const isMistake = showMistakes && Boolean(value[index]) &&
           value[index].toLowerCase() !== letter.toLowerCase();
 
