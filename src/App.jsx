@@ -1,4 +1,5 @@
 import { SENTENCES } from "./sentences.js";
+import AuditionPage from "./pages/AuditionPage.jsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 
@@ -1410,7 +1411,15 @@ export default function App() {
                 setPage("study");
                 setShowStats(false);
               }}
-            >Обучение</button>
+            >Слова</button>
+            <button
+              type="button"
+              className={page === "audition" ? "nav-button active" : "nav-button"}
+              onClick={() => {
+                setPage("audition");
+                setShowStats(false);
+              }}
+            >Аудирование</button>
             <button
               type="button"
               className={page === "admin" ? "nav-button active" : "nav-button"}
@@ -1468,6 +1477,14 @@ export default function App() {
             setShowStats={setShowStats}
             statsLevel={statsLevel}
             setStatsLevel={setStatsLevel}
+          />
+        ) : page === "audition" ? (
+          <AuditionPage
+            sentences={sentences}
+            selectedLevel={selectedLevel}
+            setSelectedLevel={changeLevel}
+            levels={levels}
+            audioEnabled={audioEnabled}
           />
         ) : (
           <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} />
