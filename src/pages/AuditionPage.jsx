@@ -65,6 +65,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   const [result, setResult] = useState("");
   const [listening, setListening] = useState(false);
   const [speechError, setSpeechError] = useState("");
+  const [dontKnowCountdown, setDontKnowCountdown] = useState(null);
   const recognitionRef = useRef(null);
   const wordInputRefs = useRef([]);
   const sentence = filteredSentences.length
@@ -90,10 +91,25 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     setVoiceAnswer("");
     setResult("");
     setSpeechError("");
+    setDontKnowCountdown(null);
     setWordAnswers({});
     setMaskedTokens(createAuditionMask(englishText));
     wordInputRefs.current = [];
   }, [sentence?.id, englishText]);
+
+  // При «Не знаю» показываем полный ответ и отсчитываем три секунды.
+  useEffect(() => {
+    if (dontKnowCountdown === null) return undefined;
+    if (dontKnowCountdown === 0) {
+      nextCard();
+      setDontKnowCountdown(null);
+      return undefined;
+    }
+    const timer = window.setTimeout(() => {
+      setDontKnowCountdown((current) => current === null ? null : current - 1);
+    }, 1000);
+    return () => window.clearTimeout(timer);
+  }, [dontKnowCountdown]);
 
   // Как и в режиме «Слова»: после правильного ответа автоматически открываем следующую карточку.
   useEffect(() => {
@@ -240,7 +256,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
               firstInputRef={thisWordRef}
               nextInputRef={nextWordRef}
               showMistakes={result === "incorrect"}
-              openedPositions={openedPositionsByToken[token.id]}
+              openedPositions={openedPositionsByToken[token.id]}\n              revealAll={dontKnowCountdown !== null}
             />
           );
         })}
@@ -258,7 +274,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
         </button>
       </div>
 
-      {speechError && <p className="audition-speech-error" role="status">{speechError}</p>}
+      {dontKnowCountdown !== null && (\n        <div className="audition-countdown" role="status" aria-live="assertive">\n          {dontKnowCountdown}\n        </div>\n      )}\n      {speechError && <p className="audition-speech-error" role="status">{speechError}</p>
       {voiceAnswer && (
         <p className="audition-voice-answer">Распознано: {voiceAnswer}</p>
       )}
