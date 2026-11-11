@@ -22,7 +22,7 @@ if errorlevel 1 (
 
 where python >nul 2>nul
 if errorlevel 1 (
-  echo ERROR: Python 3.12 is not installed or not in PATH.
+  echo ERROR: Python is not installed or not in PATH.
   pause
   exit /b 1
 )
@@ -34,20 +34,11 @@ if errorlevel 1 (
   exit /b 1
 )
 
-if not exist "backend\.venv\Scripts\python.exe" (
-  echo Creating Python virtual environment...
-  python -m venv backend\.venv
-  if errorlevel 1 (
-    echo ERROR: Could not create Python virtual environment.
-    pause
-    exit /b 1
-  )
-)
-
-if not exist "backend\.venv\Scripts\uvicorn.exe" (
-  echo Installing local speech recognition dependencies...
-  call backend\.venv\Scripts\python.exe -m pip install --upgrade pip
-  call backend\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
+echo Checking Python speech recognition packages...
+python -c "import faster_whisper, numpy, scipy, fastapi, uvicorn" >nul 2>nul
+if errorlevel 1 (
+  echo Installing only missing Python packages into your existing Python installation...
+  python -m pip install -r backend\requirements.txt
   if errorlevel 1 (
     echo ERROR: Python dependencies installation failed.
     pause
@@ -66,7 +57,7 @@ if not exist "node_modules" (
 )
 
 echo Starting local Whisper API in a separate window...
-start "Whisper API" cmd /k ""%CD%\backend\.venv\Scripts\python.exe" -m uvicorn main:app --app-dir "%CD%\backend" --host 127.0.0.1 --port 8000"
+start "Whisper API" cmd /k "cd /d "%CD%\backend" && python -m uvicorn main:app --host 127.0.0.1 --port 8000"
 
 timeout /t 2 /nobreak >nul
 
