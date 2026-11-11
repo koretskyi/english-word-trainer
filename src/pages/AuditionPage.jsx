@@ -207,7 +207,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
             body: blob,
           });
           const data = await response.json().catch(() => ({}));
-          if (!response.ok) throw new Error(data.error || "Ошибка распознавания речи.");
+          if (!response.ok) throw new Error(data.error || data.detail || "Ошибка распознавания речи.");
           if (!data.text?.trim()) throw new Error("Не удалось разобрать речь. Попробуй ещё раз.");
           validateSentence(data.text);
         } catch (error) {
