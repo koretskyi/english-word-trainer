@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import WordGap from "../components/LetterGap.jsx";
 
 function getSentenceText(sentence) {
   if (!sentence) return "";
@@ -189,18 +190,15 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
       <div className="audition-mask" aria-label="Английское предложение с пропущенными буквами">
         {maskedTokens.map((token) => (
           token.isWord ? (
-            <span key={token.id} className="audition-mask-word">
-              {[...token.value].map((letter, index) => (
-                <span
-                  key={index}
-                  className={letter === "•" ? "audition-letter" : "audition-letter audition-letter-open"}
-                >
-                  {letter}
-                </span>
-              ))}
-            </span>
+            <WordGap
+              key={token.id}
+              sentence={{ id: token.id, word: token.value }}
+              value={[]}
+              onChange={() => {}}
+              disabled
+            />
           ) : (
-            <span key={token.id} className="audition-mask-punctuation">{token.value}</span>
+            <span key={token.id}>{token.value}</span>
           )
         ))}
       </div>
