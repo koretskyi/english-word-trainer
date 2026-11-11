@@ -1391,12 +1391,10 @@ button:disabled {
   margin-bottom: 26px;
 }
 
+/* Предложение строится в обычном текстовом потоке, как слова в WordGap:
+   каждое место для буквы имеет отдельную подчёркнутую ячейку. */
 .audition-mask {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: center;
-  gap: 8px 13px;
+  display: block;
   min-height: 78px;
   margin: 0 0 28px;
   padding: 22px 18px;
@@ -1406,18 +1404,51 @@ button:disabled {
   color: #172033;
   font-size: clamp(22px, 4vw, 32px);
   font-weight: 750;
-  letter-spacing: 0.06em;
-  line-height: 1.5;
+  line-height: 2;
+  text-align: center;
   overflow-wrap: anywhere;
 }
 
 .audition-mask-word {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  margin: 0 9px 0 0;
   white-space: nowrap;
+  vertical-align: baseline;
+}
+
+.audition-letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: calc(1.2em + 2px);
+  min-width: calc(1.2em + 2px);
+  height: calc(1.65em + 2px);
+  margin: 0;
+  padding: 0 1px;
+  border: none;
+  border-bottom: 2px solid #3157d5;
+  border-radius: 0;
+  background: #f0f3ff;
+  color: #172033;
+  font-size: calc(1em + 1px);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.audition-letter-open {
+  border-bottom-color: #15803d;
+  background: #e7f6eb;
+  color: #15803d;
+  font-weight: 700;
 }
 
 .audition-mask-punctuation {
   white-space: pre;
-  margin-left: -12px;
+  font-weight: 600;
+  letter-spacing: normal;
 }
 
 .audition-audio-actions {
@@ -1497,9 +1528,14 @@ button:disabled {
   }
 
   .audition-mask {
-    gap: 6px 10px;
     padding: 18px 12px;
-    letter-spacing: 0.03em;
+    font-size: clamp(18px, 5vw, 25px);
+    line-height: 2.2;
+  }
+
+  .audition-mask-word {
+    gap: 4px;
+    margin-right: 7px;
   }
 
   .audition-audio-actions {
