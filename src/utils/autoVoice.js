@@ -102,7 +102,9 @@ export function startAutoVoiceCapture({ onStatus, onText, onError, silenceMs = 1
 
         if (!speechStartedAt && now - startedAt > 12000) {
           stopped = true;
+          cancelled = true;
           recorder.stop();
+          onStatus?.("idle");
           onError?.("Не удалось услышать речь. Попробуй ещё раз.");
           return;
         }
