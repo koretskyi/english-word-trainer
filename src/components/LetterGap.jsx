@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-function WordGap({ sentence, value, onChange, disabled, containerRef, showMistakes = false }) {
+function WordGap({ sentence, value, onChange, disabled, containerRef, showMistakes = false, autoFocus = true, nextInputRef }) {
   const letters = [...sentence.word];
   // Открываем одну случайную букву на каждые полные 3 буквы слова.
   // Выбор фиксируется на время показа карточки и меняется при переходе к новой.
@@ -30,7 +30,7 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
 
   // При открытии карточки фокусируемся на первой пустой позиции.
   useEffect(() => {
-    if (disabled) return;
+    if (disabled || !autoFocus) return;
 
     const firstEmpty = value.findIndex(
       (letter) => !letter
@@ -67,6 +67,8 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
 
       if (nextIndex < letters.length) {
         focusAt(nextIndex);
+      } else {
+        nextInputRef?.current?.focus();
       }
     }
   }
@@ -124,6 +126,9 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
             key={`${sentence.id}-${index}`}
             ref={(element) => {
               inputRefs.current[index] = element;
+              if (index === 0 && nextInputRef?.setCurrentInput) {
+                nextInputRef.setCurrentInput(element);
+              }
             }}
             className={`word-gap${isMistake ? " word-gap-mistake" : ""}`}
             type="text"
