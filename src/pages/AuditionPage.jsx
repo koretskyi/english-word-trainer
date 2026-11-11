@@ -39,7 +39,12 @@ function speakAuditionSentence(text, onFinished, onError) {
   const utterance = new SpeechSynthesisUtterance(text);
   if (onFinished) {
     utterance.onend = onFinished;
-    utterance.onerror = onError;
+    utterance.onerror = (event) => {
+      // React StrictMode and card cleanup can cancel an utterance after playback has started.
+      // These expected cancellations must not be shown as a playback failure.
+      if (event?.error === "canceled" || event?.error === "interrupted") return;
+      onError?.(event);
+    };
   }
   const englishVoices = window.speechSynthesis.getVoices()
     .filter((voice) => /^en(-|_)/i.test(voice.lang));
