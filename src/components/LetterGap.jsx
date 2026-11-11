@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-function WordGap({ sentence, value, onChange, disabled, containerRef, showMistakes = false, autoFocus = true, nextInputRef }) {
+function WordGap({ sentence, value, onChange, disabled, containerRef, showMistakes = false, autoFocus = true, firstInputRef, nextInputRef }) {
   const letters = [...sentence.word];
   // Открываем одну случайную букву на каждые полные 3 буквы слова.
   // Выбор фиксируется на время показа карточки и меняется при переходе к новой.
@@ -126,8 +126,8 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
             key={`${sentence.id}-${index}`}
             ref={(element) => {
               inputRefs.current[index] = element;
-              if (index === 0 && nextInputRef?.setCurrentInput) {
-                nextInputRef.setCurrentInput(element);
+              if (index === 0 && firstInputRef) {
+                firstInputRef.current = element;
               }
             }}
             className={`word-gap${isMistake ? " word-gap-mistake" : ""}`}
