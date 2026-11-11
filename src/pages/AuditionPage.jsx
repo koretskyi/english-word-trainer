@@ -10,7 +10,7 @@ function getSentenceText(sentence) {
 
 // Маскируем каждое слово общим WordGap — тем же компонентом, что и в режиме «Слова».
 function createAuditionMask(text) {
-  return (text.match(/[A-Za-z]+(?:['’][A-Za-z]+)?|[^A-Za-z]+/g) || []).map((part, tokenIndex) => ({
+  return (text.match(/[A-Za-z]+|[^A-Za-z]+/g) || []).map((part, tokenIndex) => ({
     id: `token-${tokenIndex}`,
     value: part,
     isWord: /^[A-Za-z]/.test(part),
