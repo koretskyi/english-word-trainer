@@ -1552,12 +1552,22 @@ button:disabled {
   color: #b45309;
 }
 
- .audition-voice-answer {
+.audition-speech-error.is-incorrect {
+  color: #dc2626;
+}
+
+.audition-voice-answer {
   padding: 14px 16px;
   border: 1px solid #bbebc7;
   border-radius: 12px;
   background: #f0fbf2;
   color: #166534;
+}
+
+.audition-voice-answer.is-incorrect {
+  border-color: #fca5a5;
+  background: #fff1f2;
+  color: #b91c1c;
 }
 
 .audition-feedback-incorrect {
@@ -1582,9 +1592,18 @@ button:disabled {
 .auto-voice-dot.is-listening {
   background: #22c55e;
   box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.14);
-  animation: auto-voice-pulse 1.2s ease-in-out infinite;
+  animation: auto-voice-pulse 0.45s ease-in-out infinite;
 }
 
 @keyframes auto-voice-pulse {
-  50% { box-shadow: 0 0 0 7px rgba(34, 197, 94, 0.04); }
+  50% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0.04); }
+}
+
+.auto-voice-indicator.is-listening {
+  animation: auto-voice-indicator-flash 0.55s ease-in-out infinite alternate;
+}
+
+@keyframes auto-voice-indicator-flash {
+  from { border-color: #bbebc7; background: #f0fbf2; }
+  to { border-color: #86d69a; background: #dcfce7; }
 }
