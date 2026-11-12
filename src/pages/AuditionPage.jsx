@@ -290,7 +290,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
       </div>
 
       {autoVoiceStatus !== "idle" && (
-        <div className="auto-voice-indicator" role="status" aria-live="polite">
+        <div className={`auto-voice-indicator${autoVoiceStatus === "listening" ? " is-listening" : ""}`} role="status" aria-live="polite">
           <span className={autoVoiceStatus === "listening" ? "auto-voice-dot is-listening" : "auto-voice-dot"} />
           {autoVoiceStatus === "speaking" ? "Слушай предложение…" : autoVoiceStatus === "listening" ? "Микрофон активен — слушаю…" : "Распознаю речь…"}
         </div>
@@ -309,9 +309,9 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
           {dontKnowCountdown}
         </div>
       )}
-      {speechError && <p className="audition-speech-error" role="status">{speechError}</p>}
+      {speechError && <p className={`audition-speech-error${speechError.startsWith("Ответ неправильный") ? " is-incorrect" : ""}`} role="status">{speechError}</p>}
       {voiceAnswer && (
-        <p className="audition-voice-answer">Распознано: {voiceAnswer}</p>
+        <p className={`audition-voice-answer${normalizeSentence(voiceAnswer) !== normalizeSentence(englishText) ? " is-incorrect" : ""}`}>Распознано: {voiceAnswer}</p>
       )}
 
       {result === "correct" ? (
