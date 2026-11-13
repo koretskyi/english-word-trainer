@@ -30,24 +30,44 @@ def parse_timestamp(value: str) -> float:
 
 
 def parse_vtt(path: Path) -> list[dict]:
+    # Parse cue-by-cue rather than relying on blank-line separators.
+    # Some YouTube auto-caption VTT files place consecutive cues directly
+    # on adjacent lines; splitting only on blank lines merges them into
+    # one cue starting at 00:00 and defeats time-range filtering.
     raw = path.read_text(encoding="utf-8-sig", errors="replace")
+    lines = raw.replace("\r\n", "\n").replace("\r", "\n").split("\n")
     cues = []
-    for block in re.split(r"\n\s*\n", raw.replace("\r\n", "\n").replace("\r", "\n")):
-        lines = [line.strip() for line in block.splitlines() if line.strip()]
-        timing_index = next((i for i, line in enumerate(lines) if "-->" in line), None)
-        if timing_index is None:
-            continue
-        timing = lines[timing_index].split("-->")
-        if len(timing) != 2:
-            continue
-        start = parse_timestamp(timing[0].strip().split()[0])
-        end = parse_timestamp(timing[1].strip().split()[0])
-        text_lines = lines[timing_index + 1:]
-        text_lines = [re.sub(r"<[^>]*>", "", line) for line in text_lines]
-        cue_text = html.unescape(" ".join(text_lines)).strip()
-        cue_text = re.sub(r"\s+", " ", cue_text)
+    current_start = None
+    current_end = None
+    text_lines = []
+
+    def flush_cue():
+        if current_start is None or current_end is None:
+            return
+        cleaned = [re.sub(r"<[^>]*>", "", line).strip() for line in text_lines]
+        cue_text = html.unescape(" ".join(line for line in cleaned if line))
+        cue_text = re.sub(r"\\s+", " ", cue_text).strip()
         if cue_text:
-            cues.append({"start": start, "end": end, "text": cue_text})
+            cues.append({"start": current_start, "end": current_end, "text": cue_text})
+
+    for line in lines:
+        line = line.strip()
+        if "-->" in line:
+            flush_cue()
+            timing = line.split("-->")
+            if len(timing) != 2:
+                current_start = current_end = None
+                text_lines = []
+                continue
+            start_token = timing[0].strip().split()[0]
+            end_token = timing[1].strip().split()[0]
+            current_start = parse_timestamp(start_token)
+            current_end = parse_timestamp(end_token)
+            text_lines = []
+        elif current_start is not None and line and not line.startswith(("NOTE", "STYLE", "REGION")):
+            text_lines.append(line)
+
+    flush_cue()
     return cues
 
 
