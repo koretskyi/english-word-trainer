@@ -217,7 +217,7 @@ export default function VideoPage({ videos = [] }) {
       const player = playerRef.current;
       const nextBlock = trainingBlocks[blockIndex];
       if (!player || !nextBlock || typeof player.getCurrentTime !== "function") return;
-      if (player.getCurrentTime() >= nextBlock.end - 0.12) {
+      if (player.getCurrentTime() >= nextBlock.end + 0.12) {
         player.pauseVideo();
         setActiveBlockIndex(blockIndex);
       }
@@ -376,7 +376,7 @@ export default function VideoPage({ videos = [] }) {
             </p>
             <div className="video-exercise-actions">
               <button className="button button-primary" type="button" disabled={!playerReady} onClick={startTraining}>
-                {trainingStarted ? "Продолжить тренировку" : "Начать тренировку"}
+                {trainingStarted && blockIndex < trainingBlocks.length ? "Продолжить тренировку" : trainingStarted ? "Начать заново" : "Начать тренировку"}
               </button>
               {trainingStarted && <span className="video-training-progress">Задание {Math.min(blockIndex + 1, trainingBlocks.length)} из {trainingBlocks.length}</span>}
             </div>
