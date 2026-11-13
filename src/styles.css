@@ -1846,78 +1846,66 @@ button:disabled {
 }
 
 
-/* Large YouTube / TikTok platform selector buttons */
+/* Platform tabs styled like the main app navigation */
 .video-platform-picker {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
   margin: 4px 0 22px;
+  padding: 0;
 }
 
 .video-platform-button {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 13px;
+  justify-content: center;
+  gap: 7px;
   min-width: 0;
-  padding: 15px 16px;
-  border: 1px solid var(--border);
-  border-radius: 13px;
-  background: #fff;
-  color: #263247;
-  text-align: left;
-  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+  min-height: 76px;
+  padding: 10px 14px;
+  border: 1px solid transparent;
+  border-radius: 15px;
+  background: transparent;
+  color: #111827;
+  text-align: center;
+  transition: background .15s ease, color .15s ease;
 }
 
 .video-platform-button:hover {
-  border-color: #b8c5dc;
-  background: #fafbff;
+  background: #f3f6fc;
 }
 
 .video-platform-button.selected {
-  border-color: var(--primary);
-  background: #f2f5ff;
-  box-shadow: 0 0 0 2px rgb(49 87 213 / 9%);
-}
-
-.platform-button-mark {
-  display: grid;
-  place-items: center;
-  flex: 0 0 42px;
-  width: 42px;
-  height: 42px;
-  border-radius: 11px;
-  font-size: 21px;
-  font-weight: 800;
-}
-
-.youtube-mark {
-  background: #fff0f0;
-  color: #dc2626;
-}
-
-.tiktok-mark {
-  background: #eef1f5;
+  background: #e4edff;
   color: #111827;
 }
 
-.video-platform-button strong,
-.video-platform-button small {
+.platform-button-icon {
   display: block;
+  width: 23px;
+  height: 23px;
+  color: #111827;
+}
+
+.video-platform-button.selected .platform-button-icon {
+  color: #3478f6;
 }
 
 .video-platform-button strong {
-  margin-bottom: 3px;
+  display: block;
   font-size: 15px;
-}
-
-.video-platform-button small {
-  color: var(--muted);
-  font-size: 11px;
-  line-height: 1.35;
+  line-height: 1.2;
+  font-weight: 650;
 }
 
 @media (max-width: 520px) {
   .video-platform-picker {
-    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .video-platform-button {
+    min-height: 70px;
+    padding: 9px 6px;
   }
 }
