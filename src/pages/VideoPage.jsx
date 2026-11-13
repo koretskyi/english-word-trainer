@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const STORAGE_KEY = "english-word-trainer-video-url-v1";
 
@@ -92,12 +92,15 @@ export default function VideoPage() {
     }
   });
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    return () => {
-      // The embedded player is removed naturally when this page unmounts.
-    };
-  }, []);
+  const [selectedProvider, setSelectedProvider] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      const parsed = saved ? parseVideoUrl(saved) : null;
+      return parsed && !parsed.error ? parsed.provider : "youtube";
+    } catch {
+      return "youtube";
+    }
+  });
 
   function addVideo(event) {
     event.preventDefault();
@@ -105,6 +108,12 @@ export default function VideoPage() {
 
     if (parsed.error) {
       setError(parsed.error);
+      setActiveVideo(null);
+      return;
+    }
+
+    if (parsed.provider !== selectedProvider) {
+      setError(`Ссылка ведёт на ${parsed.provider === "youtube" ? "YouTube" : "TikTok"}. Выбери соответствующую кнопку выше.`);
       setActiveVideo(null);
       return;
     }
@@ -142,15 +151,46 @@ export default function VideoPage() {
         <span className="video-heading-icon" aria-hidden="true">▶</span>
       </div>
 
+      <div className="video-platform-picker" role="group" aria-label="Выбрать видеоплатформу">
+        <button
+          type="button"
+          className={`video-platform-button youtube-choice ${selectedProvider === "youtube" ? "selected" : ""}`}
+          aria-pressed={selectedProvider === "youtube"}
+          onClick={() => {
+            setSelectedProvider("youtube");
+            setError("");
+            setUrl("");
+          }}
+        >
+          <span className="platform-button-mark youtube-mark">▶</span>
+          <span><strong>YouTube</strong><small>Открыть YouTube-плеер</small></span>
+        </button>
+        <button
+          type="button"
+          className={`video-platform-button tiktok-choice ${selectedProvider === "tiktok" ? "selected" : ""}`}
+          aria-pressed={selectedProvider === "tiktok"}
+          onClick={() => {
+            setSelectedProvider("tiktok");
+            setError("");
+            setUrl("");
+          }}
+        >
+          <span className="platform-button-mark tiktok-mark">♪</span>
+          <span><strong>TikTok</strong><small>Открыть TikTok-плеер</small></span>
+        </button>
+      </div>
+
       <form className="video-link-form" onSubmit={addVideo}>
-        <label htmlFor="video-url">Ссылка на YouTube или TikTok</label>
+        <label htmlFor="video-url">Ссылка на {selectedProvider === "youtube" ? "YouTube" : "TikTok"}-видео</label>
         <div className="video-link-row">
           <input
             id="video-url"
             type="url"
             inputMode="url"
             autoComplete="url"
-            placeholder="https://www.youtube.com/watch?v=... или https://www.tiktok.com/@..."
+            placeholder={selectedProvider === "youtube"
+              ? "Вставь ссылку на YouTube-видео или Shorts"
+              : "Вставь полную ссылку на TikTok-ролик"}
             value={url}
             onChange={(event) => {
               setUrl(event.target.value);
@@ -160,10 +200,6 @@ export default function VideoPage() {
           <button className="button button-primary" type="submit" disabled={!url.trim()}>
             Открыть
           </button>
-        </div>
-        <div className="video-supported-platforms">
-          <span className="video-platform youtube-platform">YouTube</span>
-          <span className="video-platform tiktok-platform">TikTok</span>
         </div>
         {error && <p className="video-error" role="alert">{error}</p>}
       </form>
@@ -185,7 +221,7 @@ export default function VideoPage() {
               referrerPolicy="strict-origin-when-cross-origin"
               allow={activeVideo.provider === "youtube"
                 ? "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                : "fullscreen"}
+                : "encrypted-media; fullscreen"}
               allowFullScreen
             />
           </div>
