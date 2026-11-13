@@ -1844,3 +1844,80 @@ button:disabled {
     min-height: min(578px, 125vw);
   }
 }
+
+
+/* Large YouTube / TikTok platform selector buttons */
+.video-platform-picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 4px 0 22px;
+}
+
+.video-platform-button {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+  padding: 15px 16px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: #fff;
+  color: #263247;
+  text-align: left;
+  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+
+.video-platform-button:hover {
+  border-color: #b8c5dc;
+  background: #fafbff;
+}
+
+.video-platform-button.selected {
+  border-color: var(--primary);
+  background: #f2f5ff;
+  box-shadow: 0 0 0 2px rgb(49 87 213 / 9%);
+}
+
+.platform-button-mark {
+  display: grid;
+  place-items: center;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.youtube-mark {
+  background: #fff0f0;
+  color: #dc2626;
+}
+
+.tiktok-mark {
+  background: #eef1f5;
+  color: #111827;
+}
+
+.video-platform-button strong,
+.video-platform-button small {
+  display: block;
+}
+
+.video-platform-button strong {
+  margin-bottom: 3px;
+  font-size: 15px;
+}
+
+.video-platform-button small {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+@media (max-width: 520px) {
+  .video-platform-picker {
+    grid-template-columns: 1fr;
+  }
+}
