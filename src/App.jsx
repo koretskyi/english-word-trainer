@@ -798,6 +798,52 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
 
     <div className="admin-layout">
 
+      <section className="panel admin-video-panel">
+        <h2>Библиотека видео</h2>
+        <p className="muted">Добавляй ссылки на ролики здесь. Они появятся в разделе «Видео».</p>
+        <form className="admin-form" onSubmit={(event) => {
+          event.preventDefault();
+          const formData = new FormData(event.currentTarget);
+          const title = String(formData.get("videoTitle") || "").trim();
+          const url = String(formData.get("videoUrl") || "").trim();
+          const level = String(formData.get("videoLevel") || "B1");
+          if (!title || !url) return;
+          onSaveVideo({ id: createId(), title, url, level, transcript: "" });
+          event.currentTarget.reset();
+        }}>
+          <label>Название ролика
+            <input name="videoTitle" required placeholder="Например: Ordering food in a café" />
+          </label>
+          <label>Ссылка YouTube или TikTok
+            <input name="videoUrl" type="url" required placeholder="https://..." />
+          </label>
+          <label>Уровень
+            <select name="videoLevel" defaultValue="B1">
+              {["A1", "A2", "B1", "B2", "C1"].map((level) => <option key={level}>{level}</option>)}
+            </select>
+          </label>
+          <div className="form-actions">
+            <button className="button button-primary" type="submit">Добавить видео</button>
+          </div>
+        </form>
+        <div className="sentence-list">
+          {videos.length === 0 ? <p className="muted">Видео пока не добавлены.</p> : videos.map((video) => (
+            <article className="sentence-item" key={video.id}>
+              <div>
+                <strong>{video.title}</strong>
+                <p className="sentence-item-english">{video.url}</p>
+                <span className="muted">{video.level || "B1"}</span>
+              </div>
+              <div className="sentence-item-actions">
+                <button type="button" className="button button-danger" onClick={() => {
+                  if (window.confirm("Удалить это видео из библиотеки?")) onDeleteVideo(video.id);
+                }}>Удалить</button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="panel">
 
         <h2>
@@ -1049,51 +1095,7 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
         })()}
       </section>
 
-      <section className="panel admin-video-panel">
-        <h2>Библиотека видео</h2>
-        <p className="muted">Добавляй ссылки на ролики здесь. Они появятся в разделе «Видео».</p>
-        <form className="admin-form" onSubmit={(event) => {
-          event.preventDefault();
-          const formData = new FormData(event.currentTarget);
-          const title = String(formData.get("videoTitle") || "").trim();
-          const url = String(formData.get("videoUrl") || "").trim();
-          const level = String(formData.get("videoLevel") || "B1");
-          if (!title || !url) return;
-          onSaveVideo({ id: createId(), title, url, level, transcript: "" });
-          event.currentTarget.reset();
-        }}>
-          <label>Название ролика
-            <input name="videoTitle" required placeholder="Например: Ordering food in a café" />
-          </label>
-          <label>Ссылка YouTube или TikTok
-            <input name="videoUrl" type="url" required placeholder="https://..." />
-          </label>
-          <label>Уровень
-            <select name="videoLevel" defaultValue="B1">
-              {["A1", "A2", "B1", "B2", "C1"].map((level) => <option key={level}>{level}</option>)}
-            </select>
-          </label>
-          <div className="form-actions">
-            <button className="button button-primary" type="submit">Добавить видео</button>
-          </div>
-        </form>
-        <div className="sentence-list">
-          {videos.length === 0 ? <p className="muted">Видео пока не добавлены.</p> : videos.map((video) => (
-            <article className="sentence-item" key={video.id}>
-              <div>
-                <strong>{video.title}</strong>
-                <p className="sentence-item-english">{video.url}</p>
-                <span className="muted">{video.level || "B1"}</span>
-              </div>
-              <div className="sentence-item-actions">
-                <button type="button" className="button button-danger" onClick={() => {
-                  if (window.confirm("Удалить это видео из библиотеки?")) onDeleteVideo(video.id);
-                }}>Удалить</button>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+
 
     </div>
 
