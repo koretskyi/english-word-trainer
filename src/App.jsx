@@ -671,7 +671,7 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
       if (!response.ok) throw new Error(data.detail || "Не удалось получить субтитры.");
       const transcript = String(data.text || "").trim();
       if (!transcript) throw new Error("YouTube не вернул английские субтитры.");
-      onSaveVideo({ ...video, transcript });
+      onSaveVideo({ ...video, transcript, subtitleCues: Array.isArray(data.cues) ? data.cues : [] });
       setSubtitleJobs((current) => ({ ...current, [video.id]: "done" }));
     } catch (error) {
       setSubtitleErrors((current) => ({ ...current, [video.id]: error.message || "Ошибка загрузки субтитров." }));
@@ -867,6 +867,17 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
                 <strong>{video.title}</strong>
                 <p className="sentence-item-english">{video.url}</p>
                 <span className="muted">{video.level || "B1"}</span>
+                <div className="admin-video-range">
+                  <label>Начало (мм:сс)
+                    <input aria-label={`Начало видео ${video.title}`} defaultValue={video.startTime || "00:00"}
+                      placeholder="00:00" onBlur={(event) => onSaveVideo({ ...video, startTime: event.target.value.trim() })} />
+                  </label>
+                  <label>Конец (мм:сс)
+                    <input aria-label={`Конец видео ${video.title}`} defaultValue={video.endTime || ""}
+                      placeholder="до конца" onBlur={(event) => onSaveVideo({ ...video, endTime: event.target.value.trim() })} />
+                  </label>
+                  <small className="muted">Оставь конец пустым, чтобы использовать весь остаток ролика</small>
+                </div>
               </div>
               <div className="sentence-item-actions">
                 <button type="button" className="button button-primary"
