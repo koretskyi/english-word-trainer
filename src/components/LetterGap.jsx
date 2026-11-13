@@ -32,6 +32,10 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
     return false;
   }
 
+  if (lastInputRef) {
+    lastInputRef.focusAt = focusAt;
+  }
+
   // При открытии карточки фокусируемся на первой пустой позиции.
   useEffect(() => {
     if (disabled || !autoFocus) return;
@@ -115,7 +119,11 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
           const nextPreviousWord = [...previousWordValue];
           nextPreviousWord[previousWordIndex] = "";
           previousWordOnChange(nextPreviousWord);
-          previousWordLastInputRef?.current?.focus();
+          if (previousWordLastInputRef?.focusAt) {
+            previousWordLastInputRef.focusAt(previousWordIndex);
+          } else {
+            previousWordLastInputRef?.current?.focus();
+          }
         }
       }
     }
