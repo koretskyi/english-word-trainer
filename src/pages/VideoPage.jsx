@@ -67,84 +67,34 @@ function parseVideoTime(value) {
 }
 
 function buildTrainingBlocks(cues, startSeconds, endSeconds) {
-  const inRange = [...cues]
-    .filter((cue) => Number(cue.start) < (endSeconds ?? Infinity) && Number(cue.end) > startSeconds)
-    .sort((a, b) => Number(a.start) - Number(b.start));
-
-  const sentences = [];
-  let buffer = "";
-  let bufferStart = null;
-  let previousCueEnd = null;
-
-  const finishBuffer = (end) => {
-    const text = buffer.trim();
-    if (text) sentences.push({ text, start: bufferStart ?? startSeconds, end });
-    buffer = "";
-    bufferStart = null;
-  };
-
-  for (const cue of inRange) {
-    const cueStart = Number(cue.start);
-    const cueEnd = Number(cue.end);
-    const cueText = String(cue.text || "").trim();
-    if (!cueText || !Number.isFinite(cueStart) || !Number.isFinite(cueEnd)) continue;
-
-    if (buffer && previousCueEnd !== null && cueStart - previousCueEnd > 2.2) {
-      finishBuffer(previousCueEnd);
-    }
-
-    const pieces = (cueText.match(/[^.!?]+[.!?]+["')\]]*|[^.!?]+$/g) || [cueText])
-      .map((piece) => piece.trim()).filter(Boolean);
-    // A YouTube subtitle cue can contain several sentences but has only one
-    // time range. Split that range proportionally so each sentence can replay
-    // independently instead of replaying the entire cue.
-    const weights = pieces.map((piece) => Math.max(1, (piece.match(/[\p{L}\p{N}]+/gu) || []).length));
-    const totalWeight = weights.reduce((sum, weight) => sum + weight, 0) || 1;
-    const cueDuration = Math.max(0, cueEnd - cueStart);
-    let elapsedWeight = 0;
-    for (let pieceIndex = 0; pieceIndex < pieces.length; pieceIndex += 1) {
-      const part = pieces[pieceIndex];
-      const segmentStart = cueStart + cueDuration * elapsedWeight / totalWeight;
-      elapsedWeight += weights[pieceIndex];
-      const segmentEnd = cueStart + cueDuration * elapsedWeight / totalWeight;
-      if (!buffer) bufferStart = segmentStart;
-      buffer = buffer ? buffer + " " + part : part;
-      if (/[.!?]["')\]]*$/.test(part)) finishBuffer(segmentEnd);
-    }
-    previousCueEnd = cueEnd;
-  }
-  if (buffer) finishBuffer(previousCueEnd ?? startSeconds);
-
-  const blocks = [];
-  let sentenceIndex = 0;
-  const countWords = (items) => (items.map((sentence) => sentence.text).join(" ").match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu) || []).filter((word) => (word.match(/[\p{L}\p{N}]/gu) || []).length >= 3).length;
-
-  // Keep each exercise to a maximum of 7 qualifying words where possible.
-  // A single long subtitle sentence stays intact rather than being cut mid-sentence.
-  while (sentenceIndex < sentences.length) {
-    const group = [];
-    while (sentenceIndex < sentences.length) {
-      const candidate = [...group, sentences[sentenceIndex]];
-      if (group.length && countWords(candidate) > 7) break;
-      group.push(sentences[sentenceIndex]);
-      sentenceIndex += 1;
-      if (countWords(group) >= 7) break;
-    }
-
-    const text = group.map((sentence) => sentence.text).join(" ");
-    const wordCount = countWords(group);
-    if (group.length) {
-      blocks.push({
-        id: "group-" + (sentenceIndex - group.length),
+  // One YouTube subtitle cue = one exercise. Keep the original cue timestamps;
+  // never split a cue by sentence or estimate internal sentence timings.
+  return [...cues]
+    .filter((cue) => {
+      const cueStart = Number(cue.start);
+      const cueEnd = Number(cue.end);
+      return String(cue.text || "").trim() &&
+        Number.isFinite(cueStart) && Number.isFinite(cueEnd) &&
+        cueEnd > startSeconds && cueStart < (endSeconds ?? Infinity);
+    })
+    .sort((a, b) => Number(a.start) - Number(b.start))
+    .map((cue, index) => {
+      const start = Math.max(Number(cue.start), startSeconds);
+      const end = Math.min(Number(cue.end), endSeconds ?? Infinity);
+      const text = String(cue.text || "").trim();
+      const sentence = { text, start, end };
+      const wordCount = (text.match(/[\\p{L}\\p{N}]+(?:['’\\-][\\p{L}\\p{N}]+)*/gu) || [])
+        .filter((word) => (word.match(/[\\p{L}\\p{N}]/gu) || []).length >= 3).length;
+      return {
+        id: "cue-" + index,
         text,
-        sentences: group,
-        start: group[0].start,
-        end: group[group.length - 1].end,
+        sentences: [sentence],
+        start,
+        end,
         wordCount,
-      });
-    }
-  }
-  return blocks;
+      };
+    })
+    .filter((block) => block.end > block.start);
 }
 
 export default function VideoPage({ videos = [] }) {
@@ -270,11 +220,11 @@ export default function VideoPage({ videos = [] }) {
       const player = playerRef.current;
       const nextBlock = trainingBlocks[blockIndex];
       if (!player || !nextBlock || typeof player.getCurrentTime !== "function") return;
-      if (player.getCurrentTime() >= Math.max(nextBlock.start ?? startSeconds, nextBlock.end - 0.15)) {
+      if (player.getCurrentTime() >= nextBlock.end) {
         player.pauseVideo();
         setActiveBlockIndex(blockIndex);
       }
-    }, 100);
+    }, 50);
     return () => window.clearInterval(timer);
   }, [trainingStarted, activeBlockIndex, playerReady, blockIndex, trainingBlocks]);
 
@@ -348,11 +298,11 @@ export default function VideoPage({ videos = [] }) {
     const timer = window.setInterval(() => {
       const player = playerRef.current;
       if (player && typeof player.getCurrentTime === "function" &&
-          player.getCurrentTime() >= sentence.end + 0.2) {
+          player.getCurrentTime() >= sentence.end) {
         player.pauseVideo();
         setReplayingSentenceIndex(null);
       }
-    }, 100);
+    }, 50);
     return () => window.clearInterval(timer);
   }, [replayingSentenceIndex, selectedId, activeBlock?.id, exerciseSentences]);
 
@@ -365,9 +315,8 @@ export default function VideoPage({ videos = [] }) {
     setReplayingBlock(false);
     setReplayingSentenceIndex(sentenceIndex);
     playerRef.current.pauseVideo();
-    // Start slightly early and stop slightly late to avoid clipping speech
-    // at approximate sentence boundaries inside a shared YouTube subtitle cue.
-    playerRef.current.seekTo(Math.max(0, sentence.start - 0.15), true);
+    // Replay the exact subtitle cue interval supplied by YouTube.
+    playerRef.current.seekTo(sentence.start, true);
     playerRef.current.playVideo();
   }
 
@@ -453,7 +402,7 @@ export default function VideoPage({ videos = [] }) {
       <section className="video-exercise-panel video-training-panel">
         <div className="video-mask-heading">
           <h3>Тренировка аудирования</h3>
-          <span>до 7 слов в задании</span>
+          <span>по таймкодам субтитров</span>
         </div>
         {!subtitleCues.length ? (
           <p className="video-training-note">Для этого ролика ещё не загружены субтитры. Сначала получи английские субтитры в админке.</p>
