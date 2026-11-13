@@ -127,6 +127,7 @@ function buildTrainingBlocks(cues, startSeconds, endSeconds) {
       blocks.push({
         id: "group-" + (sentenceIndex - group.length),
         text,
+        sentences: group,
         start: group[0].start,
         end: group[group.length - 1].end,
         wordCount,
@@ -160,10 +161,24 @@ export default function VideoPage({ videos = [] }) {
   const [voiceAnswer, setVoiceAnswer] = useState("");
   const [voiceError, setVoiceError] = useState("");
   const [answerResult, setAnswerResult] = useState("");
+  const [manualAnswer, setManualAnswer] = useState("");
+  const [replayingBlock, setReplayingBlock] = useState(false);
   const activeBlock = activeBlockIndex === null ? null : trainingBlocks[activeBlockIndex];
 
-  const exerciseTokens = useMemo(() => tokenize(activeBlock?.text || ""), [activeBlock?.id]);
-  const exerciseWordTokens = exerciseTokens.filter((token) => token.isWord);
+  const exerciseSentences = useMemo(() => {
+    if (!activeBlock) return [];
+    const sentences = activeBlock.sentences?.length
+      ? activeBlock.sentences
+      : [{ text: activeBlock.text }];
+    return sentences.map((sentence, sentenceIndex) => ({
+      ...sentence,
+      tokens: tokenize(sentence.text).map((token) => ({
+        ...token,
+        id: "sentence-" + sentenceIndex + "-" + token.id,
+      })),
+    }));
+  }, [activeBlock?.id]);
+  const exerciseWordTokens = exerciseSentences.flatMap((sentence) => sentence.tokens.filter((token) => token.isWord));
   const openedPositions = useMemo(
     () => Object.fromEntries(exerciseWordTokens.map((token) => [
       token.id, createWordGapOpenedPositions(token.value),
@@ -182,6 +197,8 @@ export default function VideoPage({ videos = [] }) {
     setVoiceAnswer("");
     setVoiceError("");
     setAnswerResult("");
+    setManualAnswer("");
+    setReplayingBlock(false);
 
     if (!parsed?.videoId || !playerContainerRef.current) return undefined;
 
@@ -238,9 +255,19 @@ export default function VideoPage({ videos = [] }) {
     return () => window.clearInterval(timer);
   }, [trainingStarted, activeBlockIndex, playerReady, blockIndex, trainingBlocks]);
 
-  const startVoiceCapture = useCallback((index) => {
-    const block = trainingBlocks[index];
-    if (!block) return;
+  const evaluateAnswer = useCallback((answer) => {
+    if (!activeBlock) return;
+    if (normalizeText(answer) === normalizeText(activeBlock.text)) {
+      setVoiceError("");
+      setAnswerResult("correct");
+    } else {
+      setAnswerResult("incorrect");
+      setVoiceError("Ответ отличается от оригинала. Попробуй ещё раз или исправь текст вручную.");
+    }
+  }, [activeBlock?.id]);
+
+  const startVoiceCapture = useCallback(() => {
+    if (!activeBlock) return;
     captureRef.current?.stop();
     setVoiceAnswer("");
     setVoiceError("");
@@ -250,28 +277,33 @@ export default function VideoPage({ videos = [] }) {
       onError: (message) => setVoiceError(message),
       onText: (recognizedText) => {
         setVoiceAnswer(recognizedText);
-        if (normalizeText(recognizedText) === normalizeText(block.text)) {
-          setVoiceError("");
-          setAnswerResult("correct");
-        } else {
-          setAnswerResult("incorrect");
-          setVoiceError("Распознанный текст отличается от оригинала. Попробуй ещё раз.");
-        }
+        evaluateAnswer(recognizedText);
       },
     });
     captureRef.current = capture;
     capture.start();
-  }, [trainingBlocks]);
+  }, [activeBlock?.id, evaluateAnswer]);
 
   useEffect(() => {
-    if (activeBlockIndex === null) return undefined;
-    const timer = window.setTimeout(() => startVoiceCapture(activeBlockIndex), 350);
-    return () => {
-      window.clearTimeout(timer);
-      captureRef.current?.stop();
-      captureRef.current = null;
-    };
-  }, [activeBlockIndex, startVoiceCapture]);
+    if (!replayingBlock || !activeBlock) return undefined;
+    const timer = window.setInterval(() => {
+      const player = playerRef.current;
+      if (player && typeof player.getCurrentTime === "function" &&
+          player.getCurrentTime() >= activeBlock.end) {
+        player.pauseVideo();
+        setReplayingBlock(false);
+      }
+    }, 100);
+    return () => window.clearInterval(timer);
+  }, [replayingBlock, activeBlock?.id]);
+
+  function replayActiveBlock() {
+    if (!activeBlock || !playerRef.current) return;
+    playerRef.current.pauseVideo();
+    playerRef.current.seekTo(activeBlock.start, true);
+    setReplayingBlock(true);
+    playerRef.current.playVideo();
+  }
 
   function startTraining() {
     if (!playerReady || !playerRef.current || !trainingBlocks.length) return;
@@ -281,6 +313,7 @@ export default function VideoPage({ videos = [] }) {
     setVoiceAnswer("");
     setVoiceError("");
     setAnswerResult("");
+    setManualAnswer("");
     setTrainingStarted(true);
     playerRef.current.seekTo(startSeconds, true);
     playerRef.current.playVideo();
@@ -296,6 +329,8 @@ export default function VideoPage({ videos = [] }) {
     setVoiceAnswer("");
     setVoiceError("");
     setAnswerResult("");
+    setManualAnswer("");
+    setReplayingBlock(false);
     playerRef.current?.playVideo();
   }
 
@@ -350,33 +385,51 @@ export default function VideoPage({ videos = [] }) {
           <p className="video-training-note">В выбранном фрагменте недостаточно текста для задания длиннее 20 слов. Проверь субтитры или выбери другой отрезок.</p>
         ) : activeBlock ? (
           <>
-            <p className="video-training-question">Воспроизведите то, что вы услышали</p>
-            <div className="video-training-mask" aria-label="Два предложения с замаскированными буквами">
-              {exerciseTokens.map((token) => {
-                if (!token.isWord) return <span key={token.id}>{token.value}</span>;
-                return <WordGap key={token.id}
-                  sentence={{ id: activeBlock.id + "-" + token.id, word: token.value }}
-                  value={Array([...token.value].length).fill("")}
-                  onChange={() => {}}
-                  disabled
-                  autoFocus={false}
-                  openedPositions={openedPositions[token.id]} />;
-              })}
+            <div className="video-training-mask" aria-label="Предложения с замаскированными буквами">
+              {exerciseSentences.map((sentence, sentenceIndex) => (
+                <div className="video-training-sentence" key={sentenceIndex}>
+                  <span className="video-training-sentence-number">{sentenceIndex + 1}.</span>
+                  <div className="video-training-sentence-text">
+                    {sentence.tokens.map((token) => {
+                      if (!token.isWord) return <span key={token.id}>{token.value}</span>;
+                      return <WordGap key={token.id}
+                        sentence={{ id: activeBlock.id + "-" + token.id, word: token.value }}
+                        value={Array([...token.value].length).fill("")}
+                        onChange={() => {}}
+                        disabled
+                        autoFocus={false}
+                        openedPositions={openedPositions[token.id]} />;
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="video-exercise-actions video-training-controls">
+              <button className="button button-secondary" type="button" onClick={replayActiveBlock} disabled={replayingBlock}>
+                <span aria-hidden="true">↻</span> {replayingBlock ? "Прослушивание…" : "Прослушать фрагмент ещё раз"}
+              </button>
+              <button className="button button-secondary" type="button" onClick={startVoiceCapture} disabled={voiceStatus === "listening" || voiceStatus === "transcribing"}>
+                <span aria-hidden="true">🎙</span> Записать ответ
+              </button>
             </div>
             <div className={"video-voice-indicator" + (voiceStatus === "listening" ? " is-listening" : "")} role="status" aria-live="polite">
               <span className={"auto-voice-dot" + (voiceStatus === "listening" ? " is-listening" : "")} />
-              {voiceStatus === "listening" ? "Микрофон активен — произнесите оба предложения…" :
+              {voiceStatus === "listening" ? "Микрофон активен — произнесите предложения…" :
                 voiceStatus === "transcribing" ? "Whisper распознаёт вашу речь…" :
-                  answerResult === "correct" ? "Ответ распознан правильно." : "Подготовка микрофона…"}
+                  answerResult === "correct" ? "Ответ распознан правильно." : "Микрофон включается только после нажатия «Записать ответ»."}
             </div>
             {voiceAnswer && <p className={"video-voice-answer" + (answerResult === "incorrect" ? " is-incorrect" : "")}>Распознано: {voiceAnswer}</p>}
+            <label className="video-manual-answer-label" htmlFor="video-manual-answer">Или введите ответ вручную</label>
+            <textarea id="video-manual-answer" className="video-manual-answer" value={manualAnswer}
+              onChange={(event) => { setManualAnswer(event.target.value); setAnswerResult(""); setVoiceError(""); }}
+              placeholder="Введите услышанные предложения…" rows={4} />
             {voiceError && <p className="video-voice-error" role="alert">{voiceError}</p>}
             <div className="video-exercise-actions">
               {answerResult === "correct" ? (
                 <button className="button button-primary" type="button" onClick={continueVideo}>Продолжить просмотр</button>
               ) : (
-                <button className="button button-secondary" type="button" onClick={() => startVoiceCapture(activeBlockIndex)}>
-                  <span aria-hidden="true">🎙</span> Повторить ответ
+                <button className="button button-primary" type="button" disabled={!manualAnswer.trim()} onClick={() => evaluateAnswer(manualAnswer)}>
+                  Проверить ответ
                 </button>
               )}
             </div>
