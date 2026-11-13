@@ -2613,9 +2613,7 @@ button:disabled {
 /* Header refresh: light surface, dark typography, and a distinct active tab */
 .app-header {
   color: #172033;
-  background:
-    linear-gradient(rgba(248, 250, 252, 0.76), rgba(248, 250, 252, 0.76)),
-    url("https://wikimedia.ie/wp-content/uploads/2025/05/Condado_de_Dublin_-_Long_Room-Trinity_College_-_20170826095948-1-2048x1365.jpg") center 48% / cover no-repeat;
+  background: url("https://wikimedia.ie/wp-content/uploads/2025/05/Condado_de_Dublin_-_Long_Room-Trinity_College_-_20170826095948-1-2048x1365.jpg") center 48% / cover no-repeat;
   border-bottom: 1px solid #e2e8f0;
 }
 
