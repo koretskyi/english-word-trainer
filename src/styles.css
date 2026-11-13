@@ -2765,9 +2765,11 @@ button:disabled {
 }
 
 
-/* Keep the title on the left, level with the Admin button on the right */
+/* Put the title opposite the Admin button: same top row, left side */
 .app-header .brand > div:last-child {
-  position: relative;
+  position: absolute;
+  top: 8px;
+  left: max(20px, calc((100% - 1000px) / 2));
   display: flex;
   align-items: center;
   height: 42px;
