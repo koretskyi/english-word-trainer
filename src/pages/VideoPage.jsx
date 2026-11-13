@@ -348,7 +348,7 @@ export default function VideoPage({ videos = [] }) {
     const timer = window.setInterval(() => {
       const player = playerRef.current;
       if (player && typeof player.getCurrentTime === "function" &&
-          player.getCurrentTime() >= sentence.end) {
+          player.getCurrentTime() >= sentence.end + 0.2) {
         player.pauseVideo();
         setReplayingSentenceIndex(null);
       }
@@ -365,7 +365,9 @@ export default function VideoPage({ videos = [] }) {
     setReplayingBlock(false);
     setReplayingSentenceIndex(sentenceIndex);
     playerRef.current.pauseVideo();
-    playerRef.current.seekTo(sentence.start, true);
+    // Start slightly early and stop slightly late to avoid clipping speech
+    // at approximate sentence boundaries inside a shared YouTube subtitle cue.
+    playerRef.current.seekTo(Math.max(0, sentence.start - 0.15), true);
     playerRef.current.playVideo();
   }
 
