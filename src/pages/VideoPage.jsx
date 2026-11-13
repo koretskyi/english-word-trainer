@@ -318,7 +318,7 @@ export default function VideoPage({ videos = [] }) {
     const timer = window.setInterval(() => {
       const player = playerRef.current;
       if (player && typeof player.getCurrentTime === "function" &&
-          player.getCurrentTime() >= sentence.end + 0.3) {
+          player.getCurrentTime() >= sentence.end + 0.1) {
         player.pauseVideo();
         setReplayingSentenceIndex(null);
       }
