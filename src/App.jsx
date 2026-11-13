@@ -655,6 +655,29 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
   const [error, setError] = useState("");
   const [activeLevel, setActiveLevel] = useState("A1");
   const adminLevels = ["A1", "A2", "B1", "B2", "C1"];
+  const [subtitleJobs, setSubtitleJobs] = useState({});
+  const [subtitleErrors, setSubtitleErrors] = useState({});
+
+  async function fetchVideoSubtitles(video) {
+    setSubtitleErrors((current) => ({ ...current, [video.id]: "" }));
+    setSubtitleJobs((current) => ({ ...current, [video.id]: "loading" }));
+    try {
+      const response = await fetch("/api/youtube-subtitles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: video.url }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || "Не удалось получить субтитры.");
+      const transcript = String(data.text || "").trim();
+      if (!transcript) throw new Error("YouTube не вернул английские субтитры.");
+      onSaveVideo({ ...video, transcript });
+      setSubtitleJobs((current) => ({ ...current, [video.id]: "done" }));
+    } catch (error) {
+      setSubtitleErrors((current) => ({ ...current, [video.id]: error.message || "Ошибка загрузки субтитров." }));
+      setSubtitleJobs((current) => ({ ...current, [video.id]: "error" }));
+    }
+  }
 
 
 
@@ -846,6 +869,15 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
                 <span className="muted">{video.level || "B1"}</span>
               </div>
               <div className="sentence-item-actions">
+                <button type="button" className="button button-primary"
+                  disabled={subtitleJobs[video.id] === "loading"}
+                  onClick={() => fetchVideoSubtitles(video)}>
+                  {subtitleJobs[video.id] === "loading"
+                    ? "Загружаю титры…"
+                    : video.transcript ? "Обновить титры" : "Получить титры"}
+                </button>
+                {video.transcript && <span className="muted">Титры загружены</span>}
+                {subtitleErrors[video.id] && <p className="form-error" role="alert">{subtitleErrors[video.id]}</p>}
                 <button type="button" className="button button-danger" onClick={() => {
                   if (window.confirm("Удалить это видео из библиотеки?")) onDeleteVideo(video.id);
                 }}>Удалить</button>
