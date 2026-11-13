@@ -83,8 +83,8 @@ function buildTrainingBlocks(cues, startSeconds, endSeconds) {
       const end = Math.min(Number(cue.end), endSeconds ?? Infinity);
       const text = String(cue.text || "").trim();
       const sentence = { text, start, end };
-      const wordCount = (text.match(/[\\p{L}\\p{N}]+(?:['’\\-][\\p{L}\\p{N}]+)*/gu) || [])
-        .filter((word) => (word.match(/[\\p{L}\\p{N}]/gu) || []).length >= 3).length;
+      const wordCount = (text.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu) || [])
+        .filter((word) => (word.match(/[\p{L}\p{N}]/gu) || []).length >= 3).length;
       return {
         id: "cue-" + index,
         text,
