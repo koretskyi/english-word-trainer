@@ -107,23 +107,23 @@ function buildTrainingBlocks(cues, startSeconds, endSeconds) {
 
   const blocks = [];
   let sentenceIndex = 0;
+  const countWords = (items) => (items.map((sentence) => sentence.text).join(" ").match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu) || []).filter((word) => (word.match(/[\p{L}\p{N}]/gu) || []).length >= 3).length;
 
+  // Keep each exercise to a maximum of 7 qualifying words where possible.
+  // A single long subtitle sentence stays intact rather than being cut mid-sentence.
   while (sentenceIndex < sentences.length) {
-    const group = [sentences[sentenceIndex], sentences[sentenceIndex + 1]].filter(Boolean);
-    sentenceIndex += group.length;
-
-    const countWords = () => (group.map((sentence) => sentence.text).join(" ").match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu) || []).filter((word) => (word.match(/[\p{L}\p{N}]/gu) || []).length >= 3).length;
-
-    // Start with two sentences. If they are too short, keep adding the
-    // following sentences until the whole exercise contains more than 20 words.
-    while (group.length >= 2 && countWords() <= 10 && sentenceIndex < sentences.length) {
+    const group = [];
+    while (sentenceIndex < sentences.length) {
+      const candidate = [...group, sentences[sentenceIndex]];
+      if (group.length && countWords(candidate) > 7) break;
       group.push(sentences[sentenceIndex]);
       sentenceIndex += 1;
+      if (countWords(group) >= 7) break;
     }
 
     const text = group.map((sentence) => sentence.text).join(" ");
-    const wordCount = countWords();
-    if (group.length >= 2 && wordCount > 10) {
+    const wordCount = countWords(group);
+    if (group.length) {
       blocks.push({
         id: "group-" + (sentenceIndex - group.length),
         text,
@@ -163,6 +163,10 @@ export default function VideoPage({ videos = [] }) {
   const [answerResult, setAnswerResult] = useState("");
   const [videoWordAnswers, setVideoWordAnswers] = useState({});
   const [replayingBlock, setReplayingBlock] = useState(false);
+  const [replayingSentenceIndex, setReplayingSentenceIndex] = useState(null);
+  const [revealedSentences, setRevealedSentences] = useState({});
+  const [sentenceVoiceAnswers, setSentenceVoiceAnswers] = useState({});
+  const [recordingSentenceIndex, setRecordingSentenceIndex] = useState(null);
   const activeBlock = activeBlockIndex === null ? null : trainingBlocks[activeBlockIndex];
 
   const exerciseSentences = useMemo(() => {
@@ -301,48 +305,57 @@ export default function VideoPage({ videos = [] }) {
     }
   }
 
-  const startVoiceCapture = useCallback(() => {
-    if (!activeBlock) return;
+  const startVoiceCapture = useCallback((sentence, sentenceIndex) => {
+    if (!activeBlock || !sentence) return;
     setReplayingBlock(false);
+    setReplayingSentenceIndex(null);
     playerRef.current?.pauseVideo();
     captureRef.current?.stop();
-    setVoiceAnswer("");
+    setRecordingSentenceIndex(sentenceIndex);
+    setSentenceVoiceAnswers((current) => ({ ...current, [sentenceIndex]: "" }));
     setVoiceError("");
-    setAnswerResult("");
     const capture = startAutoVoiceCapture({
       onStatus: setVoiceStatus,
-      onError: (message) => setVoiceError(message),
+      onError: (message) => { setVoiceError(message); setRecordingSentenceIndex(null); },
       onText: (recognizedText) => {
-        setVoiceAnswer(recognizedText);
-        evaluateAnswer(recognizedText);
+        setSentenceVoiceAnswers((current) => ({ ...current, [sentenceIndex]: recognizedText }));
+        setRecordingSentenceIndex(null);
+        if (normalizeText(recognizedText) === normalizeText(sentence.text)) {
+          setVoiceError("");
+        } else {
+          setVoiceError("Ответ в предложении " + (sentenceIndex + 1) + " отличается от оригинала.");
+        }
       },
     });
     captureRef.current = capture;
     capture.start();
-  }, [selectedId, activeBlock?.id, evaluateAnswer]);
+  }, [selectedId, activeBlock?.id]);
 
   useEffect(() => {
-    if (!replayingBlock || !activeBlock) return undefined;
+    if (replayingSentenceIndex === null || !activeBlock) return undefined;
+    const sentence = exerciseSentences[replayingSentenceIndex];
+    if (!sentence) return undefined;
     const timer = window.setInterval(() => {
       const player = playerRef.current;
       if (player && typeof player.getCurrentTime === "function" &&
-          player.getCurrentTime() >= activeBlock.end) {
+          player.getCurrentTime() >= sentence.end) {
         player.pauseVideo();
-        setReplayingBlock(false);
+        setReplayingSentenceIndex(null);
       }
     }, 100);
     return () => window.clearInterval(timer);
-  }, [replayingBlock, selectedId, activeBlock?.id]);
+  }, [replayingSentenceIndex, selectedId, activeBlock?.id, exerciseSentences]);
 
-  function replayActiveBlock() {
-    if (!activeBlock || !playerRef.current) return;
+  function replaySentence(sentence, sentenceIndex) {
+    if (!sentence || !playerRef.current) return;
     captureRef.current?.stop();
     captureRef.current = null;
+    setRecordingSentenceIndex(null);
     setVoiceStatus("idle");
     setReplayingBlock(false);
+    setReplayingSentenceIndex(sentenceIndex);
     playerRef.current.pauseVideo();
-    playerRef.current.seekTo(activeBlock.start, true);
-    setReplayingBlock(true);
+    playerRef.current.seekTo(sentence.start, true);
     playerRef.current.playVideo();
   }
 
@@ -428,48 +441,65 @@ export default function VideoPage({ videos = [] }) {
       <section className="video-exercise-panel video-training-panel">
         <div className="video-mask-heading">
           <h3>Тренировка аудирования</h3>
-          <span>минимум 2 предложения · больше 10 слов</span>
+          <span>до 7 слов в задании</span>
         </div>
         {!subtitleCues.length ? (
           <p className="video-training-note">Для этого ролика ещё не загружены субтитры. Сначала получи английские субтитры в админке.</p>
         ) : !trainingBlocks.length ? (
-          <p className="video-training-note">В выбранном фрагменте недостаточно текста для задания длиннее 10 слов. Проверь субтитры или выбери другой отрезок.</p>
+          <p className="video-training-note">В выбранном фрагменте недостаточно текста для заданий. Проверь субтитры или выбери другой отрезок.</p>
         ) : activeBlock ? (
           <>
             <div className="video-training-mask" aria-label="Предложения с замаскированными буквами">
               {exerciseSentences.map((sentence, sentenceIndex) => (
-                <div className="video-training-sentence" key={sentenceIndex}>
-                  <span className="video-training-sentence-number">{sentenceIndex + 1}.</span>
-                  <div className="video-training-sentence-text">
-                    {sentence.tokens.map((token) => {
-                      if (!token.isWord) return <span key={token.id}>{token.value}</span>;
-                      return <WordGap key={token.id}
-                        sentence={{ id: activeBlock.id + "-" + token.id, word: token.value }}
-                        value={videoWordAnswers[token.id] || Array([...token.value].length).fill("")}
-                        onChange={(nextValue) => updateVideoWordAnswer(token, nextValue)}
-                        disabled={answerResult === "correct"}
-                        autoFocus={false}
-                        showMistakes={answerResult === "incorrect"}
-                        openedPositions={openedPositions[token.id]} />;
-                    })}
+                <div className="video-training-sentence-card" key={sentenceIndex}>
+                  <div className="video-training-sentence">
+                    <span className="video-training-sentence-number">{sentenceIndex + 1}.</span>
+                    <div className="video-training-sentence-text">
+                      {sentence.tokens.map((token) => {
+                        if (!token.isWord) return <span key={token.id}>{token.value}</span>;
+                        return <WordGap key={token.id}
+                          sentence={{ id: activeBlock.id + "-" + token.id, word: token.value }}
+                          value={videoWordAnswers[token.id] || Array([...token.value].length).fill("")}
+                          onChange={(nextValue) => updateVideoWordAnswer(token, nextValue)}
+                          disabled={answerResult === "correct"}
+                          autoFocus={false}
+                          showMistakes={answerResult === "incorrect"}
+                          openedPositions={openedPositions[token.id]} />;
+                      })}
+                    </div>
                   </div>
+                  <div className="video-sentence-actions">
+                    <button className="button button-secondary" type="button"
+                      onClick={() => replaySentence(sentence, sentenceIndex)}
+                      disabled={replayingSentenceIndex === sentenceIndex}>
+                      {replayingSentenceIndex === sentenceIndex ? "Прослушивание…" : "↻ Прослушать ещё раз"}
+                    </button>
+                    <button className="button button-secondary" type="button"
+                      onClick={() => setRevealedSentences((current) => ({ ...current, [sentenceIndex]: !current[sentenceIndex] }))}>
+                      {revealedSentences[sentenceIndex] ? "Скрыть текст" : "Показать текст"}
+                    </button>
+                    <button className="button button-secondary" type="button"
+                      onClick={() => startVoiceCapture(sentence, sentenceIndex)}
+                      disabled={voiceStatus === "listening" || voiceStatus === "transcribing"}>
+                      {recordingSentenceIndex === sentenceIndex ? "Говорите…" : "🎙 Записать ответ"}
+                    </button>
+                  </div>
+                  {revealedSentences[sentenceIndex] && <p className="video-sentence-original">{sentence.text}</p>}
+                  {sentenceVoiceAnswers[sentenceIndex] && (
+                    <p className={"video-voice-answer" + (normalizeText(sentenceVoiceAnswers[sentenceIndex]) === normalizeText(sentence.text) ? "" : " is-incorrect")}>
+                      Распознано: {sentenceVoiceAnswers[sentenceIndex]}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
-            <div className="video-exercise-actions video-training-controls">
-              <button className="button button-secondary" type="button" onClick={replayActiveBlock} disabled={replayingBlock}>
-                <span aria-hidden="true">↻</span> {replayingBlock ? "Прослушивание…" : "Прослушать фрагмент ещё раз"}
-              </button>
-              <button className="button button-secondary" type="button" onClick={startVoiceCapture} disabled={voiceStatus === "listening" || voiceStatus === "transcribing"}>
-                <span aria-hidden="true">🎙</span> Записать ответ
-              </button>
-            </div>
-            <div className={"video-voice-indicator" + (voiceStatus === "listening" ? " is-listening" : "")} role="status" aria-live="polite">
+            <div className="video-voice-indicator" role="status" aria-live="polite">
               <span className={"auto-voice-dot" + (voiceStatus === "listening" ? " is-listening" : "")} />
-              {voiceStatus === "listening" ? "Микрофон активен — произнесите предложения…" :
+              {voiceStatus === "listening" ? "Микрофон активен — произнесите предложение…" :
                 voiceStatus === "transcribing" ? "Whisper распознаёт вашу речь…" :
-                  answerResult === "correct" ? "Ответ распознан правильно." : "Микрофон включается только после нажатия «Записать ответ»."}
+                  answerResult === "correct" ? "Все слова восстановлены правильно." : "Выберите действие под нужным предложением."}
             </div>
+            {voiceError && <p className="video-voice-error" role="alert">{voiceError}</p>}
             {voiceAnswer && <p className={"video-voice-answer" + (answerResult === "incorrect" ? " is-incorrect" : "")}>Распознано: {voiceAnswer}</p>}
             {voiceError && <p className="video-voice-error" role="alert">{voiceError}</p>}
             {answerResult === "incorrect" && <p className="video-voice-error" role="alert">Есть ошибки. Исправь буквы прямо в полях слов.</p>}
