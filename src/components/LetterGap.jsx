@@ -13,7 +13,7 @@ export function createWordGapOpenedPositions(word) {
   return positions.slice(0, count);
 }
 
-function WordGap({ sentence, value, onChange, disabled, containerRef, showMistakes = false, autoFocus = true, firstInputRef, nextInputRef, openedPositions, revealAll = false }) {
+function WordGap({ sentence, value, onChange, disabled, containerRef, showMistakes = false, autoFocus = true, firstInputRef, lastInputRef, nextInputRef, previousWordValue, previousWordOnChange, previousWordLastInputRef, openedPositions, revealAll = false }) {
   const letters = [...sentence.word];
   // Открываем одну случайную букву на каждые полные 3 буквы слова.
   // Выбор фиксируется на время показа карточки и меняется при переходе к новой.
@@ -94,16 +94,29 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
       event.preventDefault();
 
       let previous = index - 1;
-
-      while (previous >= 0 && !value[previous]) {
-        previous--;
-      }
+      while (previous >= 0 && !value[previous]) previous--;
 
       if (previous >= 0) {
         const next = [...value];
         next[previous] = "";
         onChange(next);
         focusAt(previous);
+        return;
+      }
+
+      // If this is the first filled word position, continue deleting
+      // from the end of the previous word instead of stopping here.
+      if (previousWordValue && previousWordOnChange) {
+        let previousWordIndex = previousWordValue.length - 1;
+        while (previousWordIndex >= 0 && !previousWordValue[previousWordIndex]) {
+          previousWordIndex--;
+        }
+        if (previousWordIndex >= 0) {
+          const nextPreviousWord = [...previousWordValue];
+          nextPreviousWord[previousWordIndex] = "";
+          previousWordOnChange(nextPreviousWord);
+          previousWordLastInputRef?.current?.focus();
+        }
       }
     }
   }
@@ -132,6 +145,9 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
               inputRefs.current[index] = element;
               if (index === 0 && firstInputRef) {
                 firstInputRef.current = element;
+              }
+              if (index === letters.length - 1 && lastInputRef) {
+                lastInputRef.current = element;
               }
             }}
             className={`word-gap${isMistake ? " word-gap-mistake" : ""}`}
