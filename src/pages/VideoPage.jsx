@@ -298,7 +298,7 @@ export default function VideoPage({ videos = [] }) {
     const timer = window.setInterval(() => {
       const player = playerRef.current;
       if (player && typeof player.getCurrentTime === "function" &&
-          player.getCurrentTime() >= sentence.end + 0.3) {
+          player.getCurrentTime() >= sentence.end + 0.2) {
         player.pauseVideo();
         setReplayingSentenceIndex(null);
       }
@@ -417,6 +417,9 @@ export default function VideoPage({ videos = [] }) {
                     <span className="video-training-sentence-number">{sentenceIndex + 1}.</span>
                     <div className="video-training-sentence-text">
                       {sentence.tokens.map((token) => {
+                        if (revealedSentences[sentenceIndex]) {
+                          return <span key={token.id}>{token.value}</span>;
+                        }
                         if (!token.isWord) return <span key={token.id}>{token.value}</span>;
                         return <WordGap key={token.id}
                           sentence={{ id: activeBlock.id + "-" + token.id, word: token.value }}
@@ -445,7 +448,6 @@ export default function VideoPage({ videos = [] }) {
                       {recordingSentenceIndex === sentenceIndex ? "Говорите…" : "🎙 Записать ответ"}
                     </button>
                   </div>
-                  {revealedSentences[sentenceIndex] && <p className="video-sentence-original">{sentence.text}</p>}
                   {sentenceVoiceAnswers[sentenceIndex] && (
                     <p className={"video-voice-answer" + (normalizeText(sentenceVoiceAnswers[sentenceIndex]) === normalizeText(sentence.text) ? "" : " is-incorrect")}>
                       Распознано: {sentenceVoiceAnswers[sentenceIndex]}
