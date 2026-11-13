@@ -251,7 +251,7 @@ export default function VideoPage({ videos = [] }) {
     Object.values(revealTimerRefs.current).forEach((timer) => window.clearTimeout(timer));
     revealTimerRefs.current = {};
     setRevealedSentences({});
-    setHintsRemaining(exerciseSentences.length);
+    setHintsRemaining(2);
   }, [activeBlock?.id, exerciseSentences.length]);
 
   function useHint(sentenceIndex) {
@@ -262,7 +262,7 @@ export default function VideoPage({ videos = [] }) {
     revealTimerRefs.current[sentenceIndex] = window.setTimeout(() => {
       setRevealedSentences((current) => ({ ...current, [sentenceIndex]: false }));
       delete revealTimerRefs.current[sentenceIndex];
-    }, 2000);
+    }, 3000);
   }
 
   useEffect(() => () => {
@@ -442,7 +442,17 @@ export default function VideoPage({ videos = [] }) {
           <>
             <div className="video-training-mask" aria-label="Предложения с замаскированными буквами">
               {exerciseSentences.map((sentence, sentenceIndex) => (
-                <div className="video-training-sentence-card" key={sentenceIndex}>
+                <div className={"video-training-sentence-card" + (answerResult === "correct" ? " is-correct" : "")} key={sentenceIndex}>
+                  {answerResult === "correct" && <div className="feedback-fireworks" aria-hidden="true">
+                    <div className="fireworks">
+                      <span className="firework" style={{ "--fireworks-x": "18%", "--fireworks-y": "35%" }} />
+                      <span className="firework firework-two" style={{ "--fireworks-x": "78%", "--fireworks-y": "28%" }} />
+                      <span className="firework firework-three" style={{ "--fireworks-x": "52%", "--fireworks-y": "72%" }} />
+                    </div>
+                    <div className="confetti">
+                      {Array.from({ length: 28 }, (_, index) => <span key={index} style={{ left: ((index * 37) % 100) + "%", "--fall-duration": (1.1 + (index % 5) * 0.16) + "s", animationDelay: ((index % 7) * 0.07) + "s" }} />)}
+                    </div>
+                  </div>}
                   <div className="video-training-sentence">
                     <span className="video-training-sentence-number">{sentenceIndex + 1}.</span>
                     <div className="video-training-sentence-text">
@@ -477,7 +487,7 @@ export default function VideoPage({ videos = [] }) {
                     <button className="button button-secondary" type="button"
                       onClick={() => useHint(sentenceIndex)}
                       disabled={hintsRemaining <= 0 || Boolean(revealedSentences[sentenceIndex])}>
-                      {revealedSentences[sentenceIndex] ? "Подсказка использована" : "Использовать одну подсказку"} ({hintsRemaining})
+                      {revealedSentences[sentenceIndex] ? "Текст показан…" : "Показать текст"} · осталось: {hintsRemaining}
                     </button>
                     <button className="button button-secondary" type="button"
                       onClick={() => startVoiceCapture(sentence, sentenceIndex)}
