@@ -6,7 +6,7 @@ function parseVideoUrl(rawValue) {
   try { url = new URL(String(rawValue || "").trim()); }
   catch { return { error: "Некорректная ссылка. Нужен адрес YouTube или TikTok." }; }
   if (!["https:", "http:"].includes(url.protocol)) return { error: "Используй ссылку http:// или https://." };
-  const host = url.hostname.toLowerCase().replace(/^www\\./, "");
+  const host = url.hostname.toLowerCase().replace(/^www\./, "");
   if (["youtube.com", "m.youtube.com", "music.youtube.com", "youtu.be", "youtube-nocookie.com"].includes(host)) {
     let id = host === "youtu.be" ? url.pathname.split("/").filter(Boolean)[0] : url.searchParams.get("v");
     if (!id) {
@@ -18,7 +18,7 @@ function parseVideoUrl(rawValue) {
     return { provider: "youtube", videoId: id, embedUrl: `https://www.youtube-nocookie.com/embed/${id}`, originalUrl: url.href };
   }
   if (host === "tiktok.com" || host.endsWith(".tiktok.com")) {
-    const id = url.pathname.match(/\\/video\\/(\\d+)/)?.[1] || url.pathname.match(/\\/player\\/v1\\/(\\d+)/)?.[1];
+    const id = url.pathname.match(/\/video\/(\d+)/)?.[1] || url.pathname.match(/\/player\/v1\/(\d+)/)?.[1];
     if (!id) return { error: "Для TikTok нужна полная ссылка вида tiktok.com/@author/video/123456789." };
     return { provider: "tiktok", videoId: id, embedUrl: `https://www.tiktok.com/player/v1/${id}?controls=1&description=1&music_info=1&autoplay=0`, originalUrl: url.href };
   }
@@ -27,7 +27,7 @@ function parseVideoUrl(rawValue) {
 
 function normalizeText(value) {
   return String(value || "").normalize("NFKC").toLowerCase()
-    .replace(/[’‘]/g, "'").replace(/[^\\p{L}\\p{N}'-]+/gu, " ").replace(/\\s+/g, " ").trim();
+    .replace(/[’‘]/g, "'").replace(/[^\p{L}\p{N}'-]+/gu, " ").replace(/\s+/g, " ").trim();
 }
 
 function tokenize(text) {
