@@ -60,6 +60,8 @@ export default function VideoPage({ videos = [], onUpdateVideo }) {
     const params = new URLSearchParams();
     if (startSeconds > 0) params.set("start", String(Math.floor(startSeconds)));
     if (endSeconds !== null && endSeconds > startSeconds) params.set("end", String(Math.floor(endSeconds)));
+    params.set("controls", "1");
+    params.set("enablejsapi", "1");
     const query = params.toString();
     return parsed.embedUrl + (query ? "?" + query : "");
   }, [parsed?.embedUrl, startSeconds, endSeconds]);
