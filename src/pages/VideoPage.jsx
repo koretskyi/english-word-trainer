@@ -82,13 +82,19 @@ function buildTrainingBlocks(cues, startSeconds, endSeconds) {
       const start = Math.max(Number(cue.start), startSeconds);
       const end = Math.min(Number(cue.end), endSeconds ?? Infinity);
       const text = String(cue.text || "").trim();
-      const sentence = { text, start, end };
+      // Keep sentence rows separate while preserving the cue's shared timestamps.
+      const sentences = text.split(/(?<=[.!?])\s+/u).map((part) => part.trim()).filter(Boolean);
+      const sentenceRows = (sentences.length ? sentences : [text]).map((sentenceText) => ({
+        text: sentenceText,
+        start,
+        end,
+      }));
       const wordCount = (text.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu) || [])
         .filter((word) => (word.match(/[\p{L}\p{N}]/gu) || []).length >= 3).length;
       return {
         id: "cue-" + index,
         text,
-        sentences: [sentence],
+        sentences: sentenceRows,
         start,
         end,
         wordCount,
@@ -298,7 +304,7 @@ export default function VideoPage({ videos = [] }) {
     const timer = window.setInterval(() => {
       const player = playerRef.current;
       if (player && typeof player.getCurrentTime === "function" &&
-          player.getCurrentTime() >= sentence.end) {
+          player.getCurrentTime() >= sentence.end + 0.3) {
         player.pauseVideo();
         setReplayingSentenceIndex(null);
       }
