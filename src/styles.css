@@ -2765,21 +2765,24 @@ button:disabled {
 }
 
 
-/* Center the title line on the same horizontal axis as the header buttons */
+/* Keep the title on the left, level with the Admin button on the right */
 .app-header .brand > div:last-child {
   position: relative;
+  display: flex;
+  align-items: center;
+  height: 42px;
 }
 
 .app-header .brand h1 {
-  position: absolute;
-  top: 50%;
-  left: 0;
   margin: 0;
-  transform: translateY(-50%);
   white-space: nowrap;
 }
 
 .app-header .brand p {
-  margin-top: 0;
-  padding-top: 24px;
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
 }
