@@ -34,8 +34,6 @@ export default function VideoPage({ videos = [], onUpdateVideo }) {
   const [selectedId, setSelectedId] = useState(videos[0]?.id || "");
   const selectedVideo = videos.find((item) => item.id === selectedId) || videos[0] || null;
   const parsed = useMemo(() => selectedVideo ? parseYouTubeUrl(selectedVideo.url) : null, [selectedVideo?.url]);
-  const [subtitleStatus, setSubtitleStatus] = useState("idle");
-  const [subtitleError, setSubtitleError] = useState("");
   const [wordAnswers, setWordAnswers] = useState({});
   const [checked, setChecked] = useState(false);
   const transcript = selectedVideo?.transcript || "";
@@ -55,8 +53,6 @@ export default function VideoPage({ videos = [], onUpdateVideo }) {
   useEffect(() => {
     setWordAnswers({});
     setChecked(false);
-    setSubtitleStatus("idle");
-    setSubtitleError("");
   }, [selectedId, transcript]);
 
   function saveTranscript(text) {
@@ -64,27 +60,6 @@ export default function VideoPage({ videos = [], onUpdateVideo }) {
     onUpdateVideo({ ...selectedVideo, transcript: text });
     setWordAnswers({});
     setChecked(false);
-  }
-
-  async function fetchSubtitles() {
-    setSubtitleError("");
-    setSubtitleStatus("loading");
-    try {
-      const response = await fetch("/api/youtube-subtitles", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: selectedVideo.url }),
-      });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || "Не удалось получить субтитры.");
-      const text = String(data.text || "").trim();
-      if (!text) throw new Error("YouTube не вернул английские субтитры.");
-      saveTranscript(text);
-      setSubtitleStatus("done");
-    } catch (error) {
-      setSubtitleError(error.message || "Не удалось получить субтитры.");
-      setSubtitleStatus("idle");
-    }
   }
 
   function updateAnswer(token, value) {
@@ -135,14 +110,7 @@ export default function VideoPage({ videos = [], onUpdateVideo }) {
       </div>
       <section className="video-transcription-panel">
         <h3>Субтитры YouTube</h3>
-        <p className="muted">Загружаем готовые английские субтитры YouTube: сначала авторские, затем автоматические. Звук не записывается и не распознаётся.</p>
-        <div className="video-capture-actions">
-          <button className="button button-primary" type="button" disabled={subtitleStatus === "loading"} onClick={fetchSubtitles}>
-            {subtitleStatus === "loading" ? "Загружаю субтитры…" : transcript ? "Обновить субтитры" : "Получить субтитры"}
-          </button>
-          {subtitleStatus === "done" && <span className="video-success">Субтитры загружены</span>}
-        </div>
-        {subtitleError && <p className="video-error" role="alert">{subtitleError}</p>}
+        <p className="muted">{transcript ? "Субтитры подготовлены администратором." : "Субтитры для этого ролика ещё не загружены. Попроси администратора подготовить их в админке."}</p>
       </section>
       {transcript && <section className="video-exercise-panel">
         <div className="video-transcript-heading">
