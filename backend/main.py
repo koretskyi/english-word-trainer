@@ -1,101 +1,79 @@
-import os
+import html
+import re
 import subprocess
+import sys
 import tempfile
-from contextlib import asynccontextmanager
 from pathlib import Path
+from urllib.parse import urlparse
 
-import numpy as np
-from fastapi import FastAPI, HTTPException, Request
-from starlette.concurrency import run_in_threadpool
-from scipy.io.wavfile import read as read_wav
-from faster_whisper import WhisperModel
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 
-MODEL = None
-MAX_AUDIO_BYTES = 20 * 1024 * 1024
+app = FastAPI(title="English Word Trainer YouTube Subtitles API")
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    global MODEL
-    MODEL = await run_in_threadpool(
-        WhisperModel, "small", device="cpu", compute_type="int8"
-    )
-    yield
-    MODEL = None
+class SubtitleRequest(BaseModel):
+    url: str
 
 
-app = FastAPI(title="English Word Trainer Local Speech API", lifespan=lifespan)
+def clean_vtt(path: Path) -> str:
+    raw = path.read_text(encoding="utf-8-sig", errors="replace")
+    lines = []
+    for line in raw.splitlines():
+        line = line.strip()
+        if not line or line == "WEBVTT" or line.startswith(("NOTE", "Kind:", "Language:")):
+            continue
+        if "-->" in line or re.fullmatch(r"\d+", line):
+            continue
+        line = re.sub(r"<[^>]*>", "", line)
+        line = html.unescape(line).strip()
+        if line and (not lines or line != lines[-1]):
+            lines.append(line)
+    return re.sub(r"\s+", " ", " ".join(lines)).strip()
 
 
-def transcribe_bytes(audio_bytes: bytes) -> str:
-    if not MODEL:
-        raise RuntimeError("Модель распознавания ещё загружается.")
+@app.post("/api/youtube-subtitles")
+async def youtube_subtitles(payload: SubtitleRequest):
+    url = payload.url.strip()
+    parsed = urlparse(url)
+    host = (parsed.hostname or "").lower()
+    if parsed.scheme not in ("http", "https") or host not in {
+        "youtube.com", "www.youtube.com", "m.youtube.com",
+        "music.youtube.com", "youtu.be"
+    }:
+        raise HTTPException(status_code=400, detail="Поддерживаются только ссылки YouTube.")
 
-    with tempfile.TemporaryDirectory(prefix="english-word-trainer-") as temp_dir:
-        input_path = Path(temp_dir) / "recording.webm"
-        wav_path = Path(temp_dir) / "recording.wav"
-        input_path.write_bytes(audio_bytes)
-
-        ffmpeg = os.environ.get("FFMPEG_PATH", "ffmpeg")
+    with tempfile.TemporaryDirectory(prefix="ewt-youtube-subs-") as temp_dir:
+        output = Path(temp_dir)
         command = [
-            ffmpeg, "-y", "-i", str(input_path),
-            "-vn", "-ac", "1", "-ar", "16000",
-            "-c:a", "pcm_s16le", str(wav_path),
+            sys.executable, "-m", "yt_dlp",
+            "--no-warnings", "--no-playlist", "--skip-download",
+            "--write-subs", "--write-auto-subs",
+            "--sub-langs", "en,en.*",
+            "--sub-format", "vtt/best",
+            "--output", str(output / "%(id)s.%(ext)s"),
+            url,
         ]
         try:
-            converted = subprocess.run(
-                command, capture_output=True, text=True, timeout=60
-            )
-        except FileNotFoundError:
-            raise RuntimeError("FFmpeg не найден. Установи FFmpeg и перезапусти приложение.")
-        except subprocess.TimeoutExpired:
-            raise RuntimeError("Преобразование аудио заняло слишком много времени.")
+            result = subprocess.run(command, capture_output=True, text=True, timeout=90)
+        except subprocess.TimeoutExpired as error:
+            raise HTTPException(status_code=504, detail="YouTube слишком долго отвечает. Попробуй ещё раз.") from error
 
-        if converted.returncode != 0 or not wav_path.exists():
-            details = (converted.stderr or "").strip()
-            raise RuntimeError("Не удалось декодировать аудио." + (f" {details[-500:]}" if details else ""))
+        subtitle_files = list(output.glob("*.vtt"))
+        if result.returncode != 0 and not subtitle_files:
+            details = (result.stderr or result.stdout or "").strip()
+            message = "YouTube ограничил автоматический доступ к субтитрам." if "Sign in" in details or "bot" in details.lower() else "Не удалось получить субтитры. Возможно, они отключены или YouTube ограничил доступ."
+            raise HTTPException(status_code=422, detail=message)
+        if not subtitle_files:
+            raise HTTPException(status_code=404, detail="У ролика нет доступных английских субтитров — ни авторских, ни автоматических.")
 
-        sample_rate, audio = read_wav(str(wav_path))
-        if sample_rate != 16000:
-            raise RuntimeError(f"Неверная частота аудио: {sample_rate} Гц.")
-
-        original_dtype = audio.dtype
-        audio = audio.astype(np.float32)
-        if original_dtype == np.int16:
-            audio /= 32768.0
-        elif original_dtype == np.int32:
-            audio /= 2147483648.0
-
-        segments, _ = MODEL.transcribe(
-            audio,
-            language="en",
-            beam_size=5,
-            vad_filter=True,
-        )
-        return " ".join(segment.text.strip() for segment in segments).strip()
-
-
-@app.post("/api/transcribe")
-async def transcribe(request: Request):
-    content_type = request.headers.get("content-type", "")
-    if not content_type.startswith("audio/"):
-        raise HTTPException(status_code=415, detail="Ожидается аудиофайл.")
-
-    audio_bytes = await request.body()
-    if not audio_bytes:
-        raise HTTPException(status_code=400, detail="Аудиозапись пустая.")
-    if len(audio_bytes) > MAX_AUDIO_BYTES:
-        raise HTTPException(status_code=413, detail="Аудиофайл слишком большой (максимум 20 МБ).")
-
-    try:
-        text = await run_in_threadpool(transcribe_bytes, audio_bytes)
+        subtitle_files.sort(key=lambda path: (0 if ".en." in path.name.lower() else 1, 0 if "orig" in path.name.lower() else 1, path.name))
+        text = clean_vtt(subtitle_files[0])
+        if not text:
+            raise HTTPException(status_code=404, detail="YouTube вернул пустой файл субтитров.")
         return {"text": text}
-    except RuntimeError as error:
-        raise HTTPException(status_code=500, detail=str(error)) from error
-    except Exception as error:
-        raise HTTPException(status_code=500, detail="Ошибка локального распознавания речи.") from error
 
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "model_loaded": MODEL is not None}
+    return {"status": "ok"}
