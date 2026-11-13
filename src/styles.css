@@ -1924,21 +1924,42 @@ button:disabled {
   color: #3478f6;
 }
 
-.nav-utility-button {
-  min-height: 32px;
-  padding: 5px 10px;
-  border: 0;
-  background: transparent;
-  color: #64748b;
-  font-size: 12px;
-}
-
-.sound-toggle {
+.header-utility-controls {
   position: absolute;
   top: 8px;
   right: max(20px, calc((100% - 1000px) / 2));
-  width: 34px;
-  height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-utility-button {
+  min-height: 34px;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #f8faff;
+  color: #4e5a70;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 550;
+}
+
+.nav-utility-button:hover {
+  background: #e9eeff;
+  border-color: #c7d2fe;
+}
+
+.nav-utility-button.active {
+  background: #e4edff;
+  border-color: #c7d8ff;
+  color: #245fc5;
+}
+
+.header-utility-controls .sound-toggle {
+  position: static;
+  width: 36px;
+  height: 36px;
 }
 
 @media (max-width: 600px) {
@@ -1962,7 +1983,19 @@ button:disabled {
     height: 21px;
   }
 
-  .sound-toggle {
+  .header-utility-controls {
     right: 10px;
+    gap: 5px;
+  }
+
+  .nav-utility-button {
+    min-height: 32px;
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+
+  .header-utility-controls .sound-toggle {
+    width: 34px;
+    height: 34px;
   }
 }
