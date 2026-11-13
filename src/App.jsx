@@ -187,6 +187,18 @@ function recordWordAnswer(previous, word, isCorrect) {
   return { version: 1, completedCount, words, stats };
 }
 
+const VIDEO_LIBRARY_KEY = "english-word-trainer-video-library-v1";
+
+function loadVideos() {
+  try {
+    const saved = localStorage.getItem(VIDEO_LIBRARY_KEY);
+    const parsed = saved ? JSON.parse(saved) : [];
+    return Array.isArray(parsed) ? parsed.filter((item) => item && item.id && item.url) : [];
+  } catch {
+    return [];
+  }
+}
+
 function createId() {
 
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -630,7 +642,7 @@ const EMPTY_FORM = {
 
 // Локальная админка.
 
-function AdminPage({ sentences, onSave, onDelete }) {
+function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteVideo }) {
   const safeSentences = Array.isArray(sentences)
     ? sentences.filter((sentence) => sentence && typeof sentence === "object")
     : [];
@@ -1037,6 +1049,52 @@ function AdminPage({ sentences, onSave, onDelete }) {
         })()}
       </section>
 
+      <section className="panel admin-video-panel">
+        <h2>Библиотека видео</h2>
+        <p className="muted">Добавляй ссылки на ролики здесь. Они появятся в разделе «Видео».</p>
+        <form className="admin-form" onSubmit={(event) => {
+          event.preventDefault();
+          const formData = new FormData(event.currentTarget);
+          const title = String(formData.get("videoTitle") || "").trim();
+          const url = String(formData.get("videoUrl") || "").trim();
+          const level = String(formData.get("videoLevel") || "B1");
+          if (!title || !url) return;
+          onSaveVideo({ id: createId(), title, url, level, transcript: "" });
+          event.currentTarget.reset();
+        }}>
+          <label>Название ролика
+            <input name="videoTitle" required placeholder="Например: Ordering food in a café" />
+          </label>
+          <label>Ссылка YouTube или TikTok
+            <input name="videoUrl" type="url" required placeholder="https://..." />
+          </label>
+          <label>Уровень
+            <select name="videoLevel" defaultValue="B1">
+              {["A1", "A2", "B1", "B2", "C1"].map((level) => <option key={level}>{level}</option>)}
+            </select>
+          </label>
+          <div className="form-actions">
+            <button className="button button-primary" type="submit">Добавить видео</button>
+          </div>
+        </form>
+        <div className="sentence-list">
+          {videos.length === 0 ? <p className="muted">Видео пока не добавлены.</p> : videos.map((video) => (
+            <article className="sentence-item" key={video.id}>
+              <div>
+                <strong>{video.title}</strong>
+                <p className="sentence-item-english">{video.url}</p>
+                <span className="muted">{video.level || "B1"}</span>
+              </div>
+              <div className="sentence-item-actions">
+                <button type="button" className="button button-danger" onClick={() => {
+                  if (window.confirm("Удалить это видео из библиотеки?")) onDeleteVideo(video.id);
+                }}>Удалить</button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
     </div>
 
   );
@@ -1048,6 +1106,7 @@ function AdminPage({ sentences, onSave, onDelete }) {
 // Главный компонент приложения.
 export default function App() {
   const [sentences, setSentences] = useState(loadSentences);
+  const [videos, setVideos] = useState(loadVideos);
   const [page, setPage] = useState("study");
   const [showStats, setShowStats] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState("A1");
@@ -1148,6 +1207,14 @@ export default function App() {
 
   useEffect(() => {
     try {
+      localStorage.setItem(VIDEO_LIBRARY_KEY, JSON.stringify(videos));
+    } catch (error) {
+      console.error("Не удалось сохранить библиотеку видео:", error);
+    }
+  }, [videos]);
+
+  useEffect(() => {
+    try {
       localStorage.setItem(LEARNING_STORAGE_KEY, JSON.stringify(learningData));
     } catch (error) {
       console.error("Не удалось сохранить прогресс:", error);
@@ -1195,6 +1262,17 @@ export default function App() {
 
   function deleteSentence(id) {
     setSentences((current) => current.filter((item) => item.id !== id));
+  }
+
+  function saveVideo(video) {
+    setVideos((current) => {
+      const exists = current.some((item) => item.id === video.id);
+      return exists ? current.map((item) => item.id === video.id ? video : item) : [...current, video];
+    });
+  }
+
+  function deleteVideo(id) {
+    setVideos((current) => current.filter((item) => item.id !== id));
   }
 
   return (
@@ -1311,9 +1389,9 @@ export default function App() {
             audioEnabled={audioEnabled}
           />
         ) : page === "video" ? (
-          <VideoPage />
+          <VideoPage videos={videos} onUpdateVideo={saveVideo} />
         ) : (
-          <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} />
+          <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} videos={videos} onSaveVideo={saveVideo} onDeleteVideo={deleteVideo} />
         )}
       </main>
       <footer className="app-footer">English Word Trainer · MVP v1</footer>
