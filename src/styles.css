@@ -2788,3 +2788,9 @@ button:disabled {
   padding: 0;
   white-space: nowrap;
 }
+
+
+/* Keep the header subtitle white */
+.app-header .brand p {
+  color: #fff;
+}
