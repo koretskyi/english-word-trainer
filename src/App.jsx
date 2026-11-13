@@ -1242,6 +1242,8 @@ export default function App() {
               <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="14" height="12" rx="3" /><path d="m17 10 4-2v8l-4-2z" /></svg>
               <span>Видео</span>
             </button>
+          </nav>
+          <div className="header-utility-controls">
             <button
               type="button"
               className={page === "admin" ? "nav-button nav-utility-button active" : "nav-button nav-utility-button"}
@@ -1262,17 +1264,17 @@ export default function App() {
                 }
               }}
             >Статистика</button>
-          </nav>
-          <button
-            className={"sound-toggle" + (audioEnabled ? "" : " sound-toggle-off")}
-            type="button"
-            onClick={toggleAudio}
-            aria-label={audioEnabled ? "Выключить озвучивание" : "Включить озвучивание"}
-            aria-pressed={audioEnabled}
-            title={audioEnabled ? "Выключить звук" : "Включить звук"}
-          >
-            {audioEnabled ? "🔊" : "🔇"}
-          </button>
+            <button
+              className={"sound-toggle" + (audioEnabled ? "" : " sound-toggle-off")}
+              type="button"
+              onClick={toggleAudio}
+              aria-label={audioEnabled ? "Выключить озвучивание" : "Включить озвучивание"}
+              aria-pressed={audioEnabled}
+              title={audioEnabled ? "Выключить звук" : "Включить звук"}
+            >
+              {audioEnabled ? "🔊" : "🔇"}
+            </button>
+          </div>
         </div>
       </header>
       <main className="main-content">
