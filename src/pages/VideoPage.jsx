@@ -36,6 +36,16 @@ function tokenize(text) {
   }));
 }
 
+function PlatformIcon({ provider }) {
+  if (provider === "youtube") return <svg viewBox="0 0 28 20" aria-hidden="true"><path fill="#ff0033" d="M27.4 3.1A3.5 3.5 0 0 0 25 0.7C22.9.1 14 .1 14 .1S5.1.1 3 .7A3.5 3.5 0 0 0 .6 3.1 36 36 0 0 0 0 10a36 36 0 0 0 .6 6.9A3.5 3.5 0 0 0 3 19.3c2.1.6 11 .6 11 .6s8.9 0 11-.6a3.5 3.5 0 0 0 2.4-2.4A36 36 0 0 0 28 10a36 36 0 0 0-.6-6.9Z"/><path fill="#fff" d="m11.2 14.2 7.3-4.2-7.3-4.2z"/></svg>;
+  if (provider === "tiktok") return <svg viewBox="0 0 24 26" aria-hidden="true">
+    <path fill="#25F4EE" d="M14 1h4c.2 2.8 1.7 4.7 4.5 5.3v4c-2-.1-3.7-.8-5-1.9v9.1a7 7 0 1 1-7-7c.5 0 1 .1 1.5.2v4.2a3 3 0 1 0 1.5 2.6V1Z" transform="translate(-1 1)"/>
+    <path fill="#FE2C55" d="M14 1h4c.2 2.8 1.7 4.7 4.5 5.3v4c-2-.1-3.7-.8-5-1.9v9.1a7 7 0 1 1-7-7c.5 0 1 .1 1.5.2v4.2a3 3 0 1 0 1.5 2.6V1Z" transform="translate(1 -1)"/>
+    <path fill="#111827" d="M14 1h4c.2 2.8 1.7 4.7 4.5 5.3v4c-2-.1-3.7-.8-5-1.9v9.1a7 7 0 1 1-7-7c.5 0 1 .1 1.5.2v4.2a3 3 0 1 0 1.5 2.6V1Z"/>
+  </svg>;
+  return <span>?</span>;
+}
+
 export default function VideoPage({ videos = [], onUpdateVideo }) {
   const [selectedId, setSelectedId] = useState(videos[0]?.id || "");
   const selectedVideo = videos.find((item) => item.id === selectedId) || videos[0] || null;
@@ -184,9 +194,7 @@ export default function VideoPage({ videos = [], onUpdateVideo }) {
         return <button type="button" key={video.id}
           className={`video-library-item ${selectedVideo?.id === video.id ? "selected" : ""}`}
           onClick={() => { setSelectedId(video.id); setCaptureError(""); setCaptureStatus("idle"); }}>
-          <span className={`video-library-logo ${platform.provider || "unknown"}`}>
-            {platform.provider === "youtube" ? "▶" : platform.provider === "tiktok" ? "♪" : "?"}
-          </span>
+          <span className={`video-library-logo ${platform.provider || "unknown"}`}><PlatformIcon provider={platform.provider} /></span>
           <span className="video-library-title"><strong>{video.title}</strong><small>{video.level || "B1"} · {platform.provider === "youtube" ? "YouTube" : platform.provider === "tiktok" ? "TikTok" : "Проверь ссылку"}</small></span>
           <span className="video-library-arrow">›</span>
         </button>;
