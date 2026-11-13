@@ -951,6 +951,21 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
                       : video.transcript ? "Обновить титры" : "Получить титры"}
                   </button>
                   {video.transcript && <span className="muted">Титры загружены</span>}
+                  {Array.isArray(video.subtitleCues) && video.subtitleCues.length > 0 && (
+                    <details className="admin-subtitle-debug">
+                      <summary>Показать субтитры и таймкоды ({video.subtitleCues.length})</summary>
+                      <div style={{ maxHeight: "320px", overflowY: "auto", marginTop: "10px" }}>
+                        {video.subtitleCues.map((cue, cueIndex) => (
+                          <div key={cueIndex} style={{ padding: "7px 0", borderBottom: "1px solid var(--border-color, #ddd)" }}>
+                            <small className="muted">
+                              {Number(cue.start).toFixed(2)}–{Number(cue.end).toFixed(2)} сек.
+                            </small>
+                            <div>{cue.text}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  )}
                   {subtitleErrors[video.id] && <p className="form-error" role="alert">{subtitleErrors[video.id]}</p>}
                   <button type="button" className="button button-danger" onClick={() => {
                     if (window.confirm("Удалить это видео из библиотеки?")) onDeleteVideo(video.id);
