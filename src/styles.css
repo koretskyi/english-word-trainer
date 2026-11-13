@@ -2719,3 +2719,34 @@ button:disabled {
     -42px 0 #ff9800,
     -30px -30px #e040fb;
 }
+
+
+/* Header: white title and white navigation buttons */
+.app-header .brand h1,
+.app-header .brand p {
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+}
+
+.app-header .nav-main-button,
+.app-header .nav-main-button.active,
+.app-header .nav-utility-button,
+.app-header .nav-utility-button.active,
+.app-header .sound-toggle {
+  color: #263247;
+  background: #fff;
+  border-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+}
+
+.app-header .nav-main-button:hover,
+.app-header .nav-utility-button:hover,
+.app-header .sound-toggle:hover {
+  color: #1d4ed8;
+  background: #f4f7fc;
+  border-color: #fff;
+}
+
+.app-header .nav-main-button.active svg {
+  color: #263247;
+}
