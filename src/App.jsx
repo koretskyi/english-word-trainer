@@ -1211,31 +1211,40 @@ export default function App() {
           <nav className="main-nav">
             <button
               type="button"
-              className={page === "study" && !showStats ? "nav-button active" : "nav-button"}
+              className={page === "study" && !showStats ? "nav-button nav-main-button active" : "nav-button nav-main-button"}
               onClick={() => {
                 setPage("study");
                 setShowStats(false);
               }}
-            >Слова</button>
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5c2.8-.9 5.5-.4 8 1.5v13c-2.5-1.9-5.2-2.4-8-1.5zM20 5.5c-2.8-.9-5.5-.4-8 1.5v13c2.5-1.9 5.2-2.4 8-1.5z" /></svg>
+              <span>Слова</span>
+            </button>
             <button
               type="button"
-              className={page === "audition" ? "nav-button active" : "nav-button"}
+              className={page === "audition" ? "nav-button nav-main-button active" : "nav-button nav-main-button"}
               onClick={() => {
                 setPage("audition");
                 setShowStats(false);
               }}
-            >Аудирование</button>
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13v-2a8 8 0 0 1 16 0v2M4 13h3v7H6a2 2 0 0 1-2-2zM20 13h-3v7h1a2 2 0 0 0 2-2z" /></svg>
+              <span>Аудирование</span>
+            </button>
             <button
               type="button"
-              className={page === "video" ? "nav-button active" : "nav-button"}
+              className={page === "video" ? "nav-button nav-main-button active" : "nav-button nav-main-button"}
               onClick={() => {
                 setPage("video");
                 setShowStats(false);
               }}
-            >Видео</button>
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="14" height="12" rx="3" /><path d="m17 10 4-2v8l-4-2z" /></svg>
+              <span>Видео</span>
+            </button>
             <button
               type="button"
-              className={page === "admin" ? "nav-button active" : "nav-button"}
+              className={page === "admin" ? "nav-button nav-utility-button active" : "nav-button nav-utility-button"}
               onClick={() => {
                 setPage("admin");
                 setShowStats(false);
@@ -1243,7 +1252,7 @@ export default function App() {
             >Админка</button>
             <button
               type="button"
-              className={page === "study" && showStats ? "nav-button active" : "nav-button"}
+              className={page === "study" && showStats ? "nav-button nav-utility-button active" : "nav-button nav-utility-button"}
               onClick={() => {
                 if (page === "study" && showStats) {
                   setShowStats(false);
