@@ -93,13 +93,23 @@ function buildTrainingBlocks(cues, startSeconds, endSeconds) {
       finishBuffer(previousCueEnd);
     }
 
-    const pieces = cueText.match(/[^.!?]+[.!?]+["')\]]*|[^.!?]+$/g) || [cueText];
-    for (const piece of pieces) {
-      const part = piece.trim();
-      if (!part) continue;
-      if (!buffer) bufferStart = cueStart;
+    const pieces = (cueText.match(/[^.!?]+[.!?]+["')\]]*|[^.!?]+$/g) || [cueText])
+      .map((piece) => piece.trim()).filter(Boolean);
+    // A YouTube subtitle cue can contain several sentences but has only one
+    // time range. Split that range proportionally so each sentence can replay
+    // independently instead of replaying the entire cue.
+    const weights = pieces.map((piece) => Math.max(1, (piece.match(/[\p{L}\p{N}]+/gu) || []).length));
+    const totalWeight = weights.reduce((sum, weight) => sum + weight, 0) || 1;
+    const cueDuration = Math.max(0, cueEnd - cueStart);
+    let elapsedWeight = 0;
+    for (let pieceIndex = 0; pieceIndex < pieces.length; pieceIndex += 1) {
+      const part = pieces[pieceIndex];
+      const segmentStart = cueStart + cueDuration * elapsedWeight / totalWeight;
+      elapsedWeight += weights[pieceIndex];
+      const segmentEnd = cueStart + cueDuration * elapsedWeight / totalWeight;
+      if (!buffer) bufferStart = segmentStart;
       buffer = buffer ? buffer + " " + part : part;
-      if (/[.!?]["')\]]*$/.test(part)) finishBuffer(cueEnd);
+      if (/[.!?]["')\]]*$/.test(part)) finishBuffer(segmentEnd);
     }
     previousCueEnd = cueEnd;
   }
