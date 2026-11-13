@@ -106,16 +106,29 @@ function buildTrainingBlocks(cues, startSeconds, endSeconds) {
   if (buffer) finishBuffer(previousCueEnd ?? startSeconds);
 
   const blocks = [];
-  for (let index = 0; index + 1 < sentences.length; index += 2) {
-    const pair = [sentences[index], sentences[index + 1]];
-    const text = pair.map((sentence) => sentence.text).join(" ");
-    const wordCount = (text.match(/[\p{L}\p{N}']+/gu) || []).length;
-    if (wordCount > 20) {
+  let sentenceIndex = 0;
+
+  while (sentenceIndex < sentences.length) {
+    const group = [sentences[sentenceIndex], sentences[sentenceIndex + 1]].filter(Boolean);
+    sentenceIndex += group.length;
+
+    const countWords = () => (group.map((sentence) => sentence.text).join(" ").match(/[\p{L}\p{N}']+/gu) || []).length;
+
+    // Start with two sentences. If they are too short, keep adding the
+    // following sentences until the whole exercise contains more than 20 words.
+    while (group.length >= 2 && countWords() <= 20 && sentenceIndex < sentences.length) {
+      group.push(sentences[sentenceIndex]);
+      sentenceIndex += 1;
+    }
+
+    const text = group.map((sentence) => sentence.text).join(" ");
+    const wordCount = countWords();
+    if (group.length >= 2 && wordCount > 20) {
       blocks.push({
-        id: "pair-" + index,
+        id: "group-" + (sentenceIndex - group.length),
         text,
-        start: pair[0].start,
-        end: pair[1].end,
+        start: group[0].start,
+        end: group[group.length - 1].end,
         wordCount,
       });
     }
@@ -329,12 +342,12 @@ export default function VideoPage({ videos = [] }) {
       <section className="video-exercise-panel video-training-panel">
         <div className="video-mask-heading">
           <h3>Тренировка аудирования</h3>
-          <span>2 предложения · больше 20 слов</span>
+          <span>минимум 2 предложения · больше 20 слов</span>
         </div>
         {!subtitleCues.length ? (
           <p className="video-training-note">Для этого ролика ещё не загружены субтитры. Сначала получи английские субтитры в админке.</p>
         ) : !trainingBlocks.length ? (
-          <p className="video-training-note">В выбранном фрагменте не найдено пар из двух предложений длиннее 20 слов. Проверь субтитры или выбери другой отрезок.</p>
+          <p className="video-training-note">В выбранном фрагменте недостаточно текста для задания длиннее 20 слов. Проверь субтитры или выбери другой отрезок.</p>
         ) : activeBlock ? (
           <>
             <p className="video-training-question">Воспроизведите то, что вы услышали</p>
@@ -371,7 +384,7 @@ export default function VideoPage({ videos = [] }) {
         ) : (
           <>
             <p className="video-training-note">
-              Видео будет автоматически останавливаться после каждой пары предложений, если в ней больше 20 слов.
+              Видео будет автоматически останавливаться после каждых двух предложений. Если в них 20 слов или меньше, тренажёр добавит следующие предложения, пока в задании не станет больше 20 слов.
               Всего найдено заданий: <strong>{trainingBlocks.length}</strong>.
             </p>
             <div className="video-exercise-actions">
