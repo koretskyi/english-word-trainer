@@ -2765,7 +2765,11 @@ button:disabled {
 }
 
 
-/* Align the brand title block with the Admin button */
+/* Align the title text center with the vertical center of the Admin button */
 .app-header .brand > div:last-child {
+  transform: none;
+}
+
+.app-header .brand h1 {
   transform: translateY(10px);
 }
