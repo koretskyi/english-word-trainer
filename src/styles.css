@@ -2756,3 +2756,10 @@ button:disabled {
 .app-header .nav-main-button.active svg {
   color: #24427f;
 }
+
+
+/* Make the header 30px taller */
+.app-header {
+  padding-top: 39px;
+  padding-bottom: 39px;
+}
