@@ -52,8 +52,8 @@ button:disabled {
   padding: 24px max(20px, calc((100% - 1000px) / 2));
   color: #fff;
   background:
-    linear-gradient(90deg, rgba(12, 18, 29, 0.78), rgba(12, 18, 29, 0.48)),
-    url("https://www.onthegotours.com/repository/Trinity-College--Dublin--Ireland-826921700668991.jpg") center 48% / cover no-repeat;
+    linear-gradient(90deg, rgba(255, 248, 232, 0.16), rgba(255, 248, 232, 0.08)),
+    url("https://wikimedia.ie/wp-content/uploads/2025/05/Condado_de_Dublin_-_Long_Room-Trinity_College_-_20170826095948-1-2048x1365.jpg") center 48% / cover no-repeat;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -71,18 +71,25 @@ button:disabled {
 
 .app-header .nav-button,
 .app-header .sound-toggle {
-  color: #fff;
-  background: rgba(15, 23, 42, 0.55);
-  border-color: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(6px);
+  color: #263247;
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 10px rgba(31, 41, 55, 0.12);
+  backdrop-filter: blur(8px);
 }
 
 .app-header .nav-button:hover,
-.app-header .sound-toggle:hover,
+.app-header .sound-toggle:hover {
+  color: #172033;
+  background: rgba(255, 255, 255, 0.98);
+  border-color: #fff;
+}
+
 .app-header .nav-button.active {
-  color: #fff;
-  background: rgba(15, 23, 42, 0.82);
-  border-color: rgba(255, 255, 255, 0.65);
+  color: #174ea6;
+  background: rgba(255, 255, 255, 0.98);
+  border-color: #fff;
+  box-shadow: 0 3px 14px rgba(31, 41, 55, 0.2);
 }
 
 .brand {
