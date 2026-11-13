@@ -112,7 +112,7 @@ function buildTrainingBlocks(cues, startSeconds, endSeconds) {
     const group = [sentences[sentenceIndex], sentences[sentenceIndex + 1]].filter(Boolean);
     sentenceIndex += group.length;
 
-    const countWords = () => (group.map((sentence) => sentence.text).join(" ").match(/[\p{L}\p{N}']+/gu) || []).length;
+    const countWords = () => (group.map((sentence) => sentence.text).join(" ").match(/[\p{L}\p{N}']{3,}/gu) || []).length;
 
     // Start with two sentences. If they are too short, keep adding the
     // following sentences until the whole exercise contains more than 20 words.
@@ -383,10 +383,6 @@ export default function VideoPage({ videos = [] }) {
           </>
         ) : (
           <>
-            <p className="video-training-note">
-              Видео будет автоматически останавливаться после каждых двух предложений. Если в них 20 слов или меньше, тренажёр добавит следующие предложения, пока в задании не станет больше 20 слов.
-              Всего найдено заданий: <strong>{trainingBlocks.length}</strong>.
-            </p>
             <div className="video-exercise-actions">
               <button className="button button-primary" type="button" disabled={!playerReady} onClick={startTraining}>
                 {trainingStarted && blockIndex < trainingBlocks.length ? "Продолжить тренировку" : trainingStarted ? "Начать заново" : "Начать тренировку"}
