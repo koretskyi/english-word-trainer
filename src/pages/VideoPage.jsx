@@ -393,17 +393,27 @@ export default function VideoPage({ videos = [] }) {
       </div>
       <span className="video-heading-icon" aria-hidden="true">▶</span>
     </div>
-    <div className="video-library-list">
-      {videos.map((item) => (
-        <button type="button" key={item.id}
-          className={"video-library-item " + (selectedVideo?.id === item.id ? "selected" : "")}
-          onClick={() => setSelectedId(item.id)}>
-          <span className="video-library-logo youtube">▶</span>
-          <span className="video-library-title"><strong>{item.title}</strong>
-            <small>{item.level || "B1"} · YouTube</small></span>
-          <span className="video-library-arrow">›</span>
-        </button>
-      ))}
+    <div className="video-library-list" aria-label="Библиотека видео">
+      {videos.map((item) => {
+        const itemVideoId = parseYouTubeUrl(item.url).videoId;
+        return (
+          <button type="button" key={item.id}
+            className={"video-library-item " + (selectedVideo?.id === item.id ? "selected" : "")}
+            onClick={() => setSelectedId(item.id)}
+            aria-pressed={selectedVideo?.id === item.id}>
+            <span className="video-library-thumbnail">
+              {itemVideoId
+                ? <img src={"https://img.youtube.com/vi/" + itemVideoId + "/mqdefault.jpg"} alt="" loading="lazy" />
+                : <span className="video-library-thumbnail-fallback">▶</span>}
+              <span className="video-library-play" aria-hidden="true">▶</span>
+            </span>
+            <span className="video-library-title">
+              <strong>{item.title}</strong>
+              <small>{item.level || "B1"} · YouTube</small>
+            </span>
+          </button>
+        );
+      })}
     </div>
     {selectedVideo && parsed?.error ? <p className="video-error" role="alert">{parsed.error}</p> : selectedVideo && <>
       <div className="video-player-card video-player-youtube">
