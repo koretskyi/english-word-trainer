@@ -209,7 +209,7 @@ export default function VideoPage({ videos = [] }) {
       if (playerRef.current?.destroy) playerRef.current.destroy();
       playerRef.current = null;
     };
-  }, [parsed?.videoId, startSeconds, endSeconds]);
+  }, [selectedId, parsed?.videoId, startSeconds, endSeconds]);
 
   useEffect(() => {
     if (!trainingStarted || activeBlockIndex !== null || !playerReady) return undefined;
@@ -320,7 +320,7 @@ export default function VideoPage({ videos = [] }) {
       <div className="video-player-card video-player-youtube">
         <div className="video-player-topline"><strong>{selectedVideo.title}</strong><span>{selectedVideo.level || "B1"}</span></div>
         <div className="video-frame-wrap">
-          <div className="video-youtube-player" key={parsed.videoId + "-" + startSeconds + "-" + (endSeconds || "end")} ref={playerContainerRef} />
+          <div className="video-youtube-player" key={selectedId + "-" + parsed.videoId + "-" + startSeconds + "-" + (endSeconds || "end")} ref={playerContainerRef} />
         </div>
         <a className="video-original-link" href={parsed.originalUrl} target="_blank" rel="noreferrer">Открыть оригинал ↗</a>
       </div>
