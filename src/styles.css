@@ -2633,14 +2633,14 @@ button:disabled {
 }
 
 .app-header .nav-main-button.active {
-  color: #fff;
-  background: #3157d5;
-  border-color: #3157d5;
-  box-shadow: 0 3px 10px rgba(49, 87, 213, 0.22);
+  color: #24427f;
+  background: #dce8ff;
+  border-color: #c5d7fb;
+  box-shadow: 0 2px 7px rgba(49, 87, 213, 0.10);
 }
 
 .app-header .nav-main-button.active svg {
-  color: #fff;
+  color: #24427f;
 }
 
 .app-header .nav-utility-button {
@@ -2656,9 +2656,9 @@ button:disabled {
 }
 
 .app-header .nav-utility-button.active {
-  color: #fff;
-  background: #0f766e;
-  border-color: #0f766e;
+  color: #245e59;
+  background: #d9f0ec;
+  border-color: #bfe2dc;
 }
 
 .app-header .sound-toggle {
