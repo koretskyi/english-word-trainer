@@ -2140,3 +2140,9 @@ button:disabled {
   .video-capture-actions .button { width: 100%; }
   .video-mask-text { padding: 14px 10px; font-size: 18px; }
 }
+
+.video-library-logo svg {
+  display: block;
+  width: 28px;
+  height: 28px;
+}
