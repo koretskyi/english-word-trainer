@@ -2763,3 +2763,9 @@ button:disabled {
   padding-top: 39px;
   padding-bottom: 39px;
 }
+
+
+/* Align the brand title block with the Admin button */
+.app-header .brand > div:last-child {
+  transform: translateY(10px);
+}
