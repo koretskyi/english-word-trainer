@@ -135,7 +135,7 @@ export default function VideoPage({ videos = [], onUpdateVideo }) {
       </div>
       <section className="video-transcription-panel">
         <h3>Субтитры YouTube</h3>
-        <p className="muted">Загружаем готовые английские субтитры YouTube: сначала авторские, затем автоматические. Запись звука и Whisper не используются.</p>
+        <p className="muted">Загружаем готовые английские субтитры YouTube: сначала авторские, затем автоматические. Звук не записывается и не распознаётся.</p>
         <div className="video-capture-actions">
           <button className="button button-primary" type="button" disabled={subtitleStatus === "loading"} onClick={fetchSubtitles}>
             {subtitleStatus === "loading" ? "Загружаю субтитры…" : transcript ? "Обновить субтитры" : "Получить субтитры"}
