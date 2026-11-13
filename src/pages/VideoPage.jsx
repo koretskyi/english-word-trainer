@@ -116,14 +116,14 @@ function buildTrainingBlocks(cues, startSeconds, endSeconds) {
 
     // Start with two sentences. If they are too short, keep adding the
     // following sentences until the whole exercise contains more than 20 words.
-    while (group.length >= 2 && countWords() <= 20 && sentenceIndex < sentences.length) {
+    while (group.length >= 2 && countWords() <= 10 && sentenceIndex < sentences.length) {
       group.push(sentences[sentenceIndex]);
       sentenceIndex += 1;
     }
 
     const text = group.map((sentence) => sentence.text).join(" ");
     const wordCount = countWords();
-    if (group.length >= 2 && wordCount > 20) {
+    if (group.length >= 2 && wordCount > 10) {
       blocks.push({
         id: "group-" + (sentenceIndex - group.length),
         text,
@@ -418,12 +418,12 @@ export default function VideoPage({ videos = [] }) {
       <section className="video-exercise-panel video-training-panel">
         <div className="video-mask-heading">
           <h3>Тренировка аудирования</h3>
-          <span>минимум 2 предложения · больше 20 слов</span>
+          <span>минимум 2 предложения · больше 10 слов</span>
         </div>
         {!subtitleCues.length ? (
           <p className="video-training-note">Для этого ролика ещё не загружены субтитры. Сначала получи английские субтитры в админке.</p>
         ) : !trainingBlocks.length ? (
-          <p className="video-training-note">В выбранном фрагменте недостаточно текста для задания длиннее 20 слов. Проверь субтитры или выбери другой отрезок.</p>
+          <p className="video-training-note">В выбранном фрагменте недостаточно текста для задания длиннее 10 слов. Проверь субтитры или выбери другой отрезок.</p>
         ) : activeBlock ? (
           <>
             <div className="video-training-mask" aria-label="Предложения с замаскированными буквами">
