@@ -162,8 +162,11 @@ export default function VideoPage() {
             setUrl("");
           }}
         >
-          <span className="platform-button-mark youtube-mark">▶</span>
-          <span><strong>YouTube</strong><small>Открыть YouTube-плеер</small></span>
+          <svg className="platform-button-icon youtube-mark" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="6" width="18" height="12" rx="4" fill="none" stroke="currentColor" strokeWidth="1.8" />
+            <path d="M10 9.2 15 12l-5 2.8z" fill="currentColor" />
+          </svg>
+          <strong>YouTube</strong>
         </button>
         <button
           type="button"
@@ -175,8 +178,10 @@ export default function VideoPage() {
             setUrl("");
           }}
         >
-          <span className="platform-button-mark tiktok-mark">♪</span>
-          <span><strong>TikTok</strong><small>Открыть TikTok-плеер</small></span>
+          <svg className="platform-button-icon tiktok-mark" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M14.2 3v11.1a4.1 4.1 0 1 1-3.1-4V13a1.5 1.5 0 1 0 1.1 1.4V3h2.1c.3 2 1.5 3.4 3.7 3.8v2.2A6.4 6.4 0 0 1 14.2 7z" fill="currentColor" />
+          </svg>
+          <strong>TikTok</strong>
         </button>
       </div>
 
