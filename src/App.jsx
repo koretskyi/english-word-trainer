@@ -810,7 +810,7 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
           if (!title || !url) return;
           try {
             const parsedUrl = new URL(url);
-            const host = parsedUrl.hostname.toLowerCase().replace(/^www\\./, "");
+            const host = parsedUrl.hostname.toLowerCase().replace(/^www\./, "");
             if (!["youtube.com", "m.youtube.com", "music.youtube.com", "youtu.be"].includes(host)) {
               window.alert("Пока можно добавлять только ссылки YouTube.");
               return;
