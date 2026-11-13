@@ -2365,3 +2365,64 @@ button:disabled {
     width: 100%;
   }
 }
+
+
+/* Video listening exercise: sentence numbering, replay, and manual answer */
+.video-training-mask {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+.video-training-sentence {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 8px;
+}
+.video-training-sentence-number {
+  color: #64748b;
+  font-size: 16px;
+  font-weight: 750;
+}
+.video-training-sentence-text {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 7px 5px;
+  min-width: 0;
+}
+.video-training-controls {
+  margin-top: 0;
+}
+.video-manual-answer-label {
+  margin: 2px 0 -7px;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 650;
+}
+.video-manual-answer {
+  width: 100%;
+  min-height: 110px;
+  padding: 12px 14px;
+  border: 1px solid #cfd7e6;
+  border-radius: 10px;
+  background: #fff;
+  color: #172033;
+  font: inherit;
+  line-height: 1.55;
+  resize: vertical;
+}
+.video-manual-answer:focus {
+  outline: 3px solid #dbe5ff;
+  border-color: var(--primary);
+}
+@media (max-width: 600px) {
+  .video-training-controls .button {
+    width: 100%;
+  }
+  .video-training-sentence {
+    grid-template-columns: 22px minmax(0, 1fr);
+    gap: 5px;
+  }
+}
