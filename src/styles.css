@@ -1846,66 +1846,123 @@ button:disabled {
 }
 
 
-/* Platform tabs styled like the main app navigation */
-.video-platform-picker {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin: 4px 0 22px;
-  padding: 0;
+/* Main navigation tabs styled to match the supplied reference */
+.app-header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 18px;
+  padding: 0 max(20px, calc((100% - 1000px) / 2)) 16px;
 }
 
-.video-platform-button {
+.brand {
+  min-height: 38px;
+  padding-top: 8px;
+}
+
+.brand-icon,
+.brand p {
+  display: none;
+}
+
+.brand h1 {
+  font-size: 19px;
+}
+
+.header-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+}
+
+.main-nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+.nav-main-button {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  min-width: 0;
   min-height: 76px;
-  padding: 10px 14px;
+  padding: 9px 12px;
   border: 1px solid transparent;
   border-radius: 15px;
   background: transparent;
   color: #111827;
-  text-align: center;
-  transition: background .15s ease, color .15s ease;
+  font-size: 16px;
+  font-weight: 600;
 }
 
-.video-platform-button:hover {
+.nav-main-button:hover {
   background: #f3f6fc;
 }
 
-.video-platform-button.selected {
+.nav-main-button.active {
   background: #e4edff;
+  border-color: transparent;
   color: #111827;
 }
 
-.platform-button-icon {
-  display: block;
+.nav-main-button svg {
   width: 23px;
   height: 23px;
-  color: #111827;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.video-platform-button.selected .platform-button-icon {
+.nav-main-button.active svg {
   color: #3478f6;
 }
 
-.video-platform-button strong {
-  display: block;
-  font-size: 15px;
-  line-height: 1.2;
-  font-weight: 650;
+.nav-utility-button {
+  min-height: 32px;
+  padding: 5px 10px;
+  border: 0;
+  background: transparent;
+  color: #64748b;
+  font-size: 12px;
 }
 
-@media (max-width: 520px) {
-  .video-platform-picker {
-    gap: 7px;
+.sound-toggle {
+  position: absolute;
+  top: 8px;
+  right: max(20px, calc((100% - 1000px) / 2));
+  width: 34px;
+  height: 34px;
+}
+
+@media (max-width: 600px) {
+  .app-header {
+    padding: 0 10px 12px;
+    gap: 12px;
   }
 
-  .video-platform-button {
-    min-height: 70px;
-    padding: 9px 6px;
+  .brand {
+    padding-left: 6px;
+  }
+
+  .nav-main-button {
+    min-height: 68px;
+    padding: 8px 4px;
+    font-size: 13px;
+  }
+
+  .nav-main-button svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .sound-toggle {
+    right: 10px;
   }
 }
