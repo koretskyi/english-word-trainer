@@ -199,6 +199,55 @@ function loadVideos() {
   }
 }
 
+function getYouTubeVideoId(url) {
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname.includes("youtu.be")) return parsed.pathname.split("/").filter(Boolean)[0] || "";
+    if (parsed.searchParams.get("v")) return parsed.searchParams.get("v");
+    const parts = parsed.pathname.split("/").filter(Boolean);
+    const marker = parts.findIndex((part) => ["embed", "shorts", "live"].includes(part));
+    return marker >= 0 ? parts[marker + 1] || "" : "";
+  } catch {
+    return "";
+  }
+}
+
+function VideoTimeFields({ label, value, onSave, allowEmpty = false }) {
+  const initial = String(value || "").split(":");
+  const [minutes, setMinutes] = useState(initial.length > 1 ? initial[initial.length - 2] : (initial[0] || ""));
+  const [seconds, setSeconds] = useState(initial.length > 1 ? initial[initial.length - 1] : "00");
+
+  useEffect(() => {
+    const parts = String(value || "").split(":");
+    setMinutes(value ? (parts.length > 1 ? parts[parts.length - 2] : parts[0]) : "");
+    setSeconds(value ? (parts.length > 1 ? parts[parts.length - 1] : "00") : "");
+  }, [value]);
+
+  function commit() {
+    if (allowEmpty && !minutes.trim() && !seconds.trim()) {
+      onSave("");
+      return;
+    }
+    const mins = Math.max(0, Number.parseInt(minutes || "0", 10) || 0);
+    const secs = Math.min(59, Math.max(0, Number.parseInt(seconds || "0", 10) || 0));
+    onSave(`${mins}:${String(secs).padStart(2, "0")}`);
+  }
+
+  return (
+    <div className="admin-video-time-field" onBlur={(event) => {
+      if (!event.currentTarget.contains(event.relatedTarget)) commit();
+    }}>
+      <span>{label}</span>
+      <div className="admin-video-time-inputs">
+        <label><input type="number" min="0" step="1" value={minutes}
+          onChange={(event) => setMinutes(event.target.value)} placeholder="0" aria-label={`${label}: минуты`} /> <small>мин</small></label>
+        <label><input type="number" min="0" max="59" step="1" value={seconds}
+          onChange={(event) => setSeconds(event.target.value)} placeholder="0" aria-label={`${label}: секунды`} /> <small>сек</small></label>
+      </div>
+    </div>
+  );
+}
+
 function createId() {
 
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -862,36 +911,45 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
         </form>
         <div className="sentence-list">
           {videos.length === 0 ? <p className="muted">Видео пока не добавлены.</p> : videos.map((video) => (
-            <article className="sentence-item" key={video.id}>
-              <div>
-                <strong>{video.title}</strong>
-                <p className="sentence-item-english">{video.url}</p>
-                <span className="muted">{video.level || "B1"}</span>
-                <div className="admin-video-range">
-                  <label>Начало (мм:сс)
-                    <input aria-label={`Начало видео ${video.title}`} defaultValue={video.startTime || "00:00"}
-                      placeholder="00:00" onBlur={(event) => onSaveVideo({ ...video, startTime: event.target.value.trim() })} />
-                  </label>
-                  <label>Конец (мм:сс)
-                    <input aria-label={`Конец видео ${video.title}`} defaultValue={video.endTime || ""}
-                      placeholder="до конца" onBlur={(event) => onSaveVideo({ ...video, endTime: event.target.value.trim() })} />
-                  </label>
-                  <small className="muted">Оставь конец пустым, чтобы использовать весь остаток ролика</small>
+            <article className="admin-video-item" key={video.id}>
+              <div className="admin-video-preview-column">
+                <div className="admin-video-preview">
+                  {getYouTubeVideoId(video.url) ? (
+                    <iframe
+                      src={`https://www.youtube-nocookie.com/embed/${getYouTubeVideoId(video.url)}?rel=0`}
+                      title={`Предпросмотр: ${video.title}`}
+                      loading="lazy"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  ) : <span>Не удалось открыть предпросмотр</span>}
                 </div>
+                <strong>{video.title}</strong>
+                <span className="muted">{video.level || "B1"}</span>
               </div>
-              <div className="sentence-item-actions">
-                <button type="button" className="button button-primary"
-                  disabled={subtitleJobs[video.id] === "loading"}
-                  onClick={() => fetchVideoSubtitles(video)}>
-                  {subtitleJobs[video.id] === "loading"
-                    ? "Загружаю титры…"
-                    : video.transcript ? "Обновить титры" : "Получить титры"}
-                </button>
-                {video.transcript && <span className="muted">Титры загружены</span>}
-                {subtitleErrors[video.id] && <p className="form-error" role="alert">{subtitleErrors[video.id]}</p>}
-                <button type="button" className="button button-danger" onClick={() => {
-                  if (window.confirm("Удалить это видео из библиотеки?")) onDeleteVideo(video.id);
-                }}>Удалить</button>
+              <div className="admin-video-settings">
+                <div className="admin-video-range">
+                  <VideoTimeFields label="Начало фрагмента" value={video.startTime || "0:00"}
+                    onSave={(startTime) => onSaveVideo({ ...video, startTime })} />
+                  <VideoTimeFields label="Конец фрагмента" value={video.endTime || ""}
+                    allowEmpty onSave={(endTime) => onSaveVideo({ ...video, endTime })} />
+                  <small className="muted">Оставь минуты и секунды конца пустыми, чтобы использовать остаток ролика.</small>
+                </div>
+                <div className="admin-video-actions">
+                  <button type="button" className="button button-primary"
+                    disabled={subtitleJobs[video.id] === "loading"}
+                    onClick={() => fetchVideoSubtitles(video)}>
+                    {subtitleJobs[video.id] === "loading"
+                      ? "Загружаю титры…"
+                      : video.transcript ? "Обновить титры" : "Получить титры"}
+                  </button>
+                  {video.transcript && <span className="muted">Титры загружены</span>}
+                  {subtitleErrors[video.id] && <p className="form-error" role="alert">{subtitleErrors[video.id]}</p>}
+                  <button type="button" className="button button-danger" onClick={() => {
+                    if (window.confirm("Удалить это видео из библиотеки?")) onDeleteVideo(video.id);
+                  }}>Удалить</button>
+                </div>
               </div>
             </article>
           ))}
