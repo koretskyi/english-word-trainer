@@ -2721,7 +2721,7 @@ button:disabled {
 }
 
 
-/* Header: white title and white navigation buttons */
+/* Header: white title and buttons, soft blue active state */
 .app-header .brand h1,
 .app-header .brand p {
   color: #fff;
@@ -2729,9 +2729,7 @@ button:disabled {
 }
 
 .app-header .nav-main-button,
-.app-header .nav-main-button.active,
 .app-header .nav-utility-button,
-.app-header .nav-utility-button.active,
 .app-header .sound-toggle {
   color: #263247;
   background: #fff;
@@ -2747,6 +2745,14 @@ button:disabled {
   border-color: #fff;
 }
 
+.app-header .nav-main-button.active,
+.app-header .nav-utility-button.active {
+  color: #24427f;
+  background: #dce8ff;
+  border-color: #c5d7fb;
+  box-shadow: 0 2px 7px rgba(49, 87, 213, 0.10);
+}
+
 .app-header .nav-main-button.active svg {
-  color: #263247;
+  color: #24427f;
 }
