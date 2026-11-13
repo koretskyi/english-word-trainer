@@ -16,20 +16,37 @@ class SubtitleRequest(BaseModel):
     url: str
 
 
-def clean_vtt(path: Path) -> str:
+def parse_timestamp(value: str) -> float:
+    parts = value.replace(",", ".").split(":")
+    try:
+        seconds = float(parts[-1])
+        minutes = int(parts[-2]) if len(parts) >= 2 else 0
+        hours = int(parts[-3]) if len(parts) >= 3 else 0
+        return hours * 3600 + minutes * 60 + seconds
+    except (ValueError, IndexError):
+        return 0.0
+
+
+def parse_vtt(path: Path) -> list[dict]:
     raw = path.read_text(encoding="utf-8-sig", errors="replace")
-    lines = []
-    for line in raw.splitlines():
-        line = line.strip()
-        if not line or line == "WEBVTT" or line.startswith(("NOTE", "Kind:", "Language:")):
+    cues = []
+    for block in re.split(r"\n\s*\n", raw.replace("\r\n", "\n").replace("\r", "\n")):
+        lines = [line.strip() for line in block.splitlines() if line.strip()]
+        timing_index = next((i for i, line in enumerate(lines) if "-->" in line), None)
+        if timing_index is None:
             continue
-        if "-->" in line or re.fullmatch(r"\d+", line):
+        timing = lines[timing_index].split("-->")
+        if len(timing) != 2:
             continue
-        line = re.sub(r"<[^>]*>", "", line)
-        line = html.unescape(line).strip()
-        if line and (not lines or line != lines[-1]):
-            lines.append(line)
-    return re.sub(r"\s+", " ", " ".join(lines)).strip()
+        start = parse_timestamp(timing[0].strip().split()[0])
+        end = parse_timestamp(timing[1].strip().split()[0])
+        text_lines = lines[timing_index + 1:]
+        text_lines = [re.sub(r"<[^>]*>", "", line) for line in text_lines]
+        cue_text = html.unescape(" ".join(text_lines)).strip()
+        cue_text = re.sub(r"\s+", " ", cue_text)
+        if cue_text:
+            cues.append({"start": start, "end": end, "text": cue_text})
+    return cues
 
 
 @app.post("/api/youtube-subtitles")
@@ -70,10 +87,10 @@ async def youtube_subtitles(payload: SubtitleRequest):
             raise HTTPException(status_code=404, detail="У ролика нет доступных английских субтитров — ни авторских, ни автоматических.")
 
         subtitle_files.sort(key=lambda path: (0 if re.search(r"\.en(?:-[a-z]{2})?\.", path.name.lower()) else 1, 0 if "orig" in path.name.lower() else 1, path.name))
-        text = clean_vtt(subtitle_files[0])
-        if not text:
+        cues = parse_vtt(subtitle_files[0])
+        if not cues:
             raise HTTPException(status_code=404, detail="YouTube вернул пустой файл субтитров.")
-        return {"text": text}
+        return {"text": " ".join(cue["text"] for cue in cues), "cues": cues}
 
 
 @app.get("/health")
