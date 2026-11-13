@@ -2306,7 +2306,7 @@ button:disabled {
   line-height: 2.2;
 }
 .video-training-mask .word-gap-container {
-  pointer-events: none;
+  pointer-events: auto;
 }
 .video-voice-indicator {
   display: flex;
