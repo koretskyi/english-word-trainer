@@ -2426,3 +2426,14 @@ button:disabled {
     gap: 5px;
   }
 }
+
+
+/* Video listening: clearer separation between masked words */
+.video-training-sentence-text {
+  column-gap: 13px;
+  row-gap: 9px;
+}
+
+.video-training-sentence-text .word-gap-container {
+  margin-right: 4px;
+}
