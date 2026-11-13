@@ -270,7 +270,7 @@ export default function VideoPage({ videos = [] }) {
       const player = playerRef.current;
       const nextBlock = trainingBlocks[blockIndex];
       if (!player || !nextBlock || typeof player.getCurrentTime !== "function") return;
-      if (player.getCurrentTime() >= nextBlock.end + 0.12) {
+      if (player.getCurrentTime() >= Math.max(nextBlock.start ?? startSeconds, nextBlock.end - 0.15)) {
         player.pauseVideo();
         setActiveBlockIndex(blockIndex);
       }
