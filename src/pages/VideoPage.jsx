@@ -136,17 +136,7 @@ export default function VideoPage({ videos = [], onUpdateVideo }) {
         </div>
         <a className="video-original-link" href={parsed.originalUrl} target="_blank" rel="noreferrer">Открыть оригинал ↗</a>
       </div>
-      <section className="video-transcription-panel">
-        <h3>Субтитры YouTube</h3>
-        <p className="muted">{transcript ? (selectedVideo.startTime || selectedVideo.endTime ? `Фрагмент: ${selectedVideo.startTime || "00:00"} – ${selectedVideo.endTime || "конец видео"}.` : "Субтитры подготовлены администратором.") : "Субтитры для этого ролика ещё не загружены. Попроси администратора подготовить их в админке."}</p>
-      </section>
       {exerciseTranscript && <section className="video-exercise-panel">
-        <div className="video-transcript-heading">
-          <div><h3>Текст субтитров</h3><p className="muted">Английский текст, полученный с YouTube</p></div>
-          <button type="button" className="button button-secondary"
-            onClick={() => navigator.clipboard?.writeText(exerciseTranscript)}>Копировать текст</button>
-        </div>
-        <p className="video-transcript-plain">{exerciseTranscript}</p>
         <div className="video-mask-heading"><h3>Упражнение с маской</h3><span>{wordTokens.length} слов</span></div>
         <div className="video-mask-text">
           {tokens.map((token) => {
