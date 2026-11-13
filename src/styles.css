@@ -2608,3 +2608,61 @@ button:disabled {
     margin-left: 0;
   }
 }
+
+
+/* Header refresh: light surface, dark typography, and a distinct active tab */
+.app-header {
+  color: #172033;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.app-header .brand h1,
+.app-header .brand p {
+  color: #172033;
+}
+
+.app-header .nav-main-button {
+  color: #334155;
+  background: transparent;
+}
+
+.app-header .nav-main-button:hover {
+  color: #1d4ed8;
+  background: #eaf1ff;
+}
+
+.app-header .nav-main-button.active {
+  color: #fff;
+  background: #3157d5;
+  border-color: #3157d5;
+  box-shadow: 0 3px 10px rgba(49, 87, 213, 0.22);
+}
+
+.app-header .nav-main-button.active svg {
+  color: #fff;
+}
+
+.app-header .nav-utility-button {
+  color: #334155;
+  background: #fff;
+  border-color: #d8e0ec;
+}
+
+.app-header .nav-utility-button:hover {
+  color: #1d4ed8;
+  background: #eef4ff;
+  border-color: #b9ccf5;
+}
+
+.app-header .nav-utility-button.active {
+  color: #fff;
+  background: #0f766e;
+  border-color: #0f766e;
+}
+
+.app-header .sound-toggle {
+  color: #334155;
+  background: #fff;
+  border-color: #d8e0ec;
+}
