@@ -800,7 +800,7 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
 
       <section className="panel admin-video-panel">
         <h2>Библиотека видео</h2>
-        <p className="muted">Добавляй ссылки на ролики здесь. Они появятся в разделе «Видео».</p>
+        <p className="muted">Добавляй YouTube-ролики здесь. Они появятся в разделе «Видео».</p>
         <form className="admin-form" onSubmit={(event) => {
           event.preventDefault();
           const formData = new FormData(event.currentTarget);
@@ -808,14 +808,25 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
           const url = String(formData.get("videoUrl") || "").trim();
           const level = String(formData.get("videoLevel") || "B1");
           if (!title || !url) return;
+          try {
+            const parsedUrl = new URL(url);
+            const host = parsedUrl.hostname.toLowerCase().replace(/^www\\./, "");
+            if (!["youtube.com", "m.youtube.com", "music.youtube.com", "youtu.be"].includes(host)) {
+              window.alert("Пока можно добавлять только ссылки YouTube.");
+              return;
+            }
+          } catch {
+            window.alert("Введи корректную ссылку YouTube.");
+            return;
+          }
           onSaveVideo({ id: createId(), title, url, level, transcript: "" });
           event.currentTarget.reset();
         }}>
           <label>Название ролика
             <input name="videoTitle" required placeholder="Например: Ordering food in a café" />
           </label>
-          <label>Ссылка YouTube или TikTok
-            <input name="videoUrl" type="url" required placeholder="https://..." />
+          <label>Ссылка на YouTube
+            <input name="videoUrl" type="url" required placeholder="https://www.youtube.com/watch?v=..." />
           </label>
           <label>Уровень
             <select name="videoLevel" defaultValue="B1">
