@@ -2260,3 +2260,108 @@ button:disabled {
     gap: 16px;
   }
 }
+
+
+/* Video training: sentence-pair pause and Whisper response */
+.video-player-youtube .video-frame-wrap {
+  aspect-ratio: 16 / 9;
+  padding: 0;
+}
+.video-youtube-player {
+  width: 100%;
+  height: 100%;
+  min-height: 220px;
+  background: #0f172a;
+}
+.video-training-panel {
+  display: grid;
+  gap: 14px;
+}
+.video-training-panel .video-mask-heading {
+  margin: 0;
+}
+.video-training-note {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.video-training-question {
+  margin: 0;
+  color: #172033;
+  font-size: 19px;
+  font-weight: 750;
+}
+.video-training-mask {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 7px 5px;
+  padding: 18px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #f8faff;
+  color: #172033;
+  font-size: clamp(19px, 3vw, 27px);
+  font-weight: 700;
+  line-height: 2.2;
+}
+.video-training-mask .word-gap-container {
+  pointer-events: none;
+}
+.video-voice-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 10px 13px;
+  border: 1px solid #dbe3ef;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 650;
+}
+.video-voice-indicator.is-listening {
+  border-color: #86d69a;
+  background: #effbf2;
+  color: #166534;
+}
+.video-voice-answer {
+  margin: 0;
+  padding: 11px 13px;
+  border-radius: 9px;
+  background: #f0f7ff;
+  color: #245fc5;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.video-voice-answer.is-incorrect {
+  background: #fff1f2;
+  color: #b91c1c;
+}
+.video-voice-error {
+  margin: 0;
+  color: #b91c1c;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.video-training-progress {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+}
+.video-training-complete {
+  color: #15803d;
+}
+@media (max-width: 600px) {
+  .video-youtube-player {
+    min-height: 180px;
+  }
+  .video-training-mask {
+    padding: 14px 10px;
+    font-size: 18px;
+  }
+  .video-training-panel .video-exercise-actions .button {
+    width: 100%;
+  }
+}
