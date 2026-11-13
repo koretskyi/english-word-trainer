@@ -112,7 +112,7 @@ function buildTrainingBlocks(cues, startSeconds, endSeconds) {
     const group = [sentences[sentenceIndex], sentences[sentenceIndex + 1]].filter(Boolean);
     sentenceIndex += group.length;
 
-    const countWords = () => (group.map((sentence) => sentence.text).join(" ").match(/[\p{L}\p{N}']{3,}/gu) || []).length;
+    const countWords = () => (group.map((sentence) => sentence.text).join(" ").match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu) || []).filter((word) => (word.match(/[\p{L}\p{N}]/gu) || []).length >= 3).length;
 
     // Start with two sentences. If they are too short, keep adding the
     // following sentences until the whole exercise contains more than 20 words.
@@ -161,7 +161,7 @@ export default function VideoPage({ videos = [] }) {
   const [voiceAnswer, setVoiceAnswer] = useState("");
   const [voiceError, setVoiceError] = useState("");
   const [answerResult, setAnswerResult] = useState("");
-  const [manualAnswer, setManualAnswer] = useState("");
+  const [videoWordAnswers, setVideoWordAnswers] = useState({});
   const [replayingBlock, setReplayingBlock] = useState(false);
   const activeBlock = activeBlockIndex === null ? null : trainingBlocks[activeBlockIndex];
 
@@ -197,7 +197,7 @@ export default function VideoPage({ videos = [] }) {
     setVoiceAnswer("");
     setVoiceError("");
     setAnswerResult("");
-    setManualAnswer("");
+    setVideoWordAnswers({});
     setReplayingBlock(false);
 
     if (!parsed?.videoId || !playerContainerRef.current) return undefined;
@@ -265,6 +265,32 @@ export default function VideoPage({ videos = [] }) {
       setVoiceError("Ответ отличается от оригинала. Попробуй ещё раз или исправь текст вручную.");
     }
   }, [selectedId, activeBlock?.id]);
+
+  function updateVideoWordAnswer(token, nextValue) {
+    const nextAnswers = { ...videoWordAnswers, [token.id]: nextValue };
+    setVideoWordAnswers(nextAnswers);
+    setVoiceError("");
+    setAnswerResult("");
+
+    const assembled = exerciseSentences.map((sentence) => sentence.tokens.map((part) => {
+      if (!part.isWord) return part.value;
+      return (nextAnswers[part.id] || []).join("");
+    }).join("")).join(" ");
+
+    const complete = exerciseWordTokens.every((word) => {
+      const letters = nextAnswers[word.id] || [];
+      return letters.length === [...word.value].length && letters.every(Boolean);
+    });
+
+    if (complete) {
+      if (normalizeText(assembled) === normalizeText(activeBlock?.text)) {
+        setAnswerResult("correct");
+        setVoiceError("");
+      } else {
+        setAnswerResult("incorrect");
+      }
+    }
+  }
 
   const startVoiceCapture = useCallback(() => {
     if (!activeBlock) return;
@@ -400,10 +426,11 @@ export default function VideoPage({ videos = [] }) {
                       if (!token.isWord) return <span key={token.id}>{token.value}</span>;
                       return <WordGap key={token.id}
                         sentence={{ id: activeBlock.id + "-" + token.id, word: token.value }}
-                        value={Array([...token.value].length).fill("")}
-                        onChange={() => {}}
-                        disabled
+                        value={videoWordAnswers[token.id] || Array([...token.value].length).fill("")}
+                        onChange={(nextValue) => updateVideoWordAnswer(token, nextValue)}
+                        disabled={answerResult === "correct"}
                         autoFocus={false}
+                        showMistakes={answerResult === "incorrect"}
                         openedPositions={openedPositions[token.id]} />;
                     })}
                   </div>
@@ -425,20 +452,13 @@ export default function VideoPage({ videos = [] }) {
                   answerResult === "correct" ? "Ответ распознан правильно." : "Микрофон включается только после нажатия «Записать ответ»."}
             </div>
             {voiceAnswer && <p className={"video-voice-answer" + (answerResult === "incorrect" ? " is-incorrect" : "")}>Распознано: {voiceAnswer}</p>}
-            <label className="video-manual-answer-label" htmlFor="video-manual-answer">Или введите ответ вручную</label>
-            <textarea id="video-manual-answer" className="video-manual-answer" value={manualAnswer}
-              onChange={(event) => { setManualAnswer(event.target.value); setAnswerResult(""); setVoiceError(""); }}
-              placeholder="Введите услышанные предложения…" rows={4} />
             {voiceError && <p className="video-voice-error" role="alert">{voiceError}</p>}
-            <div className="video-exercise-actions">
-              {answerResult === "correct" ? (
+            {answerResult === "incorrect" && <p className="video-voice-error" role="alert">Есть ошибки. Исправь буквы прямо в полях слов.</p>}
+            {answerResult === "correct" && (
+              <div className="video-exercise-actions">
                 <button className="button button-primary" type="button" onClick={continueVideo}>Продолжить просмотр</button>
-              ) : (
-                <button className="button button-primary" type="button" disabled={!manualAnswer.trim()} onClick={() => evaluateAnswer(manualAnswer)}>
-                  Проверить ответ
-                </button>
-              )}
-            </div>
+              </div>
+            )}
           </>
         ) : (
           <>
