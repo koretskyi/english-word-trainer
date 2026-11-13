@@ -127,6 +127,8 @@ export default function VideoPage({ videos = [] }) {
   const [revealedSentences, setRevealedSentences] = useState({});
   const [sentenceVoiceAnswers, setSentenceVoiceAnswers] = useState({});
   const [recordingSentenceIndex, setRecordingSentenceIndex] = useState(null);
+  const wordInputRefs = useRef([]);
+  const revealTimerRef = useRef(null);
   const activeBlock = activeBlockIndex === null ? null : trainingBlocks[activeBlockIndex];
 
   const exerciseSentences = useMemo(() => {
@@ -143,6 +145,9 @@ export default function VideoPage({ videos = [] }) {
     }));
   }, [selectedId, activeBlock?.id]);
   const exerciseWordTokens = exerciseSentences.flatMap((sentence) => sentence.tokens.filter((token) => token.isWord));
+  exerciseWordTokens.forEach((_, index) => {
+    if (!wordInputRefs.current[index]) wordInputRefs.current[index] = { current: null };
+  });
   const openedPositions = useMemo(
     () => Object.fromEntries(exerciseWordTokens.map((token) => [
       token.id, createWordGapOpenedPositions(token.value),
@@ -239,6 +244,21 @@ export default function VideoPage({ videos = [] }) {
     }
   }, [selectedId, activeBlock?.id]);
 
+  function toggleRevealText(sentenceIndex) {
+    window.clearTimeout(revealTimerRef.current);
+    if (revealedSentences[sentenceIndex]) {
+      setRevealedSentences((current) => ({ ...current, [sentenceIndex]: false }));
+      return;
+    }
+    setRevealedSentences((current) => ({ ...current, [sentenceIndex]: true }));
+    revealTimerRef.current = window.setTimeout(() => {
+      setRevealedSentences((current) => ({ ...current, [sentenceIndex]: false }));
+      revealTimerRef.current = null;
+    }, 2000);
+  }
+
+  useEffect(() => () => window.clearTimeout(revealTimerRef.current), []);
+
   function updateVideoWordAnswer(token, nextValue) {
     const nextAnswers = { ...videoWordAnswers, [token.id]: nextValue };
     setVideoWordAnswers(nextAnswers);
@@ -298,7 +318,7 @@ export default function VideoPage({ videos = [] }) {
     const timer = window.setInterval(() => {
       const player = playerRef.current;
       if (player && typeof player.getCurrentTime === "function" &&
-          player.getCurrentTime() >= sentence.end + 0.2) {
+          player.getCurrentTime() >= sentence.end + 0.3) {
         player.pauseVideo();
         setReplayingSentenceIndex(null);
       }
@@ -417,16 +437,18 @@ export default function VideoPage({ videos = [] }) {
                     <span className="video-training-sentence-number">{sentenceIndex + 1}.</span>
                     <div className="video-training-sentence-text">
                       {sentence.tokens.map((token) => {
-                        if (revealedSentences[sentenceIndex]) {
-                          return <span key={token.id}>{token.value}</span>;
-                        }
                         if (!token.isWord) return <span key={token.id}>{token.value}</span>;
+                        const wordIndex = exerciseWordTokens.findIndex((word) => word.id === token.id);
+                        const isRevealed = Boolean(revealedSentences[sentenceIndex]);
+                        const typedLetters = videoWordAnswers[token.id] || Array([...token.value].length).fill("");
                         return <WordGap key={token.id}
                           sentence={{ id: activeBlock.id + "-" + token.id, word: token.value }}
-                          value={videoWordAnswers[token.id] || Array([...token.value].length).fill("")}
+                          value={isRevealed ? [...token.value] : typedLetters}
                           onChange={(nextValue) => updateVideoWordAnswer(token, nextValue)}
-                          disabled={answerResult === "correct"}
+                          disabled={answerResult === "correct" || isRevealed}
                           autoFocus={false}
+                          nextInputRef={wordInputRefs.current[wordIndex + 1]}
+                          firstInputRef={wordInputRefs.current[wordIndex]}
                           showMistakes={answerResult === "incorrect"}
                           openedPositions={openedPositions[token.id]} />;
                       })}
@@ -439,7 +461,7 @@ export default function VideoPage({ videos = [] }) {
                       {replayingSentenceIndex === sentenceIndex ? "Прослушивание…" : "↻ Прослушать ещё раз"}
                     </button>
                     <button className="button button-secondary" type="button"
-                      onClick={() => setRevealedSentences((current) => ({ ...current, [sentenceIndex]: !current[sentenceIndex] }))}>
+                      onClick={() => toggleRevealText(sentenceIndex)}>
                       {revealedSentences[sentenceIndex] ? "Скрыть текст" : "Показать текст"}
                     </button>
                     <button className="button button-secondary" type="button"
