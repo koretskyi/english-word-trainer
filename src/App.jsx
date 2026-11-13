@@ -2,6 +2,7 @@ import { SENTENCES } from "./sentences.js";
 import WordGap from "./components/LetterGap.jsx";
 import CorrectFeedback from "./components/CorrectFeedback.jsx";
 import AuditionPage from "./pages/AuditionPage.jsx";
+import VideoPage from "./pages/VideoPage.jsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 
@@ -1226,6 +1227,14 @@ export default function App() {
             >Аудирование</button>
             <button
               type="button"
+              className={page === "video" ? "nav-button active" : "nav-button"}
+              onClick={() => {
+                setPage("video");
+                setShowStats(false);
+              }}
+            >Видео</button>
+            <button
+              type="button"
               className={page === "admin" ? "nav-button active" : "nav-button"}
               onClick={() => {
                 setPage("admin");
@@ -1290,6 +1299,8 @@ export default function App() {
             levels={levels}
             audioEnabled={audioEnabled}
           />
+        ) : page === "video" ? (
+          <VideoPage />
         ) : (
           <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} />
         )}
