@@ -205,7 +205,12 @@ export default function VideoPage({ videos = [] }) {
     loadYouTubeIframeApi()
       .then((YT) => {
         if (cancelled || !playerContainerRef.current) return;
-        const player = new YT.Player(playerContainerRef.current, {
+        // Keep React's container separate from the DOM node that YouTube replaces
+        // with its iframe. This prevents React/YouTube from removing the same node.
+        const playerMountNode = document.createElement("div");
+        playerMountNode.className = "video-youtube-player-mount";
+        playerContainerRef.current.replaceChildren(playerMountNode);
+        const player = new YT.Player(playerMountNode, {
           host: "https://www.youtube-nocookie.com",
           videoId: parsed.videoId,
           playerVars: {
@@ -236,8 +241,12 @@ export default function VideoPage({ videos = [] }) {
       cancelled = true;
       captureRef.current?.stop();
       captureRef.current = null;
-      if (playerRef.current?.destroy) playerRef.current.destroy();
+      const player = playerRef.current;
       playerRef.current = null;
+      if (player?.destroy) player.destroy();
+      // YouTube may replace its mount node with an iframe; clear only inside
+      // the stable React-owned container after the player has been destroyed.
+      playerContainerRef.current?.replaceChildren();
     };
   }, [selectedId, parsed?.videoId, startSeconds, endSeconds]);
 
