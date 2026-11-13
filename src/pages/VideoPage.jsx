@@ -262,7 +262,7 @@ export default function VideoPage({ videos = [] }) {
       setAnswerResult("correct");
     } else {
       setAnswerResult("incorrect");
-      setVoiceError("Ответ отличается от оригинала. Попробуй ещё раз или исправь текст вручную.");
+      setVoiceError("Ответ отличается от оригинала. Исправь буквы прямо в полях слов.");
     }
   }, [selectedId, activeBlock?.id]);
 
@@ -345,7 +345,7 @@ export default function VideoPage({ videos = [] }) {
     setVoiceAnswer("");
     setVoiceError("");
     setAnswerResult("");
-    setManualAnswer("");
+    setVideoWordAnswers({});
     setTrainingStarted(true);
     playerRef.current.seekTo(startSeconds, true);
     playerRef.current.playVideo();
@@ -361,7 +361,7 @@ export default function VideoPage({ videos = [] }) {
     setVoiceAnswer("");
     setVoiceError("");
     setAnswerResult("");
-    setManualAnswer("");
+    setVideoWordAnswers({});
     setReplayingBlock(false);
     playerRef.current?.playVideo();
   }
