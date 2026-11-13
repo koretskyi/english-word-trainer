@@ -82,19 +82,13 @@ function buildTrainingBlocks(cues, startSeconds, endSeconds) {
       const start = Math.max(Number(cue.start), startSeconds);
       const end = Math.min(Number(cue.end), endSeconds ?? Infinity);
       const text = String(cue.text || "").trim();
-      // Keep sentence rows separate while preserving the cue's shared timestamps.
-      const sentences = text.split(/(?<=[.!?])\s+/u).map((part) => part.trim()).filter(Boolean);
-      const sentenceRows = (sentences.length ? sentences : [text]).map((sentenceText) => ({
-        text: sentenceText,
-        start,
-        end,
-      }));
+      const sentence = { text, start, end };
       const wordCount = (text.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu) || [])
         .filter((word) => (word.match(/[\p{L}\p{N}]/gu) || []).length >= 3).length;
       return {
         id: "cue-" + index,
         text,
-        sentences: sentenceRows,
+        sentences: [sentence],
         start,
         end,
         wordCount,
