@@ -14,6 +14,8 @@ app = FastAPI(title="English Word Trainer YouTube Subtitles API")
 
 class SubtitleRequest(BaseModel):
     url: str
+    startTime: str = "00:00"
+    endTime: str = ""
 
 
 def parse_timestamp(value: str) -> float:
@@ -90,6 +92,14 @@ async def youtube_subtitles(payload: SubtitleRequest):
         cues = parse_vtt(subtitle_files[0])
         if not cues:
             raise HTTPException(status_code=404, detail="YouTube вернул пустой файл субтитров.")
+        start_seconds = parse_timestamp(payload.startTime)
+        end_seconds = parse_timestamp(payload.endTime) if payload.endTime.strip() else None
+        if end_seconds is not None and end_seconds <= start_seconds:
+            raise HTTPException(status_code=400, detail="Время окончания должно быть позже времени начала.")
+        if start_seconds > 0 or end_seconds is not None:
+            cues = [cue for cue in cues if cue["start"] < (end_seconds if end_seconds is not None else float("inf")) and cue["end"] > start_seconds]
+        if not cues:
+            raise HTTPException(status_code=404, detail="В выбранном временном отрезке нет английских субтитров.")
         return {"text": " ".join(cue["text"] for cue in cues), "cues": cues}
 
 
