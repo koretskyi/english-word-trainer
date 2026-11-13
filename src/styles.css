@@ -2794,3 +2794,12 @@ button:disabled {
 .app-header .brand p {
   color: #fff;
 }
+
+
+/* Show the header tagline below the title */
+.app-header .brand p {
+  display: block;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  z-index: 2;
+}
