@@ -30,6 +30,14 @@ function tokenize(text) {
   }));
 }
 
+function parseVideoTime(value) {
+  const parts = String(value || "").trim().split(":").map(Number);
+  if (!parts.length || parts.some((part) => !Number.isFinite(part) || part < 0)) return 0;
+  if (parts.length === 1) return parts[0];
+  if (parts.length === 2) return parts[0] * 60 + parts[1];
+  return parts[0] * 3600 + parts[1] * 60 + parts[2];
+}
+
 export default function VideoPage({ videos = [], onUpdateVideo }) {
   const [selectedId, setSelectedId] = useState(videos[0]?.id || "");
   const selectedVideo = videos.find((item) => item.id === selectedId) || videos[0] || null;
@@ -37,7 +45,25 @@ export default function VideoPage({ videos = [], onUpdateVideo }) {
   const [wordAnswers, setWordAnswers] = useState({});
   const [checked, setChecked] = useState(false);
   const transcript = selectedVideo?.transcript || "";
-  const tokens = useMemo(() => tokenize(transcript), [transcript]);
+  const startSeconds = parseVideoTime(selectedVideo?.startTime);
+  const endSeconds = selectedVideo?.endTime ? parseVideoTime(selectedVideo.endTime) : null;
+  const subtitleCues = Array.isArray(selectedVideo?.subtitleCues) ? selectedVideo.subtitleCues : [];
+  const exerciseTranscript = subtitleCues.length
+    ? subtitleCues
+        .filter((cue) => Number(cue.start) < (endSeconds ?? Infinity) && Number(cue.end) > startSeconds)
+        .map((cue) => cue.text)
+        .join(" ")
+        .trim()
+    : transcript;
+  const playerUrl = useMemo(() => {
+    if (!parsed?.embedUrl) return "";
+    const params = new URLSearchParams();
+    if (startSeconds > 0) params.set("start", String(Math.floor(startSeconds)));
+    if (endSeconds !== null && endSeconds > startSeconds) params.set("end", String(Math.floor(endSeconds)));
+    const query = params.toString();
+    return parsed.embedUrl + (query ? "?" + query : "");
+  }, [parsed?.embedUrl, startSeconds, endSeconds]);
+  const tokens = useMemo(() => tokenize(exerciseTranscript), [exerciseTranscript]);
   const wordTokens = tokens.filter((token) => token.isWord);
   const opened = useMemo(() => Object.fromEntries(wordTokens.map((token) => [
     token.id, createWordGapOpenedPositions(token.value),
@@ -48,12 +74,12 @@ export default function VideoPage({ videos = [], onUpdateVideo }) {
     (wordAnswers[token.id] || []).length === [...token.value].length &&
     (wordAnswers[token.id] || []).every(Boolean)
   );
-  const isCorrect = checked && normalizeText(assembled) === normalizeText(transcript);
+  const isCorrect = checked && normalizeText(assembled) === normalizeText(exerciseTranscript);
 
   useEffect(() => {
     setWordAnswers({});
     setChecked(false);
-  }, [selectedId, transcript]);
+  }, [selectedId, exerciseTranscript]);
 
   function saveTranscript(text) {
     if (!selectedVideo || !onUpdateVideo) return;
@@ -81,7 +107,7 @@ export default function VideoPage({ videos = [], onUpdateVideo }) {
   return <section className="panel video-panel">
     <div className="video-page-heading">
       <div><p className="eyebrow">YOUTUBE LISTENING</p><h2>Видео</h2>
-        <p className="video-intro">Выбери ролик и загрузи доступные английские субтитры YouTube.</p>
+        <p className="video-intro">Выбери ролик и выполни упражнение по выбранному фрагменту видео.</p>
       </div>
       <span className="video-heading-icon" aria-hidden="true">▶</span>
     </div>
@@ -101,7 +127,7 @@ export default function VideoPage({ videos = [], onUpdateVideo }) {
       <div className="video-player-card video-player-youtube">
         <div className="video-player-topline"><strong>{selectedVideo.title}</strong><span>{selectedVideo.level || "B1"}</span></div>
         <div className="video-frame-wrap">
-          <iframe key={parsed.embedUrl} src={parsed.embedUrl} title={selectedVideo.title}
+          <iframe key={playerUrl} src={playerUrl} title={selectedVideo.title}
             loading="lazy" referrerPolicy="strict-origin-when-cross-origin"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
             allowFullScreen />
@@ -110,15 +136,15 @@ export default function VideoPage({ videos = [], onUpdateVideo }) {
       </div>
       <section className="video-transcription-panel">
         <h3>Субтитры YouTube</h3>
-        <p className="muted">{transcript ? "Субтитры подготовлены администратором." : "Субтитры для этого ролика ещё не загружены. Попроси администратора подготовить их в админке."}</p>
+        <p className="muted">{transcript ? (selectedVideo.startTime || selectedVideo.endTime ? `Фрагмент: ${selectedVideo.startTime || "00:00"} – ${selectedVideo.endTime || "конец видео"}.` : "Субтитры подготовлены администратором.") : "Субтитры для этого ролика ещё не загружены. Попроси администратора подготовить их в админке."}</p>
       </section>
-      {transcript && <section className="video-exercise-panel">
+      {exerciseTranscript && <section className="video-exercise-panel">
         <div className="video-transcript-heading">
           <div><h3>Текст субтитров</h3><p className="muted">Английский текст, полученный с YouTube</p></div>
           <button type="button" className="button button-secondary"
-            onClick={() => navigator.clipboard?.writeText(transcript)}>Копировать текст</button>
+            onClick={() => navigator.clipboard?.writeText(exerciseTranscript)}>Копировать текст</button>
         </div>
-        <p className="video-transcript-plain">{transcript}</p>
+        <p className="video-transcript-plain">{exerciseTranscript}</p>
         <div className="video-mask-heading"><h3>Упражнение с маской</h3><span>{wordTokens.length} слов</span></div>
         <div className="video-mask-text">
           {tokens.map((token) => {
