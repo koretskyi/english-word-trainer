@@ -223,26 +223,32 @@ function VideoTimeFields({ label, value, onSave, allowEmpty = false }) {
     setSeconds(value ? (parts.length > 1 ? parts[parts.length - 1] : "00") : "");
   }, [value]);
 
-  function commit() {
-    if (allowEmpty && !minutes.trim() && !seconds.trim()) {
+  function saveParts(nextMinutes, nextSeconds) {
+    if (allowEmpty && !nextMinutes.trim() && !nextSeconds.trim()) {
       onSave("");
       return;
     }
-    const mins = Math.max(0, Number.parseInt(minutes || "0", 10) || 0);
-    const secs = Math.min(59, Math.max(0, Number.parseInt(seconds || "0", 10) || 0));
+    const mins = Math.max(0, Number.parseInt(nextMinutes || "0", 10) || 0);
+    const secs = Math.min(59, Math.max(0, Number.parseInt(nextSeconds || "0", 10) || 0));
     onSave(`${mins}:${String(secs).padStart(2, "0")}`);
   }
 
   return (
-    <div className="admin-video-time-field" onBlur={(event) => {
-      if (!event.currentTarget.contains(event.relatedTarget)) commit();
-    }}>
+    <div className="admin-video-time-field">
       <span>{label}</span>
       <div className="admin-video-time-inputs">
         <label><input type="number" min="0" step="1" value={minutes}
-          onChange={(event) => setMinutes(event.target.value)} placeholder="0" aria-label={`${label}: минуты`} /> <small>мин</small></label>
+          onChange={(event) => {
+            const next = event.target.value;
+            setMinutes(next);
+            saveParts(next, seconds);
+          }} placeholder="0" aria-label={`${label}: минуты`} /> <small>мин</small></label>
         <label><input type="number" min="0" max="59" step="1" value={seconds}
-          onChange={(event) => setSeconds(event.target.value)} placeholder="0" aria-label={`${label}: секунды`} /> <small>сек</small></label>
+          onChange={(event) => {
+            const next = event.target.value;
+            setSeconds(next);
+            saveParts(minutes, next);
+          }} placeholder="0" aria-label={`${label}: секунды`} /> <small>сек</small></label>
       </div>
     </div>
   );
