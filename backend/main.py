@@ -48,14 +48,16 @@ async def youtube_subtitles(payload: SubtitleRequest):
         command = [
             sys.executable, "-m", "yt_dlp",
             "--no-warnings", "--no-playlist", "--skip-download",
+            "--js-runtimes", "node",
+            "--remote-components", "ejs:github",
             "--write-subs", "--write-auto-subs",
-            "--sub-langs", "en,en.*",
+            "--sub-langs", "en-US,en",
             "--sub-format", "vtt/best",
             "--output", str(output / "%(id)s.%(ext)s"),
             url,
         ]
         try:
-            result = subprocess.run(command, capture_output=True, text=True, timeout=90)
+            result = subprocess.run(command, capture_output=True, text=True, timeout=120)
         except subprocess.TimeoutExpired as error:
             raise HTTPException(status_code=504, detail="YouTube слишком долго отвечает. Попробуй ещё раз.") from error
 
@@ -67,7 +69,7 @@ async def youtube_subtitles(payload: SubtitleRequest):
         if not subtitle_files:
             raise HTTPException(status_code=404, detail="У ролика нет доступных английских субтитров — ни авторских, ни автоматических.")
 
-        subtitle_files.sort(key=lambda path: (0 if ".en." in path.name.lower() else 1, 0 if "orig" in path.name.lower() else 1, path.name))
+        subtitle_files.sort(key=lambda path: (0 if re.search(r"\.en(?:-[a-z]{2})?\.", path.name.lower()) else 1, 0 if "orig" in path.name.lower() else 1, path.name))
         text = clean_vtt(subtitle_files[0])
         if not text:
             raise HTTPException(status_code=404, detail="YouTube вернул пустой файл субтитров.")
