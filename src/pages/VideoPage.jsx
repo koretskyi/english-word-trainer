@@ -108,6 +108,7 @@ export default function VideoPage({ videos = [], onUpdateVideo }) {
       recorder.ondataavailable = (event) => { if (event.data?.size) chunksRef.current.push(event.data); };
       recorder.onerror = () => setCaptureError("Не удалось записать звук вкладки.");
       recorder.onstop = async () => {
+        setCaptureStatus("transcribing");
         stream.getTracks().forEach((track) => track.stop());
         streamRef.current = null;
         const blob = new Blob(chunksRef.current, { type: recorder.mimeType || "audio/webm" });
