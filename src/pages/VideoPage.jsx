@@ -177,13 +177,13 @@ export default function VideoPage({ videos = [] }) {
         id: "sentence-" + sentenceIndex + "-" + token.id,
       })),
     }));
-  }, [activeBlock?.id]);
+  }, [selectedId, activeBlock?.id]);
   const exerciseWordTokens = exerciseSentences.flatMap((sentence) => sentence.tokens.filter((token) => token.isWord));
   const openedPositions = useMemo(
     () => Object.fromEntries(exerciseWordTokens.map((token) => [
       token.id, createWordGapOpenedPositions(token.value),
     ])),
-    [activeBlock?.id]
+    [selectedId, activeBlock?.id]
   );
 
   useEffect(() => {
@@ -264,10 +264,12 @@ export default function VideoPage({ videos = [] }) {
       setAnswerResult("incorrect");
       setVoiceError("Ответ отличается от оригинала. Попробуй ещё раз или исправь текст вручную.");
     }
-  }, [activeBlock?.id]);
+  }, [selectedId, activeBlock?.id]);
 
   const startVoiceCapture = useCallback(() => {
     if (!activeBlock) return;
+    setReplayingBlock(false);
+    playerRef.current?.pauseVideo();
     captureRef.current?.stop();
     setVoiceAnswer("");
     setVoiceError("");
@@ -282,7 +284,7 @@ export default function VideoPage({ videos = [] }) {
     });
     captureRef.current = capture;
     capture.start();
-  }, [activeBlock?.id, evaluateAnswer]);
+  }, [selectedId, activeBlock?.id, evaluateAnswer]);
 
   useEffect(() => {
     if (!replayingBlock || !activeBlock) return undefined;
@@ -295,10 +297,14 @@ export default function VideoPage({ videos = [] }) {
       }
     }, 100);
     return () => window.clearInterval(timer);
-  }, [replayingBlock, activeBlock?.id]);
+  }, [replayingBlock, selectedId, activeBlock?.id]);
 
   function replayActiveBlock() {
     if (!activeBlock || !playerRef.current) return;
+    captureRef.current?.stop();
+    captureRef.current = null;
+    setVoiceStatus("idle");
+    setReplayingBlock(false);
     playerRef.current.pauseVideo();
     playerRef.current.seekTo(activeBlock.start, true);
     setReplayingBlock(true);
