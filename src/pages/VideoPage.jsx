@@ -515,7 +515,7 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
                     <button className="button button-secondary" type="button"
                       onClick={() => useHint(sentenceIndex)}
                       disabled={hintsRemaining <= 0 || Boolean(revealedSentences[sentenceIndex])}>
-                      <><svg className="video-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-7 9.5-7 9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z" /><circle cx="12" cy="12" r="3" /></svg><span>{revealedSentences[sentenceIndex] ? "Текст показан…" : "Показать текст"} · осталось: {hintsRemaining}</span></>
+                      <><svg className="video-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-7 9.5-7 9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z" /><circle cx="12" cy="12" r="3" /></svg><span>{revealedSentences[sentenceIndex] ? "Подсказка использована" : `Подсказка · осталось ${hintsRemaining}`}</span></>
                     </button>
                     <button className="button button-secondary" type="button"
                       onClick={() => startVoiceCapture(sentence, sentenceIndex)}
