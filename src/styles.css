@@ -2964,3 +2964,33 @@ button:disabled {
   color: #24427f;
   stroke: currentColor;
 }
+
+
+/* Remaining-time countdown displayed over the video player. */
+.video-player-youtube .video-frame-wrap {
+  position: relative;
+}
+.video-countdown {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  padding: 7px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.82);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  pointer-events: none;
+}
+@media (max-width: 600px) {
+  .video-countdown {
+    top: 8px;
+    right: 8px;
+    padding: 6px 9px;
+    font-size: 12px;
+  }
+}
