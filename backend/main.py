@@ -121,10 +121,10 @@ def normalize_subtitle_cues(cues: list[dict]) -> list[dict]:
         pending_text = (pending_text + " " + delta_text).strip()
         pending_end = float(cue["end"])
 
-        completed = list(re.finditer(r".*?[.!?]+(?=\s|$)", pending_text))
+        completed = list(re.finditer(r".*?(?<!\bMr)(?<!\bMrs)(?<!\bMs)(?<!\bDr)(?<!\bSt)(?<!\bJr)(?<!\bSr)(?<!\bvs)(?<!\betc)[.!?]+(?=\s|$)", pending_text, flags=re.IGNORECASE))
         consumed = 0
         for match in completed:
-            sentence_text = match.group(0).replace("\uE000", ".").strip()
+            sentence_text = match.group(0).strip()
             if sentence_text:
                 normalized.append({
                     "start": pending_start,
