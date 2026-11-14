@@ -441,7 +441,6 @@ export default function VideoPage({ videos = [] }) {
       <section className="video-exercise-panel video-training-panel">
         <div className="video-mask-heading">
           <h3>Тренировка аудирования</h3>
-          <span>по таймкодам субтитров</span>
         </div>
         {!subtitleCues.length ? (
           <p className="video-training-note">Для этого ролика ещё не загружены субтитры. Сначала получи английские субтитры в админке.</p>
