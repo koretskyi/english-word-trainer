@@ -109,10 +109,10 @@ function normalizeSubtitleCues(cues) {
     pendingText = (pendingText + " " + deltaText).trim();
     pendingEnd = Number(cue.end);
 
-    const completed = [...pendingText.matchAll(/.*?[.!?]+(?=\s|$)/g)];
+    const completed = [...pendingText.matchAll(/.*?(?<!\bMr)(?<!\bMrs)(?<!\bMs)(?<!\bDr)(?<!\bSt)(?<!\bJr)(?<!\bSr)(?<!\bvs)(?<!\betc)[.!?]+(?=\s|$)/gi)];
     let consumed = 0;
     for (const match of completed) {
-      const sentenceText = match[0].replace(/\\uE000/g, ".").trim();
+      const sentenceText = match[0].trim();
       if (sentenceText) {
         result.push({ start: pendingStart, end: pendingEnd, text: sentenceText });
       }
