@@ -379,6 +379,15 @@ export default function VideoPage({ videos = [] }) {
     playerRef.current?.playVideo();
   }
 
+  // After the success celebration, automatically move to the next subtitle cue.
+  // On the final cue, continue normal video playback.
+  useEffect(() => {
+    if (answerResult !== "correct" || activeBlockIndex === null) return undefined;
+    const timer = window.setTimeout(() => continueVideo(), 2200);
+    return () => window.clearTimeout(timer);
+  }, [answerResult, activeBlockIndex]);
+
+
   if (!videos.length) {
     return <section className="panel video-panel">
       <h2>Видео</h2>
@@ -515,11 +524,11 @@ export default function VideoPage({ videos = [] }) {
             {answerResult === "incorrect" && <p className="video-voice-error" role="alert">Есть ошибки. Исправь буквы прямо в полях слов.</p>}
             {answerResult === "correct" && (
               <div className="video-exercise-actions">
-                <button className="button button-primary" type="button" onClick={continueVideo}>
+                <p className="video-training-note">
                   {activeBlockIndex < trainingBlocks.length - 1
-                    ? "Перейти к заданию " + (activeBlockIndex + 2)
-                    : "Продолжить просмотр"}
-                </button>
+                    ? "Отлично! Переходим к заданию " + (activeBlockIndex + 2) + "…"
+                    : "Отлично! Продолжаем просмотр видео…"}
+                </p>
               </div>
             )}
           </>
