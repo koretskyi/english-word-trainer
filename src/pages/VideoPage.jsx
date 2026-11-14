@@ -535,7 +535,7 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
               <span className={"auto-voice-dot" + (voiceStatus === "listening" ? " is-listening" : "")} />
               {voiceStatus === "listening" ? "Микрофон активен — произнесите предложение…" :
                 voiceStatus === "transcribing" ? "Whisper распознаёт вашу речь…" :
-                  answerResult === "correct" ? "Все слова восстановлены правильно." : "Выберите действие под нужным предложением."}
+                  answerResult === "correct" ? "Все слова восстановлены правильно." : "Заполните поля текстом или голосом."}
             </div>
             {voiceError && <p className="video-voice-error" role="alert">{voiceError}</p>}
             {voiceAnswer && <p className={"video-voice-answer" + (answerResult === "incorrect" ? " is-incorrect" : "")}>Распознано: {voiceAnswer}</p>}
