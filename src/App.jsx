@@ -188,6 +188,16 @@ function recordWordAnswer(previous, word, isCorrect) {
 }
 
 const VIDEO_LIBRARY_KEY = "english-word-trainer-video-library-v1";
+const VIDEO_PROGRESS_KEY = "english-word-trainer-video-progress-v1";
+
+function loadCompletedVideoIds() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(VIDEO_PROGRESS_KEY) || "[]");
+    return Array.isArray(saved) ? saved.filter((id) => typeof id === "string") : [];
+  } catch {
+    return [];
+  }
+}
 
 function loadVideos() {
   try {
@@ -1242,6 +1252,7 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
 export default function App() {
   const [sentences, setSentences] = useState(loadSentences);
   const [videos, setVideos] = useState(loadVideos);
+  const [completedVideoIds, setCompletedVideoIds] = useState(loadCompletedVideoIds);
   const [page, setPage] = useState("study");
   const [showStats, setShowStats] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState("A1");
@@ -1350,6 +1361,14 @@ export default function App() {
 
   useEffect(() => {
     try {
+      localStorage.setItem(VIDEO_PROGRESS_KEY, JSON.stringify(completedVideoIds));
+    } catch (error) {
+      console.error("Не удалось сохранить прогресс по видео:", error);
+    }
+  }, [completedVideoIds]);
+
+  useEffect(() => {
+    try {
       localStorage.setItem(LEARNING_STORAGE_KEY, JSON.stringify(learningData));
     } catch (error) {
       console.error("Не удалось сохранить прогресс:", error);
@@ -1408,7 +1427,13 @@ export default function App() {
 
   function deleteVideo(id) {
     setVideos((current) => current.filter((item) => item.id !== id));
+    setCompletedVideoIds((current) => current.filter((itemId) => itemId !== id));
   }
+
+  const completeVideo = useCallback((id) => {
+    if (!id) return;
+    setCompletedVideoIds((current) => current.includes(id) ? current : [...current, id]);
+  }, []);
 
   return (
     <div className="app-shell">
@@ -1524,7 +1549,7 @@ export default function App() {
             audioEnabled={audioEnabled}
           />
         ) : page === "video" ? (
-          <VideoPage videos={videos} onUpdateVideo={saveVideo} />
+          <VideoPage videos={videos} completedVideoIds={completedVideoIds} onCompleteVideo={completeVideo} />
         ) : (
           <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} videos={videos} onSaveVideo={saveVideo} onDeleteVideo={deleteVideo} />
         )}
