@@ -430,6 +430,7 @@ export default function VideoPage({ videos = [] }) {
       })}
     </div>
     {selectedVideo && parsed?.error ? <p className="video-error" role="alert">{parsed.error}</p> : selectedVideo && <>
+      <div className="video-training-player-card">
       <section className="video-exercise-panel video-training-panel">
         <div className="video-mask-heading">
           <h3>Тренировка аудирования</h3>
@@ -544,6 +545,7 @@ export default function VideoPage({ videos = [] }) {
           <div className="video-youtube-player" key={selectedId + "-" + parsed.videoId + "-" + startSeconds + "-" + (endSeconds || "end")} ref={playerContainerRef} />
         </div>
         <a className="video-original-link" href={parsed.originalUrl} target="_blank" rel="noreferrer">Открыть оригинал ↗</a>
+      </div>
       </div>
 
       {playerError && <p className="video-error" role="alert">{playerError}</p>}
