@@ -2948,3 +2948,19 @@ button:disabled {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+
+/* Active listening controls match the selected main navigation tab */
+.video-sentence-actions .button.is-active,
+.video-sentence-actions .button.is-active:hover,
+.video-sentence-actions .button.is-active:disabled {
+  color: #24427f;
+  background: #dce8ff;
+  border-color: #c5d7fb;
+  box-shadow: 0 2px 7px rgba(49, 87, 213, 0.10);
+  opacity: 1;
+}
+.video-sentence-actions .button.is-active .video-action-icon {
+  color: #24427f;
+  stroke: currentColor;
+}
