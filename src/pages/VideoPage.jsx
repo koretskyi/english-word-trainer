@@ -66,10 +66,79 @@ function parseVideoTime(value) {
   return parts[0] * 3600 + parts[1] * 60 + parts[2];
 }
 
+function normalizeSubtitleCues(cues) {
+  const valid = [...cues]
+    .filter((cue) => {
+      const start = Number(cue.start);
+      const end = Number(cue.end);
+      return String(cue.text || "").trim() &&
+        Number.isFinite(start) && Number.isFinite(end) && end - start > 0.1;
+    })
+    .sort((a, b) => Number(a.start) - Number(b.start) || Number(a.end) - Number(b.end));
+
+  const getTokens = (value) => value.match(/[\\p{L}\\p{N}]+(?:['’\\-][\\p{L}\\p{N}]+)*|[.!?]+|[,;:]/gu) || [];
+  const tokenKey = (value) => value.toLocaleLowerCase().replace(/’/g, "'");
+  const joinTokens = (values) => values.join(" ").replace(/\\s+([.!?,;:])/g, "$1").trim();
+
+  const result = [];
+  let previousTokens = [];
+  let pendingText = "";
+  let pendingStart = null;
+  let pendingEnd = null;
+
+  for (const cue of valid) {
+    const currentTokens = getTokens(String(cue.text).trim());
+    let overlap = 0;
+    const maxOverlap = Math.min(previousTokens.length, currentTokens.length);
+    for (let size = maxOverlap; size > 0; size -= 1) {
+      const previousSuffix = previousTokens.slice(-size).map(tokenKey);
+      const currentPrefix = currentTokens.slice(0, size).map(tokenKey);
+      if (previousSuffix.every((token, index) => token === currentPrefix[index])) {
+        overlap = size;
+        break;
+      }
+    }
+
+    const delta = currentTokens.slice(overlap);
+    previousTokens = currentTokens;
+    if (!delta.length) continue;
+
+    const deltaText = joinTokens(delta);
+    if (!deltaText) continue;
+    if (!pendingText) pendingStart = Number(cue.start);
+    pendingText = (pendingText + " " + deltaText).trim();
+    pendingEnd = Number(cue.end);
+
+    const completed = [...pendingText.matchAll(/.*?[.!?]+(?=\\s|$)/g)];
+    let consumed = 0;
+    for (const match of completed) {
+      const sentenceText = match[0].trim();
+      if (sentenceText) {
+        result.push({ start: pendingStart, end: pendingEnd, text: sentenceText });
+      }
+      consumed = match.index + match[0].length;
+    }
+
+    if (consumed) {
+      pendingText = pendingText.slice(consumed).trim();
+      pendingStart = pendingText ? Number(cue.start) : null;
+    }
+  }
+
+  if (pendingText) {
+    result.push({
+      start: pendingStart ?? Number(valid[valid.length - 1].start),
+      end: pendingEnd ?? Number(valid[valid.length - 1].end),
+      text: pendingText,
+    });
+  }
+
+  return result.filter((cue) => cue.end > cue.start && cue.text.trim());
+}
+
 function buildTrainingBlocks(cues, startSeconds, endSeconds) {
-  // One YouTube subtitle cue = one exercise. Keep the original cue timestamps;
-  // never split a cue by sentence or estimate internal sentence timings.
-  return [...cues]
+  // Remove rolling-caption duplicates and turn the recovered transcript into sentence-level exercises.
+  return normalizeSubtitleCues(cues)
     .filter((cue) => {
       const cueStart = Number(cue.start);
       const cueEnd = Number(cue.end);
