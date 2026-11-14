@@ -47,6 +47,17 @@ function parseYouTubeUrl(rawValue) {
   return { videoId: id, originalUrl: url.href };
 }
 
+function formatRemainingTime(seconds) {
+  if (!Number.isFinite(seconds)) return "--:--";
+  const total = Math.max(0, Math.ceil(seconds));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const remainingSeconds = total % 60;
+  return hours > 0
+    ? hours + ":" + String(minutes).padStart(2, "0") + ":" + String(remainingSeconds).padStart(2, "0")
+    : minutes + ":" + String(remainingSeconds).padStart(2, "0");
+}
+
 function normalizeText(value) {
   return String(value || "").normalize("NFKC").toLowerCase()
     .replace(/[’‘]/g, "'").replace(/[^\p{L}\p{N}'-]+/gu, " ").replace(/\s+/g, " ").trim();
@@ -186,6 +197,7 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
   const captureRef = useRef(null);
   const [playerReady, setPlayerReady] = useState(false);
   const [playerError, setPlayerError] = useState("");
+  const [remainingSeconds, setRemainingSeconds] = useState(null);
   const [trainingStarted, setTrainingStarted] = useState(false);
   const [blockIndex, setBlockIndex] = useState(0);
   const [activeBlockIndex, setActiveBlockIndex] = useState(null);
@@ -300,6 +312,31 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
       exercisePanelRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [activeBlockIndex]);
+
+  useEffect(() => {
+    if (!playerReady) {
+      setRemainingSeconds(null);
+      return undefined;
+    }
+
+    const updateCountdown = () => {
+      const player = playerRef.current;
+      if (!player || typeof player.getCurrentTime !== "function") return;
+      const duration = Number(player.getDuration?.() || 0);
+      const currentTime = Number(player.getCurrentTime() || 0);
+      const configuredEnd = endSeconds !== null && endSeconds > startSeconds
+        ? endSeconds
+        : duration;
+      const targetEnd = duration > 0 ? Math.min(configuredEnd || duration, duration) : configuredEnd;
+      if (targetEnd > 0) {
+        setRemainingSeconds(Math.max(0, Math.ceil(targetEnd - currentTime)));
+      }
+    };
+
+    updateCountdown();
+    const timer = window.setInterval(updateCountdown, 250);
+    return () => window.clearInterval(timer);
+  }, [playerReady, selectedId, startSeconds, endSeconds]);
 
   useEffect(() => {
     if (!trainingStarted || activeBlockIndex !== null || !playerReady) return undefined;
@@ -650,6 +687,11 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
         <div className="video-player-topline"><strong>{selectedVideo.title}</strong><span>{selectedVideo.level || "B1"}</span></div>
         <div className="video-frame-wrap">
           <div className="video-youtube-player" key={selectedId + "-" + parsed.videoId + "-" + startSeconds + "-" + (endSeconds || "end")} ref={playerContainerRef} />
+          {remainingSeconds !== null && (
+            <div className="video-countdown" aria-label={"Осталось " + formatRemainingTime(remainingSeconds)}>
+              Осталось {formatRemainingTime(remainingSeconds)}
+            </div>
+          )}
         </div>
         <a className="video-original-link" href={parsed.originalUrl} target="_blank" rel="noreferrer">Открыть оригинал ↗</a>
       </div>
