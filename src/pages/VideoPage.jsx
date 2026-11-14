@@ -76,9 +76,9 @@ function normalizeSubtitleCues(cues) {
     })
     .sort((a, b) => Number(a.start) - Number(b.start) || Number(a.end) - Number(b.end));
 
-  const getTokens = (value) => value.match(/[\\p{L}\\p{N}]+(?:['’\\-][\\p{L}\\p{N}]+)*|[.!?]+|[,;:]/gu) || [];
+  const getTokens = (value) => value.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*|[.!?]+|[,;:]/gu) || [];
   const tokenKey = (value) => value.toLocaleLowerCase().replace(/’/g, "'");
-  const joinTokens = (values) => values.join(" ").replace(/\\s+([.!?,;:])/g, "$1").trim();
+  const joinTokens = (values) => values.join(" ").replace(/\s+([.!?,;:])/g, "$1").trim();
 
   const result = [];
   let previousTokens = [];
@@ -109,7 +109,7 @@ function normalizeSubtitleCues(cues) {
     pendingText = (pendingText + " " + deltaText).trim();
     pendingEnd = Number(cue.end);
 
-    const completed = [...pendingText.matchAll(/.*?[.!?]+(?=\\s|$)/g)];
+    const completed = [...pendingText.matchAll(/.*?[.!?]+(?=\s|$)/g)];
     let consumed = 0;
     for (const match of completed) {
       const sentenceText = match[0].trim();
