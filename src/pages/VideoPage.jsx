@@ -186,7 +186,8 @@ export default function VideoPage({ videos = [] }) {
           host: "https://www.youtube-nocookie.com",
           videoId: parsed.videoId,
           playerVars: {
-            controls: 1,
+            controls: 0,
+            disablekb: 1,
             enablejsapi: 1,
             rel: 0,
             start: Math.floor(startSeconds),
