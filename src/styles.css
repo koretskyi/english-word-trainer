@@ -2929,3 +2929,22 @@ button:disabled {
   border-color: #eaf5d3;
   color: #718267;
 }
+
+
+/* Listening action buttons use the same outlined icon language as main navigation */
+.video-sentence-actions .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.video-action-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  fill: none;
+  stroke: #3478f6;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
