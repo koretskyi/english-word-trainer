@@ -2303,6 +2303,24 @@ button:disabled {
 }
 
 
+/* Group listening training and its video player into one shared card. */
+.video-training-player-card {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+}
+.video-training-player-card .video-training-panel {
+  margin-top: 0;
+  border: 0;
+  border-radius: 0;
+}
+.video-training-player-card .video-player-card {
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+}
+
 /* Video training: sentence-pair pause and Whisper response */
 .video-player-youtube .video-frame-wrap {
   aspect-ratio: 16 / 9;
