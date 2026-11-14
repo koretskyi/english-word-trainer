@@ -97,9 +97,10 @@ function buildTrainingBlocks(cues, startSeconds, endSeconds) {
     .filter((block) => block.end > block.start);
 }
 
-export default function VideoPage({ videos = [] }) {
-  const [selectedId, setSelectedId] = useState(videos[0]?.id || "");
-  const selectedVideo = videos.find((item) => item.id === selectedId) || videos[0] || null;
+export default function VideoPage({ videos = [], completedVideoIds = [], onCompleteVideo = () => {} }) {
+  const [selectedId, setSelectedId] = useState("");
+  const [showCompletion, setShowCompletion] = useState(false);
+  const selectedVideo = videos.find((item) => item.id === selectedId) || null;
   const parsed = useMemo(() => selectedVideo ? parseYouTubeUrl(selectedVideo.url) : null, [selectedVideo?.url]);
   const startSeconds = parseVideoTime(selectedVideo?.startTime);
   const endSeconds = selectedVideo?.endTime ? parseVideoTime(selectedVideo.endTime) : null;
@@ -380,13 +381,28 @@ export default function VideoPage({ videos = [] }) {
     playerRef.current?.playVideo();
   }
 
-  // After the success celebration, automatically move to the next subtitle cue.
-  // On the final cue, continue normal video playback.
+  // After each correct block, continue the video. Completing the last block
+  // marks this video as done, celebrates, and returns to the library top.
   useEffect(() => {
     if (answerResult !== "correct" || activeBlockIndex === null) return undefined;
-    const timer = window.setTimeout(() => continueVideo(), 2200);
+    const timer = window.setTimeout(() => {
+      if (activeBlockIndex < trainingBlocks.length - 1) {
+        continueVideo();
+        return;
+      }
+      captureRef.current?.stop();
+      captureRef.current = null;
+      playerRef.current?.pauseVideo();
+      setShowCompletion(true);
+      window.setTimeout(() => {
+        onCompleteVideo(selectedId);
+        setShowCompletion(false);
+        setSelectedId("");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 2600);
+    }, 2200);
     return () => window.clearTimeout(timer);
-  }, [answerResult, activeBlockIndex]);
+  }, [answerResult, activeBlockIndex, trainingBlocks.length, selectedId, onCompleteVideo]);
 
 
   if (!videos.length) {
@@ -407,13 +423,18 @@ export default function VideoPage({ videos = [] }) {
       </div>
       <span className="video-heading-icon" aria-hidden="true">▶</span>
     </div>
+    <div className="video-library-progress" role="status">
+      <span>Выполнено заданий</span>
+      <strong>{videos.filter((item) => completedVideoIds.includes(item.id)).length} из {videos.length}</strong>
+      <div className="video-library-progress-track"><span style={{ width: `${videos.length ? (videos.filter((item) => completedVideoIds.includes(item.id)).length / videos.length) * 100 : 0}%` }} /></div>
+    </div>
     <div className="video-library-list" aria-label="Библиотека видео">
       {videos.map((item) => {
         const itemVideoId = parseYouTubeUrl(item.url).videoId;
         return (
           <button type="button" key={item.id}
             className={"video-library-item " + (selectedVideo?.id === item.id ? "selected" : "")}
-            onClick={() => setSelectedId(item.id)}
+            onClick={() => { setSelectedId(item.id); setShowCompletion(false); }}
             aria-pressed={selectedVideo?.id === item.id}>
             <span className="video-library-thumbnail">
               {itemVideoId
@@ -424,11 +445,17 @@ export default function VideoPage({ videos = [] }) {
             <span className="video-library-title">
               <strong>{item.title}</strong>
               <small>{item.level || "B1"} · YouTube</small>
+              {completedVideoIds.includes(item.id) && <span className="video-library-completed">✓ Задание выполнено</span>}
             </span>
           </button>
         );
       })}
     </div>
+    {showCompletion && <div className="video-completion-screen" role="status" aria-live="assertive">
+      <div className="video-completion-fireworks" aria-hidden="true">🎉 ✨ 🎊 ✨ 🎉</div>
+      <h2>ЗАДАНИЕ ВЫПОЛНЕНО!</h2>
+      <p>Отличная работа!</p>
+    </div>}
     {selectedVideo && parsed?.error ? <p className="video-error" role="alert">{parsed.error}</p> : selectedVideo && <>
       <div className="video-training-player-card">
       <section className="video-exercise-panel video-training-panel">
