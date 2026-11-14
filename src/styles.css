@@ -2321,6 +2321,84 @@ button:disabled {
   border-radius: 0;
 }
 
+/* Video library progress and completion feedback */
+.video-library-progress {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px 14px;
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  color: #33405a;
+  font-size: 14px;
+}
+.video-library-progress strong { font-size: 16px; color: #172033; }
+.video-library-progress-track {
+  grid-column: 1 / -1;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #edf1f6;
+}
+.video-library-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #c9ed78;
+  transition: width .25s ease;
+}
+.video-library-completed {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+  color: #3d741f;
+  font-size: 12px;
+  font-weight: 750;
+}
+.video-completion-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  background: rgba(255,255,255,.97);
+  text-align: center;
+  animation: video-completion-appear .35s ease-out both;
+}
+.video-completion-screen h2 {
+  margin: 0;
+  color: #2f641b;
+  font-size: clamp(30px, 6vw, 58px);
+  line-height: 1.1;
+  font-weight: 900;
+}
+.video-completion-screen p {
+  margin: 0;
+  color: #526174;
+  font-size: 22px;
+}
+.video-completion-fireworks {
+  font-size: clamp(36px, 7vw, 68px);
+  letter-spacing: 8px;
+  animation: video-completion-bounce .8s ease-in-out infinite alternate;
+}
+@keyframes video-completion-appear {
+  from { opacity: 0; transform: scale(.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes video-completion-bounce {
+  from { transform: translateY(0) scale(1); }
+  to { transform: translateY(-10px) scale(1.06); }
+}
+
 /* Video training: sentence-pair pause and Whisper response */
 .video-player-youtube .video-frame-wrap {
   aspect-ratio: 16 / 9;
