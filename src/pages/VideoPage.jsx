@@ -554,9 +554,11 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
         ) : (
           <>
             <div className="video-exercise-actions">
-              <button className="button button-primary" type="button" disabled={!playerReady} onClick={startTraining}>
-                {trainingStarted && blockIndex < trainingBlocks.length ? "Продолжить тренировку" : trainingStarted ? "Начать заново" : "Начать тренировку"}
-              </button>
+              {!trainingStarted && (
+                <button className="button button-primary" type="button" disabled={!playerReady} onClick={startTraining}>
+                  Начать тренировку
+                </button>
+              )}
               {trainingStarted && <span className="video-training-progress">Задание {Math.min(blockIndex + 1, trainingBlocks.length)} из {trainingBlocks.length}</span>}
             </div>
             {trainingStarted && blockIndex >= trainingBlocks.length && (
