@@ -2807,6 +2807,12 @@ button:disabled {
   z-index: 2;
 }
 
+/* Disable direct interaction with the embedded video; playback is controlled by training actions. */
+.video-player-youtube .video-frame-wrap iframe,
+.video-player-youtube .video-youtube-player {
+  pointer-events: none;
+}
+
 /* Start training button: soft salad green */
 .video-training-panel > .video-exercise-actions > .button-primary {
   min-height: 52px;
