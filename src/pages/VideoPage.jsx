@@ -199,6 +199,7 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
   const [playerError, setPlayerError] = useState("");
   const [remainingSeconds, setRemainingSeconds] = useState(null);
   const [trainingStarted, setTrainingStarted] = useState(false);
+  const [autoStartWhenReady, setAutoStartWhenReady] = useState(false);
   const [blockIndex, setBlockIndex] = useState(0);
   const [activeBlockIndex, setActiveBlockIndex] = useState(null);
   const [voiceStatus, setVoiceStatus] = useState("idle");
@@ -481,6 +482,16 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
     playerRef.current.playVideo();
   }
 
+  useEffect(() => {
+    if (!autoStartWhenReady || !playerReady) return;
+    if (!trainingBlocks.length) {
+      setAutoStartWhenReady(false);
+      return;
+    }
+    setAutoStartWhenReady(false);
+    startTraining();
+  }, [autoStartWhenReady, playerReady, selectedId, trainingBlocks.length]);
+
   function continueVideo() {
     const completedIndex = activeBlockIndex;
     captureRef.current?.stop();
@@ -549,7 +560,11 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
         return (
           <button type="button" key={item.id}
             className={"video-library-item " + (selectedVideo?.id === item.id ? "selected" : "")}
-            onClick={() => { setSelectedId(item.id); setShowCompletion(false); }}
+            onClick={() => {
+              setSelectedId(item.id);
+              setShowCompletion(false);
+              setAutoStartWhenReady(true);
+            }}
             aria-pressed={selectedVideo?.id === item.id}>
             <span className="video-library-thumbnail">
               {itemVideoId
