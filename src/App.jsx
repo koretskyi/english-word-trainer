@@ -1,4 +1,8 @@
 import { SENTENCES } from "./sentences.js";
+import WordGap from "./components/LetterGap.jsx";
+import CorrectFeedback from "./components/CorrectFeedback.jsx";
+import AuditionPage from "./pages/AuditionPage.jsx";
+import VideoPage from "./pages/VideoPage.jsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 
@@ -183,6 +187,73 @@ function recordWordAnswer(previous, word, isCorrect) {
   return { version: 1, completedCount, words, stats };
 }
 
+const VIDEO_LIBRARY_KEY = "english-word-trainer-video-library-v1";
+
+function loadVideos() {
+  try {
+    const saved = localStorage.getItem(VIDEO_LIBRARY_KEY);
+    const parsed = saved ? JSON.parse(saved) : [];
+    return Array.isArray(parsed) ? parsed.filter((item) => item && item.id && item.url) : [];
+  } catch {
+    return [];
+  }
+}
+
+function getYouTubeVideoId(url) {
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname.includes("youtu.be")) return parsed.pathname.split("/").filter(Boolean)[0] || "";
+    if (parsed.searchParams.get("v")) return parsed.searchParams.get("v");
+    const parts = parsed.pathname.split("/").filter(Boolean);
+    const marker = parts.findIndex((part) => ["embed", "shorts", "live"].includes(part));
+    return marker >= 0 ? parts[marker + 1] || "" : "";
+  } catch {
+    return "";
+  }
+}
+
+function VideoTimeFields({ label, value, onSave, allowEmpty = false }) {
+  const initial = String(value || "").split(":");
+  const [minutes, setMinutes] = useState(initial.length > 1 ? initial[initial.length - 2] : (initial[0] || ""));
+  const [seconds, setSeconds] = useState(initial.length > 1 ? initial[initial.length - 1] : "00");
+
+  useEffect(() => {
+    const parts = String(value || "").split(":");
+    setMinutes(value ? (parts.length > 1 ? parts[parts.length - 2] : parts[0]) : "");
+    setSeconds(value ? (parts.length > 1 ? parts[parts.length - 1] : "00") : "");
+  }, [value]);
+
+  function saveParts(nextMinutes, nextSeconds) {
+    if (allowEmpty && !nextMinutes.trim() && !nextSeconds.trim()) {
+      onSave("");
+      return;
+    }
+    const mins = Math.max(0, Number.parseInt(nextMinutes || "0", 10) || 0);
+    const secs = Math.min(59, Math.max(0, Number.parseInt(nextSeconds || "0", 10) || 0));
+    onSave(`${mins}:${String(secs).padStart(2, "0")}`);
+  }
+
+  return (
+    <div className="admin-video-time-field">
+      <span>{label}</span>
+      <div className="admin-video-time-inputs">
+        <label><input type="number" min="0" step="1" value={minutes}
+          onChange={(event) => {
+            const next = event.target.value;
+            setMinutes(next);
+            saveParts(next, seconds);
+          }} placeholder="0" aria-label={`${label}: минуты`} /> <small>мин</small></label>
+        <label><input type="number" min="0" max="59" step="1" value={seconds}
+          onChange={(event) => {
+            const next = event.target.value;
+            setSeconds(next);
+            saveParts(minutes, next);
+          }} placeholder="0" aria-label={`${label}: секунды`} /> <small>сек</small></label>
+      </div>
+    </div>
+  );
+}
+
 function createId() {
 
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -210,179 +281,6 @@ function createInitialAnswer(sentence) {
 // Каждая буква слова находится в отдельном поле ввода.
 
 
-function WordGap({ sentence, value, onChange, disabled, containerRef, showMistakes = false }) {
-  const letters = [...sentence.word];
-  // Открываем одну случайную букву на каждые полные 3 буквы слова.
-  // Выбор фиксируется на время показа карточки и меняется при переходе к новой.
-  const [opened] = useState(() => {
-    const count = Math.floor(letters.length / 3);
-    const positions = letters.map((_, index) => index);
-
-    for (let i = positions.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [positions[i], positions[j]] = [positions[j], positions[i]];
-    }
-
-    return new Set(positions.slice(0, count));
-  });
-  const inputRefs = useRef([]);
-
-  // Открытые буквы показываются как подсказки,
-  // но пользователь должен ввести каждую букву самостоятельно.
-  function focusAt(index) {
-    if (index >= 0 && index < letters.length) {
-      inputRefs.current[index]?.focus();
-      return true;
-    }
-
-    return false;
-  }
-
-  // При открытии карточки фокусируемся на первой пустой позиции.
-  useEffect(() => {
-    if (disabled) return;
-
-    const firstEmpty = value.findIndex(
-      (letter) => !letter
-    );
-
-    if (firstEmpty >= 0) {
-      focusAt(firstEmpty);
-    }
-  }, [sentence.id, sentence.word, disabled]);
-
-  function handleChange(index, rawValue) {
-    const character = [...rawValue].slice(-1)[0] || "";
-
-    if (character && !/^[a-z]$/i.test(character)) {
-      return;
-    }
-
-    const next = [...value];
-    next[index] = character;
-
-    onChange(next);
-
-    // После ввода переходим на следующую пустую позицию.
-    // Открытые буквы не пропускаются, пока не введены.
-    if (character) {
-      let nextIndex = index + 1;
-
-      while (
-        nextIndex < letters.length &&
-        next[nextIndex]
-      ) {
-        nextIndex++;
-      }
-
-      if (nextIndex < letters.length) {
-        focusAt(nextIndex);
-      }
-    }
-  }
-
-  function handleKeyDown(index, event) {
-    if (event.key === "ArrowLeft") {
-      event.preventDefault();
-      focusAt(index - 1);
-      return;
-    }
-
-    if (event.key === "ArrowRight") {
-      event.preventDefault();
-      focusAt(index + 1);
-      return;
-    }
-
-    if (event.key === "Backspace" && !value[index]) {
-      event.preventDefault();
-
-      let previous = index - 1;
-
-      while (previous >= 0 && !value[previous]) {
-        previous--;
-      }
-
-      if (previous >= 0) {
-        const next = [...value];
-        next[previous] = "";
-        onChange(next);
-        focusAt(previous);
-      }
-    }
-  }
-
-  return (
-    <span
-      ref={containerRef}
-      className="word-gap-container"
-      style={{
-        display: "inline-flex",
-        alignItems: "baseline",
-        gap: "5px",
-        whiteSpace: "nowrap",
-        verticalAlign: "baseline",
-      }}
-    >
-      {letters.map((letter, index) => {
-        const isOpened = opened.has(index);
-        const isMistake = showMistakes && Boolean(value[index]) &&
-          value[index].toLowerCase() !== letter.toLowerCase();
-
-        return (
-          <input
-            key={`${sentence.id}-${index}`}
-            ref={(element) => {
-              inputRefs.current[index] = element;
-            }}
-            className={`word-gap${isMistake ? " word-gap-mistake" : ""}`}
-            type="text"
-            inputMode="text"
-            maxLength={1}
-            value={value[index] || ""}
-            placeholder={isOpened ? letter : "*"}
-            onChange={(event) =>
-              handleChange(index, event.target.value)
-            }
-            onKeyDown={(event) =>
-              handleKeyDown(index, event)
-            }
-            disabled={disabled}
-            autoComplete="off"
-            autoCapitalize="none"
-            spellCheck={false}
-            aria-label={`Буква ${index + 1}`}
-            style={{
-              width: "calc(1.2em + 2px)",
-              minWidth: "calc(1.2em + 2px)",
-              maxWidth: "calc(1.2em + 2px)",
-              flex: "0 0 calc(1.2em + 2px)",
-              height: "calc(1.65em + 2px)",
-              margin: 0,
-              padding: "0 1px",
-              textAlign: "center",
-              font: "inherit",
-              fontSize: "calc(1em + 1px)",
-              lineHeight: 1.2,
-              border: "none",
-              borderBottom: `2px solid ${
-                isMistake ? "#dc2626" : isOpened ? "#15803d" : "#3157d5"
-              }`,
-              borderRadius: 0,
-              backgroundColor: isMistake
-                ? "#fee2e2"
-                : isOpened ? "#e7f6eb" : "#f0f3ff",
-              color: isMistake ? "#dc2626" : isOpened ? "#15803d" : "#172033",
-              fontWeight: isMistake || isOpened ? 700 : 400,
-              outlineOffset: "1px",
-              opacity: 1,
-            }}
-          />
-        );
-      })}
-    </span>
-  );
-}
 
 
 
@@ -494,9 +392,6 @@ function StudyPage({
   const englishText = sentence
     ? sentence.englishTemplate.replace("{word}", sentence.word)
     : "";
-
-  // При открытии карточки ничего не озвучиваем.
-  // Озвучка правильного слова запускается непосредственно после верного ответа.
 
   const parts = sentence ? sentence.englishTemplate.split("{word}") : [];
   const selectedLevelReviewCount = reviewWords.filter(
@@ -770,29 +665,7 @@ function StudyPage({
                 </>
               ) : (
                 <>
-                  {successVisible && (
-                    <div className="feedback-fireworks" aria-hidden="true">
-                      <div className="fireworks" style={{ "--fireworks-x": "50%", "--fireworks-y": "50%" }}>
-                        <span className="firework firework-one" />
-                        <span className="firework firework-two" />
-                        <span className="firework firework-three" />
-                      </div>
-                      <div className="confetti">
-                        {Array.from({ length: 42 }, (_, index) => (
-                          <span
-                            key={index}
-                            style={{
-                              left: `${(index * 37) % 100}%`,
-                              animationDelay: `${(index % 12) * 0.035}s`,
-                              "--fall-duration": `${1.05 + (index % 6) * 0.1}s`,
-                              "--confetti-rotation": `${index * 137}deg`,
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  <strong className="correct-inline-message">✓ Правильно!</strong>
+                  <CorrectFeedback showFireworks={successVisible} />
                 </>
               )}
             </div>
@@ -824,7 +697,7 @@ const EMPTY_FORM = {
 
 // Локальная админка.
 
-function AdminPage({ sentences, onSave, onDelete }) {
+function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteVideo }) {
   const safeSentences = Array.isArray(sentences)
     ? sentences.filter((sentence) => sentence && typeof sentence === "object")
     : [];
@@ -837,6 +710,29 @@ function AdminPage({ sentences, onSave, onDelete }) {
   const [error, setError] = useState("");
   const [activeLevel, setActiveLevel] = useState("A1");
   const adminLevels = ["A1", "A2", "B1", "B2", "C1"];
+  const [subtitleJobs, setSubtitleJobs] = useState({});
+  const [subtitleErrors, setSubtitleErrors] = useState({});
+
+  async function fetchVideoSubtitles(video) {
+    setSubtitleErrors((current) => ({ ...current, [video.id]: "" }));
+    setSubtitleJobs((current) => ({ ...current, [video.id]: "loading" }));
+    try {
+      const response = await fetch("/api/youtube-subtitles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: video.url, startTime: video.startTime || "00:00", endTime: video.endTime || "" }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || "Не удалось получить субтитры.");
+      const transcript = String(data.text || "").trim();
+      if (!transcript) throw new Error("YouTube не вернул английские субтитры.");
+      onSaveVideo({ ...video, transcript, subtitleCues: Array.isArray(data.cues) ? data.cues : [] });
+      setSubtitleJobs((current) => ({ ...current, [video.id]: "done" }));
+    } catch (error) {
+      setSubtitleErrors((current) => ({ ...current, [video.id]: error.message || "Ошибка загрузки субтитров." }));
+      setSubtitleJobs((current) => ({ ...current, [video.id]: "error" }));
+    }
+  }
 
 
 
@@ -979,6 +875,107 @@ function AdminPage({ sentences, onSave, onDelete }) {
   return (
 
     <div className="admin-layout">
+
+      <section className="panel admin-video-panel">
+        <h2>Библиотека видео</h2>
+        <p className="muted">Добавляй YouTube-ролики здесь. Они появятся в разделе «Видео».</p>
+        <form className="admin-form" onSubmit={(event) => {
+          event.preventDefault();
+          const formData = new FormData(event.currentTarget);
+          const title = String(formData.get("videoTitle") || "").trim();
+          const url = String(formData.get("videoUrl") || "").trim();
+          const level = String(formData.get("videoLevel") || "B1");
+          if (!title || !url) return;
+          try {
+            const parsedUrl = new URL(url);
+            const host = parsedUrl.hostname.toLowerCase().replace(/^www\./, "");
+            if (!["youtube.com", "m.youtube.com", "music.youtube.com", "youtu.be"].includes(host)) {
+              window.alert("Пока можно добавлять только ссылки YouTube.");
+              return;
+            }
+          } catch {
+            window.alert("Введи корректную ссылку YouTube.");
+            return;
+          }
+          onSaveVideo({ id: createId(), title, url, level, transcript: "" });
+          event.currentTarget.reset();
+        }}>
+          <label>Название ролика
+            <input name="videoTitle" required placeholder="Например: Ordering food in a café" />
+          </label>
+          <label>Ссылка на YouTube
+            <input name="videoUrl" type="url" required placeholder="https://www.youtube.com/watch?v=..." />
+          </label>
+          <label>Уровень
+            <select name="videoLevel" defaultValue="B1">
+              {["A1", "A2", "B1", "B2", "C1"].map((level) => <option key={level}>{level}</option>)}
+            </select>
+          </label>
+          <div className="form-actions">
+            <button className="button button-primary" type="submit">Добавить видео</button>
+          </div>
+        </form>
+        <div className="sentence-list">
+          {videos.length === 0 ? <p className="muted">Видео пока не добавлены.</p> : videos.map((video) => (
+            <article className="admin-video-item" key={video.id}>
+              <div className="admin-video-preview-column">
+                <div className="admin-video-preview">
+                  {getYouTubeVideoId(video.url) ? (
+                    <iframe
+                      src={`https://www.youtube-nocookie.com/embed/${getYouTubeVideoId(video.url)}?rel=0`}
+                      title={`Предпросмотр: ${video.title}`}
+                      loading="lazy"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  ) : <span>Не удалось открыть предпросмотр</span>}
+                </div>
+                <strong>{video.title}</strong>
+                <span className="muted">{video.level || "B1"}</span>
+              </div>
+              <div className="admin-video-settings">
+                <div className="admin-video-range">
+                  <VideoTimeFields label="Начало фрагмента" value={video.startTime || "0:00"}
+                    onSave={(startTime) => onSaveVideo({ ...video, startTime })} />
+                  <VideoTimeFields label="Конец фрагмента" value={video.endTime || ""}
+                    allowEmpty onSave={(endTime) => onSaveVideo({ ...video, endTime })} />
+                  <small className="muted">Оставь минуты и секунды конца пустыми, чтобы использовать остаток ролика.</small>
+                </div>
+                <div className="admin-video-actions">
+                  <button type="button" className="button button-primary"
+                    disabled={subtitleJobs[video.id] === "loading"}
+                    onClick={() => fetchVideoSubtitles(video)}>
+                    {subtitleJobs[video.id] === "loading"
+                      ? "Загружаю титры…"
+                      : video.transcript ? "Обновить титры" : "Получить титры"}
+                  </button>
+                  {video.transcript && <span className="muted">Титры загружены</span>}
+                  {Array.isArray(video.subtitleCues) && video.subtitleCues.length > 0 && (
+                    <details className="admin-subtitle-debug">
+                      <summary>Показать субтитры и таймкоды ({video.subtitleCues.length})</summary>
+                      <div style={{ maxHeight: "320px", overflowY: "auto", marginTop: "10px" }}>
+                        {video.subtitleCues.map((cue, cueIndex) => (
+                          <div key={cueIndex} style={{ padding: "7px 0", borderBottom: "1px solid var(--border-color, #ddd)" }}>
+                            <small className="muted">
+                              {Number(cue.start).toFixed(2)}–{Number(cue.end).toFixed(2)} сек.
+                            </small>
+                            <div>{cue.text}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  )}
+                  {subtitleErrors[video.id] && <p className="form-error" role="alert">{subtitleErrors[video.id]}</p>}
+                  <button type="button" className="button button-danger" onClick={() => {
+                    if (window.confirm("Удалить это видео из библиотеки?")) onDeleteVideo(video.id);
+                  }}>Удалить</button>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
 
       <section className="panel">
 
@@ -1231,6 +1228,8 @@ function AdminPage({ sentences, onSave, onDelete }) {
         })()}
       </section>
 
+
+
     </div>
 
   );
@@ -1242,6 +1241,7 @@ function AdminPage({ sentences, onSave, onDelete }) {
 // Главный компонент приложения.
 export default function App() {
   const [sentences, setSentences] = useState(loadSentences);
+  const [videos, setVideos] = useState(loadVideos);
   const [page, setPage] = useState("study");
   const [showStats, setShowStats] = useState(false);
   const [selectedLevel, setSelectedLevel] = useState("A1");
@@ -1342,6 +1342,14 @@ export default function App() {
 
   useEffect(() => {
     try {
+      localStorage.setItem(VIDEO_LIBRARY_KEY, JSON.stringify(videos));
+    } catch (error) {
+      console.error("Не удалось сохранить библиотеку видео:", error);
+    }
+  }, [videos]);
+
+  useEffect(() => {
+    try {
       localStorage.setItem(LEARNING_STORAGE_KEY, JSON.stringify(learningData));
     } catch (error) {
       console.error("Не удалось сохранить прогресс:", error);
@@ -1391,6 +1399,17 @@ export default function App() {
     setSentences((current) => current.filter((item) => item.id !== id));
   }
 
+  function saveVideo(video) {
+    setVideos((current) => {
+      const exists = current.some((item) => item.id === video.id);
+      return exists ? current.map((item) => item.id === video.id ? video : item) : [...current, video];
+    });
+  }
+
+  function deleteVideo(id) {
+    setVideos((current) => current.filter((item) => item.id !== id));
+  }
+
   return (
     <div className="app-shell">
       <header className="app-header">
@@ -1405,15 +1424,42 @@ export default function App() {
           <nav className="main-nav">
             <button
               type="button"
-              className={page === "study" && !showStats ? "nav-button active" : "nav-button"}
+              className={page === "study" && !showStats ? "nav-button nav-main-button active" : "nav-button nav-main-button"}
               onClick={() => {
                 setPage("study");
                 setShowStats(false);
               }}
-            >Обучение</button>
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5c2.8-.9 5.5-.4 8 1.5v13c-2.5-1.9-5.2-2.4-8-1.5zM20 5.5c-2.8-.9-5.5-.4-8 1.5v13c2.5-1.9 5.2-2.4 8-1.5z" /></svg>
+              <span>Слова</span>
+            </button>
             <button
               type="button"
-              className={page === "admin" ? "nav-button active" : "nav-button"}
+              className={page === "audition" ? "nav-button nav-main-button active" : "nav-button nav-main-button"}
+              onClick={() => {
+                setPage("audition");
+                setShowStats(false);
+              }}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13v-2a8 8 0 0 1 16 0v2M4 13h3v7H6a2 2 0 0 1-2-2zM20 13h-3v7h1a2 2 0 0 0 2-2z" /></svg>
+              <span>Аудирование</span>
+            </button>
+            <button
+              type="button"
+              className={page === "video" ? "nav-button nav-main-button active" : "nav-button nav-main-button"}
+              onClick={() => {
+                setPage("video");
+                setShowStats(false);
+              }}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="14" height="12" rx="3" /><path d="m17 10 4-2v8l-4-2z" /></svg>
+              <span>Видео</span>
+            </button>
+          </nav>
+          <div className="header-utility-controls">
+            <button
+              type="button"
+              className={page === "admin" ? "nav-button nav-utility-button active" : "nav-button nav-utility-button"}
               onClick={() => {
                 setPage("admin");
                 setShowStats(false);
@@ -1421,7 +1467,7 @@ export default function App() {
             >Админка</button>
             <button
               type="button"
-              className={page === "study" && showStats ? "nav-button active" : "nav-button"}
+              className={page === "study" && showStats ? "nav-button nav-utility-button active" : "nav-button nav-utility-button"}
               onClick={() => {
                 if (page === "study" && showStats) {
                   setShowStats(false);
@@ -1431,17 +1477,17 @@ export default function App() {
                 }
               }}
             >Статистика</button>
-          </nav>
-          <button
-            className={"sound-toggle" + (audioEnabled ? "" : " sound-toggle-off")}
-            type="button"
-            onClick={toggleAudio}
-            aria-label={audioEnabled ? "Выключить озвучивание" : "Включить озвучивание"}
-            aria-pressed={audioEnabled}
-            title={audioEnabled ? "Выключить звук" : "Включить звук"}
-          >
-            {audioEnabled ? "🔊" : "🔇"}
-          </button>
+            <button
+              className={"sound-toggle" + (audioEnabled ? "" : " sound-toggle-off")}
+              type="button"
+              onClick={toggleAudio}
+              aria-label={audioEnabled ? "Выключить озвучивание" : "Включить озвучивание"}
+              aria-pressed={audioEnabled}
+              title={audioEnabled ? "Выключить звук" : "Включить звук"}
+            >
+              {audioEnabled ? "🔊" : "🔇"}
+            </button>
+          </div>
         </div>
       </header>
       <main className="main-content">
@@ -1469,8 +1515,18 @@ export default function App() {
             statsLevel={statsLevel}
             setStatsLevel={setStatsLevel}
           />
+        ) : page === "audition" ? (
+          <AuditionPage
+            sentences={sentences}
+            selectedLevel={selectedLevel}
+            setSelectedLevel={changeLevel}
+            levels={levels}
+            audioEnabled={audioEnabled}
+          />
+        ) : page === "video" ? (
+          <VideoPage videos={videos} onUpdateVideo={saveVideo} />
         ) : (
-          <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} />
+          <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} videos={videos} onSaveVideo={saveVideo} onDeleteVideo={deleteVideo} />
         )}
       </main>
       <footer className="app-footer">English Word Trainer · MVP v1</footer>
