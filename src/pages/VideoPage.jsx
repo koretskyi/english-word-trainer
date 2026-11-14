@@ -192,6 +192,7 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
 
   const playerContainerRef = useRef(null);
   const playerCardRef = useRef(null);
+  const trainingPlayerCardRef = useRef(null);
   const exercisePanelRef = useRef(null);
   const playerRef = useRef(null);
   const captureRef = useRef(null);
@@ -199,7 +200,6 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
   const [playerError, setPlayerError] = useState("");
   const [remainingSeconds, setRemainingSeconds] = useState(null);
   const [trainingStarted, setTrainingStarted] = useState(false);
-  const [autoStartWhenReady, setAutoStartWhenReady] = useState(false);
   const [blockIndex, setBlockIndex] = useState(0);
   const [activeBlockIndex, setActiveBlockIndex] = useState(null);
   const [voiceStatus, setVoiceStatus] = useState("idle");
@@ -313,6 +313,14 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
       exercisePanelRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [activeBlockIndex]);
+
+  useEffect(() => {
+    if (selectedId) {
+      requestAnimationFrame(() => {
+        trainingPlayerCardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
+  }, [selectedId]);
 
   useEffect(() => {
     if (!playerReady) {
@@ -482,16 +490,6 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
     playerRef.current.playVideo();
   }
 
-  useEffect(() => {
-    if (!autoStartWhenReady || !playerReady) return;
-    if (!trainingBlocks.length) {
-      setAutoStartWhenReady(false);
-      return;
-    }
-    setAutoStartWhenReady(false);
-    startTraining();
-  }, [autoStartWhenReady, playerReady, selectedId, trainingBlocks.length]);
-
   function continueVideo() {
     const completedIndex = activeBlockIndex;
     captureRef.current?.stop();
@@ -563,7 +561,6 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
             onClick={() => {
               setSelectedId(item.id);
               setShowCompletion(false);
-              setAutoStartWhenReady(true);
             }}
             aria-pressed={selectedVideo?.id === item.id}>
             <span className="video-library-thumbnail">
@@ -587,7 +584,7 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
       <p>Отличная работа!</p>
     </div>}
     {selectedVideo && parsed?.error ? <p className="video-error" role="alert">{parsed.error}</p> : selectedVideo && <>
-      <div className="video-training-player-card">
+      <div className="video-training-player-card" ref={trainingPlayerCardRef}>
       <section className="video-exercise-panel video-training-panel" ref={exercisePanelRef}>
         <div className="video-mask-heading">
           <h3>Тренировка аудирования</h3>
