@@ -403,7 +403,7 @@ export default function VideoPage({ videos = [] }) {
   return <section className="panel video-panel">
     <div className="video-page-heading">
       <div><p className="eyebrow">YOUTUBE LISTENING</p><h2>Видео</h2>
-        <p className="video-intro">Смотри видео и восстанавливай на слух длинные фрагменты диалога.</p>
+        <p className="video-intro">Смотри видео и восстанавливай на слух фрагменты диалога.</p>
       </div>
       <span className="video-heading-icon" aria-hidden="true">▶</span>
     </div>
