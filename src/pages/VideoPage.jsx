@@ -148,8 +148,8 @@ function normalizeSubtitleCues(cues) {
 }
 
 function buildTrainingBlocks(cues, startSeconds, endSeconds) {
-  // Remove rolling-caption duplicates and turn the recovered transcript into sentence-level exercises.
-  return normalizeSubtitleCues(cues)
+  // Each subtitle cue is one exercise. Keep YouTube's original cue boundaries and timestamps.
+  return [...cues]
     .filter((cue) => {
       const cueStart = Number(cue.start);
       const cueEnd = Number(cue.end);
@@ -163,8 +163,8 @@ function buildTrainingBlocks(cues, startSeconds, endSeconds) {
       const end = Math.min(Number(cue.end), endSeconds ?? Infinity);
       const text = String(cue.text || "").trim();
       const sentence = { text, start, end };
-      const wordCount = (text.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu) || [])
-        .filter((word) => (word.match(/[\p{L}\p{N}]/gu) || []).length >= 3).length;
+      const wordCount = (text.match(/[\\p{L}\\p{N}]+(?:['’\\-][\\p{L}\\p{N}]+)*/gu) || [])
+        .filter((word) => (word.match(/[\\p{L}\\p{N}]/gu) || []).length >= 3).length;
       return {
         id: "cue-" + index,
         text,
