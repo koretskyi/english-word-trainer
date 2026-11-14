@@ -46,7 +46,7 @@ def parse_vtt(path: Path) -> list[dict]:
             return
         cleaned = [re.sub(r"<[^>]*>", "", line).strip() for line in text_lines]
         cue_text = html.unescape(" ".join(line for line in cleaned if line))
-        cue_text = re.sub(r"\\s+", " ", cue_text).strip()
+        cue_text = re.sub(r"\s+", " ", cue_text).strip()
         if cue_text:
             cues.append({"start": current_start, "end": current_end, "text": cue_text})
 
@@ -82,14 +82,14 @@ def normalize_subtitle_cues(cues: list[dict]) -> list[dict]:
     valid.sort(key=lambda cue: (float(cue["start"]), float(cue["end"])))
 
     def tokens(value: str) -> list[str]:
-        return re.findall(r"[\\w]+(?:['’\\-][\\w]+)*|[.!?]+|[,;:]", value, flags=re.UNICODE)
+        return re.findall(r"[\w]+(?:['’\-][\w]+)*|[.!?]+|[,;:]", value, flags=re.UNICODE)
 
     def token_key(value: str) -> str:
         return value.casefold().replace("’", "'")
 
     def join_tokens(values: list[str]) -> str:
         text = " ".join(values)
-        return re.sub(r"\\s+([.!?,;:])", r"\\1", text).strip()
+        return re.sub(r"\s+([.!?,;:])", r"\1", text).strip()
 
     normalized = []
     previous_tokens = []
@@ -121,7 +121,7 @@ def normalize_subtitle_cues(cues: list[dict]) -> list[dict]:
         pending_text = (pending_text + " " + delta_text).strip()
         pending_end = float(cue["end"])
 
-        completed = list(re.finditer(r".*?[.!?]+(?=\\s|$)", pending_text))
+        completed = list(re.finditer(r".*?[.!?]+(?=\s|$)", pending_text))
         consumed = 0
         for match in completed:
             sentence_text = match.group(0).strip()
