@@ -111,6 +111,8 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
   );
 
   const playerContainerRef = useRef(null);
+  const playerCardRef = useRef(null);
+  const exercisePanelRef = useRef(null);
   const playerRef = useRef(null);
   const captureRef = useRef(null);
   const [playerReady, setPlayerReady] = useState(false);
@@ -223,6 +225,12 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
       playerContainerRef.current?.replaceChildren();
     };
   }, [selectedId, parsed?.videoId, startSeconds, endSeconds]);
+
+  useEffect(() => {
+    if (activeBlockIndex !== null) {
+      exercisePanelRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [activeBlockIndex]);
 
   useEffect(() => {
     if (!trainingStarted || activeBlockIndex !== null || !playerReady) return undefined;
@@ -362,6 +370,7 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
     setAnswerResult("");
     setVideoWordAnswers({});
     setTrainingStarted(true);
+    playerCardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     playerRef.current.seekTo(startSeconds, true);
     playerRef.current.playVideo();
   }
@@ -458,7 +467,7 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
     </div>}
     {selectedVideo && parsed?.error ? <p className="video-error" role="alert">{parsed.error}</p> : selectedVideo && <>
       <div className="video-training-player-card">
-      <section className="video-exercise-panel video-training-panel">
+      <section className="video-exercise-panel video-training-panel" ref={exercisePanelRef}>
         <div className="video-mask-heading">
           <h3>Тренировка аудирования</h3>
         </div>
@@ -568,7 +577,7 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
         )}
       </section>
 
-      <div className="video-player-card video-player-youtube">
+      <div className="video-player-card video-player-youtube" ref={playerCardRef}>
         <div className="video-player-topline"><strong>{selectedVideo.title}</strong><span>{selectedVideo.level || "B1"}</span></div>
         <div className="video-frame-wrap">
           <div className="video-youtube-player" key={selectedId + "-" + parsed.videoId + "-" + startSeconds + "-" + (endSeconds || "end")} ref={playerContainerRef} />
