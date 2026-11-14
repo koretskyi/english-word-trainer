@@ -71,6 +71,85 @@ def parse_vtt(path: Path) -> list[dict]:
     return cues
 
 
+
+def normalize_subtitle_cues(cues: list[dict]) -> list[dict]:
+    """Collapse YouTube's rolling captions into sentence-level cues."""
+    valid = [
+        cue for cue in cues
+        if float(cue.get("end", 0)) - float(cue.get("start", 0)) > 0.1
+        and str(cue.get("text", "")).strip()
+    ]
+    valid.sort(key=lambda cue: (float(cue["start"]), float(cue["end"])))
+
+    def tokens(value: str) -> list[str]:
+        return re.findall(r"[\\w]+(?:['’\\-][\\w]+)*|[.!?]+|[,;:]", value, flags=re.UNICODE)
+
+    def token_key(value: str) -> str:
+        return value.casefold().replace("’", "'")
+
+    def join_tokens(values: list[str]) -> str:
+        text = " ".join(values)
+        return re.sub(r"\\s+([.!?,;:])", r"\\1", text).strip()
+
+    normalized = []
+    previous_tokens = []
+    pending_text = ""
+    pending_start = None
+    pending_end = None
+
+    for cue in valid:
+        current_tokens = tokens(str(cue["text"]).strip())
+        overlap = 0
+        max_overlap = min(len(previous_tokens), len(current_tokens))
+        for size in range(max_overlap, 0, -1):
+            if [token_key(item) for item in previous_tokens[-size:]] == [
+                token_key(item) for item in current_tokens[:size]
+            ]:
+                overlap = size
+                break
+
+        delta = current_tokens[overlap:]
+        previous_tokens = current_tokens
+        if not delta:
+            continue
+
+        delta_text = join_tokens(delta)
+        if not delta_text:
+            continue
+        if not pending_text:
+            pending_start = float(cue["start"])
+        pending_text = (pending_text + " " + delta_text).strip()
+        pending_end = float(cue["end"])
+
+        completed = list(re.finditer(r".*?[.!?]+(?=\\s|$)", pending_text))
+        consumed = 0
+        for match in completed:
+            sentence_text = match.group(0).strip()
+            if sentence_text:
+                normalized.append({
+                    "start": pending_start,
+                    "end": pending_end,
+                    "text": sentence_text,
+                })
+            consumed = match.end()
+
+        if consumed:
+            pending_text = pending_text[consumed:].strip()
+            pending_start = float(cue["start"]) if pending_text else None
+
+    if pending_text:
+        normalized.append({
+            "start": pending_start if pending_start is not None else float(valid[-1]["start"]),
+            "end": pending_end if pending_end is not None else float(valid[-1]["end"]),
+            "text": pending_text,
+        })
+
+    return [
+        cue for cue in normalized
+        if cue["end"] > cue["start"] and cue["text"].strip()
+    ]
+
+
 @app.post("/api/youtube-subtitles")
 async def youtube_subtitles(payload: SubtitleRequest):
     url = payload.url.strip()
@@ -109,7 +188,7 @@ async def youtube_subtitles(payload: SubtitleRequest):
             raise HTTPException(status_code=404, detail="У ролика нет доступных английских субтитров — ни авторских, ни автоматических.")
 
         subtitle_files.sort(key=lambda path: (0 if re.search(r"\.en(?:-[a-z]{2})?\.", path.name.lower()) else 1, 0 if "orig" in path.name.lower() else 1, path.name))
-        cues = parse_vtt(subtitle_files[0])
+        cues = normalize_subtitle_cues(parse_vtt(subtitle_files[0]))
         if not cues:
             raise HTTPException(status_code=404, detail="YouTube вернул пустой файл субтитров.")
         start_seconds = parse_timestamp(payload.startTime)
