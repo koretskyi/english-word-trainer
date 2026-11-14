@@ -510,17 +510,17 @@ export default function VideoPage({ videos = [], completedVideoIds = [], onCompl
                     <button className="button button-secondary" type="button"
                       onClick={() => replaySentence(sentence, sentenceIndex)}
                       disabled={replayingSentenceIndex === sentenceIndex}>
-                      {replayingSentenceIndex === sentenceIndex ? "Прослушивание…" : "↻ Прослушать ещё раз"}
+                      <><svg className="video-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4.9 9a7.5 7.5 0 0 1 12.6-3L20 12M4 17v-5h5M19.1 15a7.5 7.5 0 0 1-12.6 3L4 12" /></svg><span>{replayingSentenceIndex === sentenceIndex ? "Прослушивание…" : "Прослушать ещё раз"}</span></>
                     </button>
                     <button className="button button-secondary" type="button"
                       onClick={() => useHint(sentenceIndex)}
                       disabled={hintsRemaining <= 0 || Boolean(revealedSentences[sentenceIndex])}>
-                      {revealedSentences[sentenceIndex] ? "Текст показан…" : "Показать текст"} · осталось: {hintsRemaining}
+                      <><svg className="video-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-7 9.5-7 9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z" /><circle cx="12" cy="12" r="3" /></svg><span>{revealedSentences[sentenceIndex] ? "Текст показан…" : "Показать текст"} · осталось: {hintsRemaining}</span></>
                     </button>
                     <button className="button button-secondary" type="button"
                       onClick={() => startVoiceCapture(sentence, sentenceIndex)}
                       disabled={voiceStatus === "listening" || voiceStatus === "transcribing"}>
-                      {recordingSentenceIndex === sentenceIndex ? "Говорите…" : "🎙 Записать ответ"}
+                      <><svg className="video-action-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2.5" width="6" height="12" rx="3" /><path d="M5 11.5a7 7 0 0 0 14 0M12 18.5v3M9 21.5h6" /></svg><span>{recordingSentenceIndex === sentenceIndex ? "Говорите…" : "Записать ответ"}</span></>
                     </button>
                   </div>
                   {sentenceVoiceAnswers[sentenceIndex] && (
