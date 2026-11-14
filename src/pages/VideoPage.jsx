@@ -430,15 +430,6 @@ export default function VideoPage({ videos = [] }) {
       })}
     </div>
     {selectedVideo && parsed?.error ? <p className="video-error" role="alert">{parsed.error}</p> : selectedVideo && <>
-      <div className="video-player-card video-player-youtube">
-        <div className="video-player-topline"><strong>{selectedVideo.title}</strong><span>{selectedVideo.level || "B1"}</span></div>
-        <div className="video-frame-wrap">
-          <div className="video-youtube-player" key={selectedId + "-" + parsed.videoId + "-" + startSeconds + "-" + (endSeconds || "end")} ref={playerContainerRef} />
-        </div>
-        <a className="video-original-link" href={parsed.originalUrl} target="_blank" rel="noreferrer">Открыть оригинал ↗</a>
-      </div>
-
-      {playerError && <p className="video-error" role="alert">{playerError}</p>}
       <section className="video-exercise-panel video-training-panel">
         <div className="video-mask-heading">
           <h3>Тренировка аудирования</h3>
@@ -546,6 +537,17 @@ export default function VideoPage({ videos = [] }) {
           </>
         )}
       </section>
+
+      <div className="video-player-card video-player-youtube">
+        <div className="video-player-topline"><strong>{selectedVideo.title}</strong><span>{selectedVideo.level || "B1"}</span></div>
+        <div className="video-frame-wrap">
+          <div className="video-youtube-player" key={selectedId + "-" + parsed.videoId + "-" + startSeconds + "-" + (endSeconds || "end")} ref={playerContainerRef} />
+        </div>
+        <a className="video-original-link" href={parsed.originalUrl} target="_blank" rel="noreferrer">Открыть оригинал ↗</a>
+      </div>
+
+      {playerError && <p className="video-error" role="alert">{playerError}</p>}
+
     </>}
     <p className="video-legal-note">Используются только субтитры, которые YouTube отдаёт для выбранного ролика. Само видео не скачивается.</p>
   </section>;
