@@ -2806,3 +2806,21 @@ button:disabled {
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
   z-index: 2;
 }
+
+/* Start training button: soft salad green */
+.video-training-panel > .video-exercise-actions > .button-primary {
+  background: #a8d977;
+  border-color: #a8d977;
+  color: #20351b;
+}
+
+.video-training-panel > .video-exercise-actions > .button-primary:hover:not(:disabled) {
+  background: #98cb66;
+  border-color: #98cb66;
+}
+
+.video-training-panel > .video-exercise-actions > .button-primary:disabled {
+  background: #dcebcf;
+  border-color: #dcebcf;
+  color: #718267;
+}
