@@ -2982,3 +2982,41 @@ button:disabled {
   color: #24427f;
   stroke: currentColor;
 }
+
+
+/* Voice input on the Words tab */
+.word-voice-entry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+  margin: 12px 0;
+}
+.word-microphone-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+}
+.word-microphone-button svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.word-microphone-button.is-listening,
+.word-microphone-button:disabled {
+  color: #24427f;
+  background: #dce8ff;
+  border-color: #c5d7fb;
+  opacity: 1;
+}
+.word-voice-error {
+  flex-basis: 100%;
+  margin: 0;
+  color: #b91c1c;
+  font-size: 13px;
+}
