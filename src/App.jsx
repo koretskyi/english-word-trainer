@@ -425,9 +425,9 @@ function StudyPage({
     const capture = startAutoVoiceCapture({
       expectedWord: sentence.word,
       // Short, responsive capture for a single vocabulary word.
-      silenceMs: 250,
+      silenceMs: 0,
       maxRecordingMs: 2000,
-      speechConfirmMs: 100,
+      speechConfirmMs: 0,
       calibrationMs: 0,
       noSpeechTimeoutMs: 2000,
       onStatus: (status) => {
