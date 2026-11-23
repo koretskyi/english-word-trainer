@@ -392,6 +392,7 @@ function StudyPage({
   const [voiceStatus, setVoiceStatus] = useState("idle");
   const [voiceModeActive, setVoiceModeActive] = useState(false);
   const [voiceError, setVoiceError] = useState("");
+  const [voiceRecognizedText, setVoiceRecognizedText] = useState("");
   const [micLevel, setMicLevel] = useState(0);
   const [voiceSuccessConfetti, setVoiceSuccessConfetti] = useState(false);
   const voiceCaptureRef = useRef(null);
@@ -421,6 +422,7 @@ function StudyPage({
   function startVoiceInput() {
     voiceCaptureRef.current?.stop();
     setVoiceError("");
+    setVoiceRecognizedText("");
     setVoiceModeActive(true);
     setVoiceListening(true);
     const capture = startAutoVoiceCapture({
@@ -454,18 +456,17 @@ function StudyPage({
         }
         // Keep the answer mask empty after an incorrect recognition.
         setAnswer(targetLetters.map(() => ""));
-        const distance = Number.isInteger(recognitionData?.edit_distance)
-          ? recognitionData.edit_distance
-          : null;
-        const detail = distance === null ? "" : " (отличие: " + distance + " символ.)";
-        setVoiceError(transcript
-          ? "Распознано: «" + transcript + "»." + detail + " Попробуйте ещё раз."
-          : "Не удалось разобрать речь. Попробуйте ещё раз.");
+        setVoiceRecognizedText(transcript);
+        setVoiceError(transcript ? "Попробуйте ещё раз." : "Не удалось разобрать речь. Попробуйте ещё раз.");
       },
-      onError: (message) => setVoiceError(message || "Ошибка локального распознавания Whisper."),
+      onError: (message) => {
+        setVoiceRecognizedText("");
+        setVoiceError(message || "Ошибка локального распознавания Whisper.");
+      },
       onNoSpeech: () => {
         // Keep the expanded voice card open when no speech was detected.
         // The user can retry or choose "Не знаю" explicitly.
+        setVoiceRecognizedText("");
         setVoiceError("Не расслышал. Повторите, пожалуйста.");
       },
     });
@@ -722,7 +723,17 @@ function StudyPage({
               value={answer} onChange={handleAnswerChange} disabled={checked}
               showMistakes={false} autoFocus={false} />
           </div>
-          {voiceError && <p className="word-listening-error" role="alert">{voiceError}</p>}
+          {voiceError && (
+            <div className="word-listening-error" role="alert">
+              {voiceRecognizedText && (
+                <>
+                  <span className="word-listening-error-label">Распознано:</span>
+                  <strong className="word-listening-recognized-word">{voiceRecognizedText}</strong>
+                </>
+              )}
+              <span>{voiceError}</span>
+            </div>
+          )}
           {!voiceListening && (
             <button className="button button-secondary word-listening-retry"
               type="button" onClick={startVoiceInput}>Попробовать ещё раз</button>
