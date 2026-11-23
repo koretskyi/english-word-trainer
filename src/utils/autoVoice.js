@@ -1,4 +1,4 @@
-export function startAutoVoiceCapture({ onStatus, onText, onError, onLevel, silenceMs = 1700 }) {
+export function startAutoVoiceCapture({ onStatus, onText, onError, onLevel, silenceMs = 850 }) {
   let recorder = null;
   let stream = null;
   let audioContext = null;
