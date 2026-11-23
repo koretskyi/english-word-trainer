@@ -64,6 +64,7 @@ export function startAutoVoiceCapture({ expectedWord = "", onStatus, onText, onE
           return;
         }
         onStatus?.("transcribing");
+        console.info("[voice] Sending audio to local Whisper", { bytes: blob.size, mimeType: blob.type || "application/octet-stream", expectedWord });
         try {
           const response = await fetch("/api/transcribe", {
             method: "POST",
@@ -75,6 +76,7 @@ export function startAutoVoiceCapture({ expectedWord = "", onStatus, onText, onE
           });
           const data = await response.json().catch(() => ({}));
           if (!response.ok) throw new Error(data.detail || data.error || `Ошибка сервера (${response.status}).`);
+          console.info("[voice] Whisper response", { status: response.status, engine: data.engine, text: data.text });
           if (!data.text?.trim()) throw new Error("Whisper не распознал слово. Попробуй произнести его ещё раз.");
           onText?.(data.text.trim());
         } catch (error) {
