@@ -387,7 +387,58 @@ function StudyPage({
   const [audioFinished, setAudioFinished] = useState(false);
   const [dontKnowClicked, setDontKnowClicked] = useState(false);
   const [markedKnown, setMarkedKnown] = useState(false);
+  const [voiceListening, setVoiceListening] = useState(false);
+  const [voiceError, setVoiceError] = useState("");
+  const speechRecognitionRef = useRef(null);
   const targetLetters = sentence ? [...sentence.word] : [];
+
+  useEffect(() => () => {
+    speechRecognitionRef.current?.stop();
+  }, [sentence?.id]);
+
+  function startVoiceInput() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setVoiceError("Голосовой ввод не поддерживается этим браузером. Попробуй Chrome.");
+      return;
+    }
+    speechRecognitionRef.current?.stop();
+    setVoiceError("");
+    const recognition = new SpeechRecognition();
+    speechRecognitionRef.current = recognition;
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onstart = () => setVoiceListening(true);
+    recognition.onresult = (event) => {
+      const transcript = String(event.results?.[0]?.[0]?.transcript || "")
+        .toLowerCase().replace(/[^a-z'-]/g, " ").trim();
+      const spokenWords = transcript.split(/\\s+/).filter(Boolean);
+      const matchedWord = spokenWords.find((spoken) =>
+        spoken.replace(/'/g, "") === sentence.word.toLowerCase().replace(/'/g, "")
+      );
+      const spokenWord = matchedWord || spokenWords[spokenWords.length - 1] || "";
+      if (spokenWord) {
+        const letters = [...spokenWord];
+        handleAnswerChange(targetLetters.map((_, index) => letters[index] || ""));
+      } else {
+        setVoiceError("Не удалось распознать слово. Попробуй ещё раз.");
+      }
+    };
+    recognition.onerror = (event) => {
+      setVoiceError(event.error === "not-allowed"
+        ? "Разреши доступ к микрофону в браузере."
+        : "Не удалось распознать речь. Попробуй ещё раз.");
+      setVoiceListening(false);
+    };
+    recognition.onend = () => setVoiceListening(false);
+    try {
+      recognition.start();
+    } catch {
+      setVoiceListening(false);
+      setVoiceError("Не удалось запустить микрофон. Попробуй ещё раз.");
+    }
+  }
   const correct = Boolean(sentence) && targetLetters.length > 0 &&
     targetLetters.every((letter, position) =>
       (answer[position] || "").toLowerCase() === letter.toLowerCase()
@@ -629,6 +680,16 @@ function StudyPage({
             <span>{parts.slice(1).join("{word}")}</span>
           </div>
           {!checked ? (
+            <>
+            <div className="word-voice-entry">
+              <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}`}
+                type="button" onClick={startVoiceInput} disabled={voiceListening}
+                aria-label="Ввести слово голосом">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4m-4 0h8"/></svg>
+                {voiceListening ? "Слушаю…" : "Ответить голосом"}
+              </button>
+              {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
+            </div>
             <div className="form-actions">
               <button className="button button-secondary button-dont-know" type="button"
                 onClick={dontKnow}>Не знаю</button>
@@ -637,6 +698,7 @@ function StudyPage({
                   onClick={knowWord}>Я знаю</button>
               )}
             </div>
+            </>
           ) : (
             <div className={"feedback " + (correct ? "correct" : "incorrect") + (markedKnown ? " marked-known" : "")}>
               {dontKnowClicked ? (
