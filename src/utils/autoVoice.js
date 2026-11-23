@@ -1,4 +1,4 @@
-export function startAutoVoiceCapture({ onStatus, onText, onError, onNoSpeech, onLevel, silenceMs = 850 }) {
+export function startAutoVoiceCapture({ expectedWord = "", onStatus, onText, onError, onNoSpeech, onLevel, silenceMs = 850 }) {
   let recorder = null;
   let stream = null;
   let audioContext = null;
@@ -67,7 +67,10 @@ export function startAutoVoiceCapture({ onStatus, onText, onError, onNoSpeech, o
         try {
           const response = await fetch("/api/transcribe", {
             method: "POST",
-            headers: { "Content-Type": blob.type || "application/octet-stream" },
+            headers: {
+            "Content-Type": blob.type || "application/octet-stream",
+            "X-Expected-Word": expectedWord,
+          },
             body: blob,
           });
           const data = await response.json().catch(() => ({}));
