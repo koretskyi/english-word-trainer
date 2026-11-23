@@ -36,6 +36,28 @@ def get_whisper_model():
     return _whisper_model
 
 
+def normalize_spoken_word(value: str) -> str:
+    """Keep only English letters and compare without case or punctuation."""
+    return re.sub(r"[^a-z]", "", value.casefold())
+
+
+def levenshtein_distance(left: str, right: str) -> int:
+    """Return the minimum number of single-character insertions, deletions and substitutions."""
+    if len(left) < len(right):
+        left, right = right, left
+    previous = list(range(len(right) + 1))
+    for i, left_char in enumerate(left, start=1):
+        current = [i]
+        for j, right_char in enumerate(right, start=1):
+            current.append(min(
+                current[-1] + 1,
+                previous[j] + 1,
+                previous[j - 1] + (left_char != right_char),
+            ))
+        previous = current
+    return previous[-1]
+
+
 class SubtitleRequest(BaseModel):
     url: str
     startTime: str = "00:00"
@@ -226,7 +248,34 @@ async def transcribe_audio(request: Request):
     except Exception as error:
         raise HTTPException(status_code=500, detail=f"Ошибка локального распознавания Whisper: {error}") from error
 
-    return {"text": transcript, "engine": "faster-whisper small (CPU INT8)"}
+    expected_word = request.headers.get("x-expected-word", "").strip()
+    expected_normalized = normalize_spoken_word(expected_word)
+    recognized_tokens = [
+        normalize_spoken_word(token)
+        for token in re.findall(r"[A-Za-z]+(?:['’-][A-Za-z]+)*", transcript)
+    ]
+    recognized_tokens = [token for token in recognized_tokens if token]
+
+    # Match the target against individual recognized words, allowing up to
+    # three character edits (insertions, deletions or substitutions).
+    distances = [
+        levenshtein_distance(expected_normalized, token)
+        for token in recognized_tokens
+    ] if expected_normalized else []
+    best_distance = min(distances) if distances else None
+    is_correct = best_distance is not None and best_distance <= 3
+
+    logger.info(
+        "Word check: expected=%r recognized=%r distance=%r correct=%s",
+        expected_word, transcript, best_distance, is_correct,
+    )
+    return {
+        "text": transcript,
+        "expected": expected_word,
+        "is_correct": is_correct,
+        "edit_distance": best_distance,
+        "engine": "faster-whisper medium (CPU INT8)",
+    }
 
 
 @app.post("/api/youtube-subtitles")
