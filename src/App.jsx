@@ -426,7 +426,7 @@ function StudyPage({
       expectedWord: sentence.word,
       // Short, responsive capture for a single vocabulary word.
       silenceMs: 0,
-      maxRecordingMs: 2000,
+      maxRecordingMs: 3000,
       speechConfirmMs: 0,
       calibrationMs: 0,
       noSpeechTimeoutMs: 2000,
