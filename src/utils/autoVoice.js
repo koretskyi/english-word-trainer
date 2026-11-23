@@ -1,4 +1,4 @@
-export function startAutoVoiceCapture({ expectedWord = "", onStatus, onText, onError, onNoSpeech, onLevel, silenceMs = 850 }) {
+export function startAutoVoiceCapture({ expectedWord = "", onStatus, onText, onError, onNoSpeech, onLevel, silenceMs = 700 }) {
   let recorder = null;
   let stream = null;
   let audioContext = null;
