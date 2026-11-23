@@ -701,7 +701,20 @@ function StudyPage({
   }
 
   return (
-    <section className={"panel study-panel" + (checked && correct ? " answer-correct" : "")}>
+    <section className={"panel study-panel" + (checked && correct ? " answer-correct" : "") + (voiceListening ? " is-voice-listening" : "")}>
+      {voiceListening && (
+        <div className="word-listening-mode" role="status" aria-live="polite">
+          <div className="word-mic-visualizer" aria-hidden="true"
+            style={{ "--mic-level": micLevel, "--mic-scale": 1 + micLevel * 0.34 }}>
+            <div className="word-mic-glow" />
+            <svg viewBox="0 0 120 120">
+              <path d="M60 70a15 15 0 0 0 15-15V30a15 15 0 0 0-30 0v25a15 15 0 0 0 15 15Z" />
+              <path d="M90 55a30 30 0 0 1-60 0M60 85v18m-18 0h36" />
+            </svg>
+          </div>
+          <p className="word-listening-prompt">{sentence.russianWord || sentence.russian}</p>
+        </div>
+      )}
       {levelSelector}
       {statsPanel}
       <div className="learning-progress-card">
@@ -751,16 +764,7 @@ function StudyPage({
                 {voiceListening ? "Слушаю…" : "Ответить голосом"}
               </button>
               {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
-              {voiceListening && (
-                <div className="word-mic-visualizer" aria-hidden="true"
-                  style={{ "--mic-level": micLevel, "--mic-scale": 1 + micLevel * 0.34 }}>
-                  <div className="word-mic-glow" />
-                  <svg viewBox="0 0 120 120">
-                    <path d="M60 70a15 15 0 0 0 15-15V30a15 15 0 0 0-30 0v25a15 15 0 0 0 15 15Z" />
-                    <path d="M90 55a30 30 0 0 1-60 0M60 85v18m-18 0h36" />
-                  </svg>
-                </div>
-              )}
+
             </div>
             <div className="form-actions">
               <button className="button button-secondary button-dont-know" type="button"
