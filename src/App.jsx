@@ -391,6 +391,7 @@ function StudyPage({
   const [voiceError, setVoiceError] = useState("");
   const [micLevel, setMicLevel] = useState(0);
   const speechRecognitionRef = useRef(null);
+  const voiceActiveRef = useRef(false);
   const micStreamRef = useRef(null);
   const audioContextRef = useRef(null);
   const analyserFrameRef = useRef(null);
@@ -412,6 +413,10 @@ function StudyPage({
     if (!navigator.mediaDevices?.getUserMedia) return;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      if (!voiceActiveRef.current) {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
       micStreamRef.current = stream;
       const AudioContextClass = window.AudioContext || window.webkitAudioContext;
       if (!AudioContextClass) return;
@@ -457,6 +462,7 @@ function StudyPage({
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
     recognition.onstart = () => {
+      voiceActiveRef.current = true;
       setVoiceListening(true);
       startMicrophoneMeter();
     };
@@ -479,10 +485,12 @@ function StudyPage({
       setVoiceError(event.error === "not-allowed"
         ? "Разреши доступ к микрофону в браузере."
         : "Не удалось распознать речь. Попробуй ещё раз.");
+      voiceActiveRef.current = false;
       setVoiceListening(false);
       stopMicrophoneMeter();
     };
     recognition.onend = () => {
+      voiceActiveRef.current = false;
       setVoiceListening(false);
       stopMicrophoneMeter();
     };
