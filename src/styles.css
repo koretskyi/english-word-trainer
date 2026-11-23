@@ -3020,3 +3020,48 @@ button:disabled {
   color: #b91c1c;
   font-size: 13px;
 }
+
+
+.word-mic-visualizer {
+  --mic-level: 0;
+  position: fixed;
+  z-index: 50;
+  left: 50%;
+  top: 50%;
+  width: min(58vw, 360px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%) scale(var(--mic-scale, 1));
+  pointer-events: none;
+  color: #b8f34a;
+  filter: drop-shadow(0 0 18px rgba(184, 243, 74, .42));
+  transition: transform 65ms linear, opacity 65ms linear;
+  opacity: calc(.48 + var(--mic-level) * .42);
+}
+.word-mic-visualizer svg {
+  position: relative;
+  z-index: 1;
+  width: 66%;
+  height: 66%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.word-mic-glow {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: rgba(184, 243, 74, calc(.09 + var(--mic-level) * .22));
+  box-shadow: 0 0 calc(24px + var(--mic-level) * 70px) rgba(184, 243, 74, .38);
+  animation: word-mic-breathe 1.15s ease-in-out infinite alternate;
+}
+@keyframes word-mic-breathe {
+  from { transform: scale(.82); opacity: .42; }
+  to { transform: scale(1.08); opacity: .9; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .word-mic-visualizer, .word-mic-glow { animation: none; transition: none; }
+}
