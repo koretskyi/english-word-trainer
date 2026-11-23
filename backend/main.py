@@ -240,32 +240,41 @@ async def transcribe_audio(request: Request):
 
     requested_model = request.headers.get("x-whisper-model", "medium").strip().lower()
     model_size = requested_model if requested_model in {"medium", "small"} else "medium"
-    logger.info("Whisper decoded audio: %.2f seconds; model=%s; expected-word=%r", audio_samples.size / 16000, model_size, request.headers.get("x-expected-word", "").strip())
+    transcription_mode = request.headers.get("x-transcription-mode", "word").strip().lower()
+    is_sentence_mode = transcription_mode == "sentence"
+    logger.info("Whisper decoded audio: %.2f seconds; model=%s; mode=%s", audio_samples.size / 16000, model_size, transcription_mode)
     model = get_whisper_model(model_size)
     try:
         expected_word = request.headers.get("x-expected-word", "").strip()
-        # Use Faster-Whisper's dedicated hotwords hint instead of a sentence
-        # prompt. This biases decoding toward the target word without asking
-        # the model to generate that word regardless of the audio.
-        hotwords = expected_word if expected_word and len(expected_word) <= 80 else None
+        # Single-word cards use a hotword hint and short output; audition mode
+        # transcribes the complete spoken sentence without forcing its wording.
+        hotwords = expected_word if not is_sentence_mode and expected_word and len(expected_word) <= 80 else None
         segments, _ = model.transcribe(
             audio_samples,
             language="en",
             hotwords=hotwords,
             beam_size=1,
-            max_new_tokens=8,
+            max_new_tokens=128 if is_sentence_mode else 8,
             vad_filter=True,
             condition_on_previous_text=False,
         )
         raw_transcript = " ".join(segment.text.strip() for segment in segments).strip()
-        # Keep the response focused: at most two recognized English words.
         recognized_words = re.findall(r"[A-Za-z]+(?:['’-][A-Za-z]+)*", raw_transcript)
-        transcript = " ".join(recognized_words[:2])
-        logger.info("Whisper result (limited to 2 words): raw=%r final=%r", raw_transcript, transcript)
+        transcript = " ".join(recognized_words if is_sentence_mode else recognized_words[:2])
+        logger.info("Whisper result (%s): raw=%r final=%r", "full sentence" if is_sentence_mode else "limited to 2 words", raw_transcript, transcript)
     except Exception as error:
         raise HTTPException(status_code=500, detail=f"Ошибка локального распознавания Whisper: {error}") from error
 
     expected_word = request.headers.get("x-expected-word", "").strip()
+    if is_sentence_mode:
+        return {
+            "text": transcript,
+            "expected": expected_word,
+            "is_correct": None,
+            "edit_distance": None,
+            "engine": f"faster-whisper {model_size} (CPU INT8)",
+        }
+
     expected_normalized = normalize_spoken_word(expected_word)
     recognized_tokens = [
         normalize_spoken_word(token)
