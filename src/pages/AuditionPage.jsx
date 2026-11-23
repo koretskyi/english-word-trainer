@@ -151,11 +151,6 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
       noSpeechTimeoutMs: 4000,
       onStatus: (status) => {
         setAutoVoiceStatus(status);
-        if (status === "transcribing") {
-          setVoiceConfetti(true);
-          window.clearTimeout(confettiTimerRef.current);
-          confettiTimerRef.current = window.setTimeout(() => setVoiceConfetti(false), 1400);
-        }
         if (status !== "listening") setMicLevel(0);
       },
       onLevel: setMicLevel,
@@ -166,6 +161,9 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
       },
       onText: (recognizedText) => {
         if (manualInputRef.current) return;
+        setVoiceConfetti(true);
+        window.clearTimeout(confettiTimerRef.current);
+        confettiTimerRef.current = window.setTimeout(() => setVoiceConfetti(false), 1400);
         setVoiceAnswer(recognizedText);
         if (normalizeSentence(recognizedText) === normalizeSentence(englishText)) {
           setSpeechError("");
@@ -328,7 +326,8 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
         <p className="audition-mic-prompt">
           {autoVoiceStatus === "speaking" ? "Слушай предложение…" :
             autoVoiceStatus === "listening" ? "Микрофон активен — произнеси всё предложение целиком." :
-            autoVoiceStatus === "transcribing" ? "Текст распознан — проверяю…" :
+            autoVoiceStatus === "transcribing" ? "Распознаю речь…" :
+            voiceAnswer ? "Текст распознан" :
             "Нажми на микрофон и произнеси всё предложение целиком."}
         </p>
       </div>
