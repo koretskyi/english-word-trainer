@@ -3123,9 +3123,11 @@ button:disabled {
 .word-listening-mode { width: 100%; min-height: min(72vh, 690px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; }
 .word-listening-mic-button { display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; cursor: pointer; }
 .word-listening-mic-button:disabled { cursor: default; }
-.word-listening-mic-button .word-mic-visualizer { position: relative; inset: auto; left: auto; top: auto; width: min(48vw, 300px); color: #79b900; filter: drop-shadow(0 0 24px rgba(121,185,0,.55)); opacity: 1; }
+.word-listening-mic-button .word-mic-visualizer { position: relative; inset: auto; left: auto; top: auto; width: min(48vw, 300px); color: #a1a1aa; filter: none; opacity: .72; }
 .word-listening-mic-button .word-mic-visualizer svg { stroke-width: 6; }
-.word-listening-mic-button .word-mic-glow { background: rgba(142,210,0,.22); box-shadow: 0 0 55px rgba(121,185,0,.48); }
+.word-listening-mic-button .word-mic-glow { background: transparent; box-shadow: none; animation: none; }
+.word-listening-mic-button.is-listening .word-mic-visualizer { color: #79b900; filter: drop-shadow(0 0 24px rgba(121,185,0,.55)); opacity: 1; }
+.word-listening-mic-button.is-listening .word-mic-glow { background: rgba(142,210,0,.22); box-shadow: 0 0 55px rgba(121,185,0,.48); animation: word-mic-breathe 1.15s ease-in-out infinite alternate; }
 .word-listening-russian { max-width: 760px; margin: 0; color: #172033; font-size: clamp(21px,3vw,30px); line-height: 1.35; font-weight: 750; }
 .word-listening-target { margin: 0; color: #64748b; font-size: 16px; font-weight: 650; }
 .word-listening-english { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 7px 9px; margin-top: 3px; color: #172033; font-size: clamp(24px,4vw,36px); line-height: 1.8; font-weight: 700; }
