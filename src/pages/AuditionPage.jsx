@@ -76,7 +76,10 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   const [speechError, setSpeechError] = useState("");
   const [dontKnowCountdown, setDontKnowCountdown] = useState(null);
   const [autoVoiceStatus, setAutoVoiceStatus] = useState("idle");
+  const [micLevel, setMicLevel] = useState(0);
+  const [voiceConfetti, setVoiceConfetti] = useState(false);
   const autoVoiceRef = useRef(null);
+  const confettiTimerRef = useRef(null);
   const manualInputRef = useRef(false);
   const retryTimerRef = useRef(null);
   const wordInputRefs = useRef([]);
@@ -104,6 +107,9 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     autoVoiceRef.current?.stop();
     autoVoiceRef.current = null;
     setAutoVoiceStatus("idle");
+    setMicLevel(0);
+    setVoiceConfetti(false);
+    window.clearTimeout(confettiTimerRef.current);
     setVoiceAnswer("");
     setResult("");
     setSpeechError("");
@@ -129,14 +135,34 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   }, [dontKnowCountdown]);
 
   function startAutomaticListening() {
-    if (manualInputRef.current || !englishText) return;
+    if (manualInputRef.current || !englishText || result === "correct") return;
+    window.clearTimeout(retryTimerRef.current);
     autoVoiceRef.current?.stop();
+    setSpeechError("");
+    setVoiceAnswer("");
     const capture = startAutoVoiceCapture({
-      onStatus: setAutoVoiceStatus,
-      onError: setSpeechError,
+      expectedWord: englishText,
+      transcriptionMode: "sentence",
+      whisperModel: "medium",
+      silenceMs: 900,
+      maxRecordingMs: 20000,
+      speechConfirmMs: 250,
+      calibrationMs: 350,
+      noSpeechTimeoutMs: 4000,
+      onStatus: (status) => {
+        setAutoVoiceStatus(status);
+        if (status === "transcribing") {
+          setVoiceConfetti(true);
+          window.clearTimeout(confettiTimerRef.current);
+          confettiTimerRef.current = window.setTimeout(() => setVoiceConfetti(false), 1400);
+        }
+        if (status !== "listening") setMicLevel(0);
+      },
+      onLevel: setMicLevel,
+      onError: (message) => setSpeechError(message),
       onNoSpeech: () => {
         setAutoVoiceStatus("idle");
-        setSpeechError("Не услышал речь. Нажми «Прослушать ещё раз» и повтори предложение.");
+        setSpeechError("Не услышал речь. Нажми «Прослушать ещё раз» или микрофон и повтори всё предложение.");
       },
       onText: (recognizedText) => {
         if (manualInputRef.current) return;
@@ -145,12 +171,8 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
           setSpeechError("");
           setResult("correct");
         } else {
-          setSpeechError("Ответ неправильный. Микрофон включится снова через секунду.");
+          setSpeechError("Предложение распознано не полностью или с ошибками. Попробуй ещё раз.");
           setResult("");
-          window.clearTimeout(retryTimerRef.current);
-          retryTimerRef.current = window.setTimeout(() => {
-            if (!manualInputRef.current) startAutomaticListening();
-          }, 1000);
         }
       },
     });
@@ -159,7 +181,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   }
 
   function playSentenceAndListen() {
-    if (manualInputRef.current || !englishText) return;
+    if (manualInputRef.current || !englishText || result === "correct") return;
     window.clearTimeout(retryTimerRef.current);
     autoVoiceRef.current?.stop();
     setSpeechError("");
@@ -284,12 +306,32 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
         })}
       </div>
 
-      {autoVoiceStatus !== "idle" && (
-        <div className={`auto-voice-indicator${autoVoiceStatus === "listening" ? " is-listening" : ""}`} role="status" aria-live="polite">
-          <span className={autoVoiceStatus === "listening" ? "auto-voice-dot is-listening" : "auto-voice-dot"} />
-          {autoVoiceStatus === "speaking" ? "Слушай предложение…" : autoVoiceStatus === "listening" ? "Микрофон активен — слушаю…" : "Распознаю речь…"}
-        </div>
-      )}
+      <div className="audition-voice-area">
+        <button className={`audition-mic-button${autoVoiceStatus === "listening" ? " is-listening" : ""}`}
+          type="button" onClick={startAutomaticListening}
+          disabled={["speaking", "listening", "transcribing"].includes(autoVoiceStatus) || result === "correct" || manualInputRef.current}
+          aria-label="Включить микрофон и произнести предложение">
+          <span className="word-mic-visualizer" aria-hidden="true"
+            style={{ "--mic-level": micLevel, "--mic-scale": 1 + micLevel * 0.34 }}>
+            <span className="word-mic-glow" />
+            <svg viewBox="0 0 120 120">
+              <path d="M60 70a15 15 0 0 0 15-15V30a15 15 0 0 0-30 0v25a15 15 0 0 0 15 15Z" />
+              <path d="M90 55a30 30 0 0 1-60 0M60 85v18m-18 0h36" />
+            </svg>
+          </span>
+          {voiceConfetti && <span className="mic-success-confetti confetti" aria-hidden="true">
+            {Array.from({ length: 42 }, (_, index) => (
+              <span key={index} style={{ left: `${(index * 37) % 100}%`, animationDelay: `${(index % 12) * 0.035}s`, "--fall-duration": `${1.05 + (index % 6) * 0.1}s` }} />
+            ))}
+          </span>}
+        </button>
+        <p className="audition-mic-prompt">
+          {autoVoiceStatus === "speaking" ? "Слушай предложение…" :
+            autoVoiceStatus === "listening" ? "Микрофон активен — произнеси всё предложение целиком." :
+            autoVoiceStatus === "transcribing" ? "Текст распознан — проверяю…" :
+            "Нажми на микрофон и произнеси всё предложение целиком."}
+        </p>
+      </div>
       <div className="audition-audio-actions">
         <button className="button button-primary" type="button" onClick={playSentenceAndListen} disabled={result === "correct" || manualInputRef.current}>
           <span aria-hidden="true">🔊</span> Прослушать ещё раз
