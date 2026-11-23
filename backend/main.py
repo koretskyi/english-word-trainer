@@ -239,7 +239,7 @@ async def transcribe_audio(request: Request):
             audio_samples,
             language="en",
             hotwords=hotwords,
-            beam_size=5,
+            beam_size=2,
             max_new_tokens=8,
             vad_filter=True,
             condition_on_previous_text=False,
