@@ -24,7 +24,13 @@ export function startAutoVoiceCapture({ onStatus, onText, onError, silenceMs = 1
         throw new Error("Запись аудио не поддерживается этим браузером. Попробуй Chrome или Edge.");
       }
 
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      });
       if (stopped) {
         stream.getTracks().forEach((track) => track.stop());
         return;
@@ -52,34 +58,35 @@ export function startAutoVoiceCapture({ onStatus, onText, onError, silenceMs = 1
         chunks = [];
         if (!blob.size) {
           onStatus?.("idle");
-          onError?.("Не удалось услышать ответ. Попробуй ещё раз.");
+          onError?.("Не удалось записать звук. Попробуй ещё раз.");
           return;
         }
         onStatus?.("transcribing");
         try {
           const response = await fetch("/api/transcribe", {
             method: "POST",
-            headers: { "Content-Type": blob.type },
+            headers: { "Content-Type": blob.type || "application/octet-stream" },
             body: blob,
           });
           const data = await response.json().catch(() => ({}));
-          if (!response.ok) throw new Error(data.error || data.detail || "Ошибка распознавания речи.");
-          if (!data.text?.trim()) throw new Error("Не удалось разобрать речь. Попробуй ещё раз.");
+          if (!response.ok) throw new Error(data.detail || data.error || `Ошибка сервера (${response.status}).`);
+          if (!data.text?.trim()) throw new Error("Whisper не распознал слово. Попробуй произнести его ещё раз.");
           onText?.(data.text.trim());
         } catch (error) {
-          onError?.(error.message || "Ошибка отправки аудио на распознавание.");
+          onError?.(error.message || "Ошибка отправки аудио на локальный Whisper.");
         } finally {
           onStatus?.("idle");
         }
       };
 
-      audioContext = new AudioContext();
+      audioContext = new AudioContext({ latencyHint: "interactive" });
+      if (audioContext.state === "suspended") await audioContext.resume();
       const source = audioContext.createMediaStreamSource(stream);
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 2048;
       source.connect(analyser);
       const samples = new Float32Array(analyser.fftSize);
-      recorder.start();
+      recorder.start(250);
       onStatus?.("listening");
 
       const startedAt = performance.now();
@@ -91,7 +98,8 @@ export function startAutoVoiceCapture({ onStatus, onText, onError, silenceMs = 1
         const rms = Math.sqrt(energy / samples.length);
         const now = performance.now();
 
-        if (rms > 0.015) {
+        // A lower threshold catches normal speech from laptop/headset microphones.
+        if (rms > 0.006) {
           if (!speechStartedAt) speechStartedAt = now;
           lastSoundAt = now;
         } else if (speechStartedAt && now - lastSoundAt >= silenceMs) {
@@ -105,7 +113,7 @@ export function startAutoVoiceCapture({ onStatus, onText, onError, silenceMs = 1
           cancelled = true;
           recorder.stop();
           onStatus?.("idle");
-          onError?.("Не удалось услышать речь. Попробуй ещё раз.");
+          onError?.("Микрофон не уловил голос. Проверь выбранный микрофон и произнеси слово громче.");
           return;
         }
         if (now - startedAt > 20000) {
