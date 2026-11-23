@@ -424,6 +424,8 @@ function StudyPage({
     setVoiceListening(true);
     const capture = startAutoVoiceCapture({
       expectedWord: sentence.word,
+      // TEST MODE: use the smaller model on vocabulary cards; VideoPage stays on Medium.
+      whisperModel: "small",
       // Short, responsive capture for a single vocabulary word.
       silenceMs: 800,
       maxRecordingMs: 3000,
