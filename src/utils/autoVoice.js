@@ -76,9 +76,16 @@ export function startAutoVoiceCapture({ expectedWord = "", onStatus, onText, onE
           });
           const data = await response.json().catch(() => ({}));
           if (!response.ok) throw new Error(data.detail || data.error || `Ошибка сервера (${response.status}).`);
-          console.info("[voice] Whisper response", { status: response.status, engine: data.engine, text: data.text });
+          console.info("[voice] Whisper response", {
+            status: response.status,
+            engine: data.engine,
+            text: data.text,
+            expected: data.expected,
+            isCorrect: data.is_correct,
+            editDistance: data.edit_distance,
+          });
           if (!data.text?.trim()) throw new Error("Whisper не распознал слово. Попробуй произнести его ещё раз.");
-          onText?.(data.text.trim());
+          onText?.(data.text.trim(), data);
         } catch (error) {
           onError?.(error.message || "Ошибка отправки аудио на локальный Whisper.");
         } finally {
