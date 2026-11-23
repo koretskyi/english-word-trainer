@@ -3287,3 +3287,20 @@ button:disabled {
 @media (max-width: 600px) {
   .audition-mic-button .word-mic-visualizer { width: min(45vw, 160px); }
 }
+
+
+/* Audition voice mode: use the same large standalone microphone as Words mode. */
+.audition-voice-area.is-active {
+  width: 100%;
+  min-height: min(42vh, 390px);
+  justify-content: center;
+  gap: 14px;
+}
+.audition-voice-area.is-active .audition-mic-button .word-mic-visualizer {
+  width: min(48vw, 300px);
+}
+@media (max-width: 600px) {
+  .audition-voice-area.is-active .audition-mic-button .word-mic-visualizer {
+    width: min(58vw, 240px);
+  }
+}
