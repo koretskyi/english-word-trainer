@@ -137,7 +137,9 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   }, [dontKnowCountdown]);
 
   function startAutomaticListening() {
-    if (manualInputRef.current || !englishText || result === "correct") return;
+    if (!englishText || result === "correct") return;
+    manualInputRef.current = false;
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
     setVoiceModeActive(true);
     window.clearTimeout(retryTimerRef.current);
     autoVoiceRef.current?.stop();
@@ -183,7 +185,8 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   }
 
   function playSentenceAndListen() {
-    if (manualInputRef.current || !englishText || result === "correct") return;
+    if (!englishText || result === "correct") return;
+    manualInputRef.current = false;
     window.clearTimeout(retryTimerRef.current);
     autoVoiceRef.current?.stop();
     setSpeechError("");
@@ -313,7 +316,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
         {!voiceModeActive ? (
           <button className={`button button-secondary word-microphone-button${autoVoiceStatus === "listening" ? " is-listening" : ""}`}
             type="button" onClick={startAutomaticListening}
-            disabled={["speaking", "listening", "transcribing"].includes(autoVoiceStatus) || result === "correct" || manualInputRef.current}
+            disabled={result === "correct"}
             aria-label="Ответить голосом">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4m-4 0h8"/></svg>
             Ответить голосом
