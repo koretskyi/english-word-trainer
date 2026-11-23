@@ -431,13 +431,9 @@ function StudyPage({
         if (!active) setMicLevel(0);
       },
       onLevel: (level) => setMicLevel(level),
-      onText: (recognizedText) => {
+      onText: (recognizedText, recognitionData) => {
         const transcript = String(recognizedText || "").trim();
-        const normalized = transcript.toLowerCase().replace(/[^a-z'-]/g, " ").trim();
-        const spokenWords = normalized.split(/\s+/).filter(Boolean);
-        const expectedWord = sentence.word.toLowerCase().replace(/'/g, "");
-        const matchedWord = spokenWords.find((spoken) => spoken.replace(/'/g, "") === expectedWord);
-        if (matchedWord) {
+        if (recognitionData?.is_correct === true) {
           setVoiceError("");
           setVoiceModeActive(false);
           handleAnswerChange(targetLetters.map((letter) => letter));
@@ -445,7 +441,13 @@ function StudyPage({
         }
         // Keep the answer mask empty after an incorrect recognition.
         setAnswer(targetLetters.map(() => ""));
-        setVoiceError(transcript ? "Распознано: «" + transcript + "». Попробуйте ещё раз." : "Не удалось разобрать речь. Попробуйте ещё раз.");
+        const distance = Number.isInteger(recognitionData?.edit_distance)
+          ? recognitionData.edit_distance
+          : null;
+        const detail = distance === null ? "" : " (отличие: " + distance + " символ.)";
+        setVoiceError(transcript
+          ? "Распознано: «" + transcript + "»." + detail + " Попробуйте ещё раз."
+          : "Не удалось разобрать речь. Попробуйте ещё раз.");
       },
       onError: (message) => setVoiceError(message || "Ошибка локального распознавания Whisper."),
       onNoSpeech: () => {
