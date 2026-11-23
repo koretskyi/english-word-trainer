@@ -394,7 +394,6 @@ function StudyPage({
   const [voiceError, setVoiceError] = useState("");
   const [micLevel, setMicLevel] = useState(0);
   const voiceCaptureRef = useRef(null);
-  const voiceStartTimerRef = useRef(null);
   const voiceActiveRef = useRef(false);
   const micStreamRef = useRef(null);
   const audioContextRef = useRef(null);
@@ -414,25 +413,16 @@ function StudyPage({
   }
 
   useEffect(() => () => {
-    voiceActiveRef.current = false;
-    window.clearTimeout(voiceStartTimerRef.current);
     voiceCaptureRef.current?.stop();
     setVoiceListening(false);
   }, [sentence?.id]);
 
   function startVoiceInput() {
-    window.clearTimeout(voiceStartTimerRef.current);
-    voiceActiveRef.current = true;
     voiceCaptureRef.current?.stop();
     setVoiceError("");
     setVoiceModeActive(true);
     setVoiceListening(true);
-    setVoiceStatus("prompt");
-
-    // Give the learner a short moment to get ready before opening the microphone.
-    voiceStartTimerRef.current = window.setTimeout(() => {
-      if (!voiceActiveRef.current) return;
-      const capture = startAutoVoiceCapture({
+    const capture = startAutoVoiceCapture({
       expectedWord: sentence.word,
       onStatus: (status) => {
         setVoiceStatus(status);
@@ -459,19 +449,13 @@ function StudyPage({
       },
       onError: (message) => setVoiceError(message || "Ошибка локального распознавания Whisper."),
       onNoSpeech: () => {
-        // Keep the voice card open so the learner can retry instead of losing the card.
-        setVoiceError("Не услышал речь. Нажми «Попробовать ещё раз» и произнеси слово.");
-        setVoiceModeActive(true);
+        setVoiceError("");
+        setVoiceModeActive(false);
         setAnswer(targetLetters.map(() => ""));
       },
-      });
-      if (!voiceActiveRef.current) {
-        capture.stop();
-        return;
-      }
-      voiceCaptureRef.current = capture;
-      capture.start();
-    }, 700);
+    });
+    voiceCaptureRef.current = capture;
+    capture.start();
   }
 
   const correct = Boolean(sentence) && targetLetters.length > 0 &&
@@ -694,8 +678,7 @@ function StudyPage({
             </span>
           </button>
           <p className="word-listening-target">{sentence.russianWord || "Переведите слово"}</p>
-          {voiceStatus === "prompt" && <p className="word-listening-status" role="status">Приготовьтесь… Сейчас произнесите слово.</p>}
-          {voiceStatus === "listening" && <p className="word-listening-status" role="status">Произнесите слово…</p>}
+          {voiceStatus === "listening" && <p className="word-listening-status" role="status">Слушаю… Произнесите слово.</p>}
           {voiceStatus === "transcribing" && (
             <div className="word-listening-recognition" role="status" aria-live="polite">
               <div className="word-listening-received">
