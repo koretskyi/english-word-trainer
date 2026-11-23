@@ -3223,3 +3223,67 @@ button:disabled {
 .word-listening-mic-button .mic-success-confetti span {
   animation-name: feedback-confetti-fall;
 }
+
+
+/* Audition voice input: visual microphone and confetti, scoped to this tab only. */
+.audition-voice-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px auto 22px;
+  text-align: center;
+}
+.audition-mic-button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  overflow: visible;
+}
+.audition-mic-button:disabled { cursor: default; }
+.audition-mic-button .word-mic-visualizer {
+  position: relative;
+  width: min(34vw, 180px);
+  color: #a1a1aa;
+  opacity: .78;
+  transform: scale(var(--mic-scale, 1));
+  transform-origin: center;
+  transition: transform 75ms ease-out, filter 75ms ease-out;
+}
+.audition-mic-button .word-mic-visualizer svg { stroke-width: 6; }
+.audition-mic-button .word-mic-glow { background: transparent; box-shadow: none; animation: none; }
+.audition-mic-button.is-listening .word-mic-visualizer {
+  color: #79b900;
+  opacity: 1;
+  filter: drop-shadow(0 0 calc(12px + var(--mic-level, 0) * 28px) rgba(121,185,0,.62));
+}
+.audition-mic-button.is-listening .word-mic-glow {
+  background: rgba(142,210,0,.22);
+  box-shadow: 0 0 45px rgba(121,185,0,.42);
+  animation: word-mic-breathe 1.15s ease-in-out infinite alternate;
+}
+.audition-mic-button .mic-success-confetti {
+  position: absolute;
+  inset: -22px;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 3;
+}
+.audition-mic-button .mic-success-confetti span { animation-name: feedback-confetti-fall; }
+.audition-mic-prompt {
+  max-width: 760px;
+  margin: 0;
+  color: #64748b;
+  font-size: clamp(15px, 2vw, 19px);
+  font-weight: 700;
+  line-height: 1.4;
+}
+@media (max-width: 600px) {
+  .audition-mic-button .word-mic-visualizer { width: min(45vw, 160px); }
+}
