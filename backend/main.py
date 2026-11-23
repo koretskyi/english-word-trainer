@@ -1,3 +1,4 @@
+import gc
 import html
 import logging
 import re
@@ -15,23 +16,33 @@ from pydantic import BaseModel
 app = FastAPI(title="English Word Trainer Local Whisper API")
 logger = logging.getLogger("uvicorn.error")
 
-# Load the model once and reuse it for every microphone recording.
+# Keep only the currently selected model in memory to avoid loading Medium and Small together.
 _whisper_model = None
+_whisper_model_size = None
 
 
-def get_whisper_model():
-    global _whisper_model
-    if _whisper_model is None:
+def get_whisper_model(model_size: str = "medium"):
+    global _whisper_model, _whisper_model_size
+    if model_size not in {"medium", "small"}:
+        model_size = "medium"
+    if _whisper_model is None or _whisper_model_size != model_size:
+        if _whisper_model is not None:
+            _whisper_model = None
+            _whisper_model_size = None
+            gc.collect()
         try:
+            logger.info("Loading Faster-Whisper model: %s (CPU INT8)", model_size)
             _whisper_model = WhisperModel(
-                "medium",
+                model_size,
                 device="cpu",
                 compute_type="int8",
             )
+            _whisper_model_size = model_size
+            logger.info("Faster-Whisper model loaded: %s", model_size)
         except Exception as error:
             raise HTTPException(
                 status_code=503,
-                detail=f"Не удалось загрузить локальную модель Whisper: {error}",
+                detail=f"Не удалось загрузить локальную модель Whisper {model_size}: {error}",
             ) from error
     return _whisper_model
 
@@ -227,8 +238,10 @@ async def transcribe_audio(request: Request):
         logger.warning("Whisper audio too short: %d samples", audio_samples.size)
         raise HTTPException(status_code=422, detail="Запись слишком короткая. Произнеси слово ещё раз.")
 
-    logger.info("Whisper decoded audio: %.2f seconds; expected-word=%r", audio_samples.size / 16000, request.headers.get("x-expected-word", "").strip())
-    model = get_whisper_model()
+    requested_model = request.headers.get("x-whisper-model", "medium").strip().lower()
+    model_size = requested_model if requested_model in {"medium", "small"} else "medium"
+    logger.info("Whisper decoded audio: %.2f seconds; model=%s; expected-word=%r", audio_samples.size / 16000, model_size, request.headers.get("x-expected-word", "").strip())
+    model = get_whisper_model(model_size)
     try:
         expected_word = request.headers.get("x-expected-word", "").strip()
         # Use Faster-Whisper's dedicated hotwords hint instead of a sentence
@@ -278,7 +291,7 @@ async def transcribe_audio(request: Request):
         "expected": expected_word,
         "is_correct": is_correct,
         "edit_distance": best_distance,
-        "engine": "faster-whisper medium (CPU INT8)",
+        "engine": f"faster-whisper {model_size} (CPU INT8)",
     }
 
 
@@ -339,6 +352,6 @@ def health():
     return {
         "status": "ok",
         "whisper": "loaded" if _whisper_model is not None else "not_loaded",
-        "model": "medium",
-        "engine": "faster-whisper medium / CPU INT8",
+        "model": _whisper_model_size or "medium (default)",
+        "engine": f"faster-whisper {_whisper_model_size or 'medium (default)'} / CPU INT8",
     }
