@@ -3204,3 +3204,20 @@ button:disabled {
 @media (prefers-reduced-motion: reduce) {
   .word-listening-processing { animation: none; }
 }
+
+
+/* Короткий всплеск конфетти вокруг микрофона после успешного распознавания. */
+.word-listening-mic-button {
+  position: relative;
+  overflow: visible;
+}
+.word-listening-mic-button .mic-success-confetti {
+  position: absolute;
+  inset: -22px;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 3;
+}
+.word-listening-mic-button .mic-success-confetti span {
+  animation-name: feedback-confetti-fall;
+}
