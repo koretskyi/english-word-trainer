@@ -453,7 +453,7 @@ function StudyPage({
       onNoSpeech: () => {
         // Keep the expanded voice card open when no speech was detected.
         // The user can retry or choose "Не знаю" explicitly.
-        setVoiceError("Не услышал речь. Нажмите «Попробовать ещё раз» и произнесите слово.");
+        setVoiceError("Не расслышал. Повторите, пожалуйста.");
       },
     });
     voiceCaptureRef.current = capture;
