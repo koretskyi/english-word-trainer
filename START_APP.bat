@@ -58,9 +58,9 @@ if not exist "node_modules" (
 )
 
 echo Starting local Whisper and YouTube Subtitles API...
-start "Local Whisper API" cmd /k "cd /d "%CD%\backend" && python -m uvicorn main:app --host 127.0.0.1 --port 8000"
+start "Local Whisper API" /D "%CD%\backend" cmd /k "python -m uvicorn main:app --host 127.0.0.1 --port 8000"
 
-timeout /t 2 /nobreak >nul
+timeout /t 3 /nobreak >nul
 
 echo Starting React app. Keep both windows open while using it.
 call npm run dev
