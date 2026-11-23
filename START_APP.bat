@@ -3,7 +3,7 @@ setlocal
 cd /d "%~dp0"
 
 echo ==========================================
-echo English Word Trainer - YouTube Subtitles
+echo English Word Trainer - Local Whisper
 echo ==========================================
 
 where node >nul 2>nul
@@ -27,10 +27,18 @@ if errorlevel 1 (
   exit /b 1
 )
 
-echo Checking YouTube subtitle packages...
-python -c "import yt_dlp, fastapi, uvicorn" >nul 2>nul
+where ffmpeg >nul 2>nul
 if errorlevel 1 (
-  echo Installing only missing Python packages into your existing Python installation...
+  echo ERROR: FFmpeg is not installed or not in PATH.
+  echo Install FFmpeg, add it to PATH, then restart this script.
+  pause
+  exit /b 1
+)
+
+echo Checking local Whisper and application packages...
+python -c "import yt_dlp, fastapi, uvicorn, faster_whisper, numpy" >nul 2>nul
+if errorlevel 1 (
+  echo Installing missing Python dependencies...
   python -m pip install -r backend\requirements.txt
   if errorlevel 1 (
     echo ERROR: Python dependencies installation failed.
@@ -49,8 +57,8 @@ if not exist "node_modules" (
   )
 )
 
-echo Starting YouTube Subtitles API in a separate window...
-start "YouTube Subtitles API" cmd /k "cd /d "%CD%\backend" && python -m uvicorn main:app --host 127.0.0.1 --port 8000"
+echo Starting local Whisper and YouTube Subtitles API...
+start "Local Whisper API" cmd /k "cd /d "%CD%\backend" && python -m uvicorn main:app --host 127.0.0.1 --port 8000"
 
 timeout /t 2 /nobreak >nul
 
