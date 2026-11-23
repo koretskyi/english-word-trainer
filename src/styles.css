@@ -3115,3 +3115,23 @@ button:disabled {
     min-height: 64vh;
   }
 }
+
+
+/* Voice mode refinement: retain the Russian prompt and masked English word. */
+.study-panel.is-voice-listening { min-height: min(78vh, 760px); display: grid; place-items: center; padding: 28px 22px; background: #fff; }
+.study-panel.is-voice-listening > :not(.word-listening-mode) { display: none !important; }
+.word-listening-mode { width: 100%; min-height: min(72vh, 690px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; }
+.word-listening-mic-button { display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: transparent; cursor: pointer; }
+.word-listening-mic-button:disabled { cursor: default; }
+.word-listening-mic-button .word-mic-visualizer { position: relative; inset: auto; left: auto; top: auto; width: min(48vw, 300px); color: #79b900; filter: drop-shadow(0 0 24px rgba(121,185,0,.55)); opacity: 1; }
+.word-listening-mic-button .word-mic-visualizer svg { stroke-width: 6; }
+.word-listening-mic-button .word-mic-glow { background: rgba(142,210,0,.22); box-shadow: 0 0 55px rgba(121,185,0,.48); }
+.word-listening-russian { max-width: 760px; margin: 0; color: #172033; font-size: clamp(21px,3vw,30px); line-height: 1.35; font-weight: 750; }
+.word-listening-target { margin: 0; color: #64748b; font-size: 16px; font-weight: 650; }
+.word-listening-english { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 7px 9px; margin-top: 3px; color: #172033; font-size: clamp(24px,4vw,36px); line-height: 1.8; font-weight: 700; }
+.word-listening-english .word-gap-container { gap: 6px !important; }
+.word-listening-english .word-gap { width: 1.25em !important; min-width: 1.25em !important; max-width: 1.25em !important; height: 1.65em !important; border-bottom-width: 3px !important; background: #f0f5e8 !important; color: #263b13 !important; }
+.word-listening-error { margin: 4px 0 0; padding: 10px 16px; border: 1px solid #fecaca; border-radius: 12px; background: #fff1f2; color: #b42318; font-size: 15px; font-weight: 700; animation: voice-error-pop .2s ease-out both; }
+.word-listening-retry { margin-top: 2px; }
+@keyframes voice-error-pop { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 600px) { .study-panel.is-voice-listening { min-height: 76vh; padding: 18px 12px; } .word-listening-mode { min-height: 70vh; } .word-listening-mic-button .word-mic-visualizer { width: min(58vw, 240px); } .word-listening-english { font-size: 24px; } }
