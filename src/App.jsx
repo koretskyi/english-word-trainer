@@ -440,8 +440,8 @@ function StudyPage({
           handleAnswerChange(targetLetters.map((letter) => letter));
           return;
         }
-        const recognizedLetters = [...normalized.replace(/\s+/g, "")];
-        setAnswer(targetLetters.map((_, index) => recognizedLetters[index] || ""));
+        // Keep the answer mask empty after an incorrect recognition.
+        setAnswer(targetLetters.map(() => ""));
         setVoiceError(transcript ? "Распознано: «" + transcript + "». Попробуйте ещё раз." : "Не удалось разобрать речь. Попробуйте ещё раз.");
       },
       onError: (message) => setVoiceError(message || "Ошибка локального распознавания Whisper."),
