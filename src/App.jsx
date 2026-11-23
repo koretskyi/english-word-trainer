@@ -631,6 +631,10 @@ function StudyPage({
 
   function dontKnow() {
     if (!sentence || checked) return;
+    voiceCaptureRef.current?.stop();
+    setVoiceListening(false);
+    setVoiceModeActive(false);
+    setVoiceStatus("idle");
     setDontKnowClicked(true);
     setChecked(true);
     onComplete(sentence.word, false);
@@ -674,7 +678,15 @@ function StudyPage({
           </button>
           <p className="word-listening-target">{sentence.russianWord || "Переведите слово"}</p>
           {voiceStatus === "listening" && <p className="word-listening-status" role="status">Слушаю… Произнесите слово.</p>}
-          {voiceStatus === "transcribing" && <p className="word-listening-status is-processing" role="status">Голос получен. Распознаю слово…</p>}
+          {voiceStatus === "transcribing" && (
+            <div className="word-listening-recognition" role="status" aria-live="polite">
+              <div className="word-listening-received">
+                <span className="word-listening-check" aria-hidden="true">✓</span>
+                <strong>Текст получен</strong>
+              </div>
+              <p className="word-listening-processing">Распознавание…</p>
+            </div>
+          )}
           <div className="word-listening-english">
             <WordGap key={"voice-" + sentence.id + "-" + sentence.word} sentence={sentence}
               value={answer} onChange={handleAnswerChange} disabled={checked}
@@ -684,6 +696,10 @@ function StudyPage({
           {!voiceListening && (
             <button className="button button-secondary word-listening-retry"
               type="button" onClick={startVoiceInput}>Попробовать ещё раз</button>
+          )}
+          {!checked && (
+            <button className="button button-secondary word-listening-dont-know"
+              type="button" onClick={dontKnow}>Не знаю</button>
           )}
         </div>
       )}
