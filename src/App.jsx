@@ -423,6 +423,7 @@ function StudyPage({
     setVoiceModeActive(true);
     setVoiceListening(true);
     const capture = startAutoVoiceCapture({
+      expectedWord: sentence.word,
       onStatus: (status) => {
         setVoiceStatus(status);
         const active = status === "listening" || status === "transcribing";
