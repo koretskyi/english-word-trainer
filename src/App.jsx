@@ -451,9 +451,9 @@ function StudyPage({
       },
       onError: (message) => setVoiceError(message || "Ошибка локального распознавания Whisper."),
       onNoSpeech: () => {
-        setVoiceError("");
-        setVoiceModeActive(false);
-        setAnswer(targetLetters.map(() => ""));
+        // Keep the expanded voice card open when no speech was detected.
+        // The user can retry or choose "Не знаю" explicitly.
+        setVoiceError("Не услышал речь. Нажмите «Попробовать ещё раз» и произнесите слово.");
       },
     });
     voiceCaptureRef.current = capture;
