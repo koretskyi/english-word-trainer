@@ -1,4 +1,4 @@
-export function startAutoVoiceCapture({ expectedWord = "", whisperModel = "medium", onStatus, onText, onError, onNoSpeech, onLevel, silenceMs = 700, maxRecordingMs = 20000, speechConfirmMs = 350, calibrationMs = 500, noSpeechTimeoutMs = 3000 }) {
+export function startAutoVoiceCapture({ expectedWord = "", whisperModel = "medium", transcriptionMode = "word", onStatus, onText, onError, onNoSpeech, onLevel, silenceMs = 700, maxRecordingMs = 20000, speechConfirmMs = 350, calibrationMs = 500, noSpeechTimeoutMs = 3000 }) {
   let recorder = null;
   let stream = null;
   let audioContext = null;
@@ -72,6 +72,7 @@ export function startAutoVoiceCapture({ expectedWord = "", whisperModel = "mediu
             "Content-Type": blob.type || "application/octet-stream",
             "X-Expected-Word": expectedWord,
               "X-Whisper-Model": whisperModel,
+              "X-Transcription-Mode": transcriptionMode,
           },
             body: blob,
           });
