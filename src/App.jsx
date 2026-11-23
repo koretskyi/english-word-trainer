@@ -424,6 +424,12 @@ function StudyPage({
     setVoiceListening(true);
     const capture = startAutoVoiceCapture({
       expectedWord: sentence.word,
+      // Short, responsive capture for a single vocabulary word.
+      silenceMs: 250,
+      maxRecordingMs: 2000,
+      speechConfirmMs: 100,
+      calibrationMs: 0,
+      noSpeechTimeoutMs: 2000,
       onStatus: (status) => {
         setVoiceStatus(status);
         const active = status === "listening" || status === "transcribing";
