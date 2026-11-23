@@ -3133,7 +3133,9 @@ button:disabled {
 .word-listening-english { display: flex; align-items: baseline; justify-content: center; flex-wrap: wrap; gap: 7px 9px; margin-top: 3px; color: #172033; font-size: clamp(24px,4vw,36px); line-height: 1.8; font-weight: 700; }
 .word-listening-english .word-gap-container { gap: 6px !important; }
 .word-listening-english .word-gap { width: 1.25em !important; min-width: 1.25em !important; max-width: 1.25em !important; height: 1.65em !important; border-bottom-width: 3px !important; background: #f0f5e8 !important; color: #263b13 !important; }
-.word-listening-error { margin: 4px 0 0; padding: 10px 16px; border: 1px solid #fecaca; border-radius: 12px; background: #fff1f2; color: #b42318; font-size: 15px; font-weight: 700; animation: voice-error-pop .2s ease-out both; }
+.word-listening-error { display: flex; flex-direction: column; align-items: center; gap: 5px; margin: 4px 0 0; padding: 10px 16px; border: 1px solid #fecaca; border-radius: 12px; background: #fff1f2; color: #b42318; font-size: 15px; font-weight: 700; animation: voice-error-pop .2s ease-out both; }
+.word-listening-error-label { font-size: 13px; font-weight: 600; }
+.word-listening-recognized-word { color: #172033; font-size: clamp(28px, 5vw, 40px); line-height: 1.15; font-weight: 800; letter-spacing: .02em; }
 .word-listening-retry { margin-top: 2px; }
 @keyframes voice-error-pop { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 @media (max-width: 600px) { .study-panel.is-voice-listening { min-height: 76vh; padding: 18px 12px; } .word-listening-mode { min-height: 70vh; } .word-listening-mic-button .word-mic-visualizer { width: min(58vw, 240px); } .word-listening-english { font-size: 24px; } }
