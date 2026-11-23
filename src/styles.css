@@ -3135,3 +3135,21 @@ button:disabled {
 .word-listening-retry { margin-top: 2px; }
 @keyframes voice-error-pop { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 @media (max-width: 600px) { .study-panel.is-voice-listening { min-height: 76vh; padding: 18px 12px; } .word-listening-mode { min-height: 70vh; } .word-listening-mic-button .word-mic-visualizer { width: min(58vw, 240px); } .word-listening-english { font-size: 24px; } }
+
+/* Voice practice: match the Russian prompt typography to the answer mask. */
+.word-listening-target {
+  color: #172033;
+  font-size: clamp(24px, 4vw, 36px);
+  line-height: 1.8;
+  font-weight: 700;
+}
+
+/* The microphone gently grows and shrinks with the live input level. */
+.word-listening-mic-button .word-mic-visualizer {
+  transform: scale(var(--mic-scale, 1));
+  transform-origin: center;
+  transition: transform 75ms ease-out, filter 75ms ease-out;
+}
+.word-listening-mic-button.is-listening .word-mic-visualizer {
+  filter: drop-shadow(0 0 calc(12px + var(--mic-level, 0) * 28px) rgba(121, 185, 0, .62));
+}
