@@ -393,6 +393,7 @@ function StudyPage({
   const [voiceModeActive, setVoiceModeActive] = useState(false);
   const [voiceError, setVoiceError] = useState("");
   const [micLevel, setMicLevel] = useState(0);
+  const [voiceSuccessConfetti, setVoiceSuccessConfetti] = useState(false);
   const voiceCaptureRef = useRef(null);
   const voiceActiveRef = useRef(false);
   const micStreamRef = useRef(null);
@@ -443,8 +444,12 @@ function StudyPage({
         const transcript = String(recognizedText || "").trim();
         if (recognitionData?.is_correct === true) {
           setVoiceError("");
-          setVoiceModeActive(false);
+          setVoiceSuccessConfetti(true);
           handleAnswerChange(targetLetters.map((letter) => letter));
+          window.setTimeout(() => {
+            setVoiceSuccessConfetti(false);
+            setVoiceModeActive(false);
+          }, 1300);
           return;
         }
         // Keep the answer mask empty after an incorrect recognition.
@@ -686,6 +691,20 @@ function StudyPage({
                 <path d="M90 55a30 30 0 0 1-60 0M60 85v18m-18 0h36" />
               </svg>
             </span>
+            {voiceSuccessConfetti && (
+              <span className="mic-success-confetti confetti" aria-hidden="true">
+                {Array.from({ length: 42 }, (_, index) => (
+                  <span
+                    key={index}
+                    style={{
+                      left: `${(index * 37) % 100}%`,
+                      animationDelay: `${(index % 12) * 0.035}s`,
+                      "--fall-duration": `${1.05 + (index % 6) * 0.1}s`,
+                    }}
+                  />
+                ))}
+              </span>
+            )}
           </button>
           <p className="word-listening-target">{sentence.russianWord || "Переведите слово"}</p>
           {voiceStatus === "listening" && <p className="word-listening-status" role="status">Слушаю… Произнесите слово.</p>}
