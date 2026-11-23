@@ -3065,3 +3065,53 @@ button:disabled {
 @media (prefers-reduced-motion: reduce) {
   .word-mic-visualizer, .word-mic-glow { animation: none; transition: none; }
 }
+
+
+/* Minimal voice-answer mode: keep only the live microphone and the target translation. */
+.study-panel.is-voice-listening {
+  min-height: min(68vh, 620px);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #fff;
+}
+.study-panel.is-voice-listening > :not(.word-listening-mode) {
+  display: none !important;
+}
+.word-listening-mode {
+  width: 100%;
+  min-height: min(62vh, 560px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  text-align: center;
+}
+.word-listening-mode .word-mic-visualizer {
+  position: relative;
+  inset: auto;
+  left: auto;
+  top: auto;
+  width: min(58vw, 360px);
+  flex: 0 0 auto;
+  transform: scale(var(--mic-scale, 1));
+}
+.word-listening-prompt {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  color: #172033;
+  font-size: clamp(25px, 4vw, 38px);
+  line-height: 1.25;
+  font-weight: 800;
+}
+@media (max-width: 600px) {
+  .study-panel.is-voice-listening {
+    min-height: 68vh;
+    padding: 16px;
+  }
+  .word-listening-mode {
+    min-height: 64vh;
+  }
+}
