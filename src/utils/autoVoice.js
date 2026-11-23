@@ -101,31 +101,33 @@ export function startAutoVoiceCapture({ onStatus, onText, onError, onNoSpeech, o
         const now = performance.now();
         onLevel?.(Math.min(1, rms * 35));
 
-        // Learn the room noise level before speech; ignore brief background sounds.
-        const speechThreshold = Math.min(0.04, Math.max(0.012, noiseFloor * 2.2));
-        if (!speechStartedAt && !speechCandidateAt) {
-          noiseFloor = noiseFloor * 0.97 + rms * 0.03;
+        // Calibrate ambient noise first, then require a clearly louder sustained voice.
+        const elapsed = now - startedAt;
+        const calibrating = elapsed < 500;
+        if (!speechStartedAt && calibrating) {
+          noiseFloor = noiseFloor * 0.92 + rms * 0.08;
         }
+        const speechThreshold = Math.min(0.08, Math.max(0.018, noiseFloor * 3.0));
 
-        if (!speechStartedAt) {
+        if (!speechStartedAt && !calibrating) {
           if (rms > speechThreshold) {
             if (!speechCandidateAt) speechCandidateAt = now;
-            if (now - speechCandidateAt >= 280) {
+            if (now - speechCandidateAt >= 350) {
               speechStartedAt = now;
               lastSoundAt = now;
             }
           } else {
             speechCandidateAt = 0;
           }
-        } else if (rms > speechThreshold * 0.6) {
+        } else if (speechStartedAt && rms > speechThreshold * 0.65) {
           lastSoundAt = now;
-        } else if (now - lastSoundAt >= silenceMs) {
+        } else if (speechStartedAt && now - lastSoundAt >= silenceMs) {
           stopped = true;
           recorder.stop();
           return;
         }
 
-        if (!speechStartedAt && now - startedAt > 2500) {
+        if (!speechStartedAt && elapsed > 2000) {
           stopped = true;
           cancelled = true;
           recorder.stop();
