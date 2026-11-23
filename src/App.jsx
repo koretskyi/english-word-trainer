@@ -437,6 +437,7 @@ function StudyPage({
       noSpeechTimeoutMs: 2000,
       onStatus: (status) => {
         setVoiceStatus(status);
+        if (status === "transcribing") setVoiceSuccessConfetti(true);
         const active = status === "listening" || status === "transcribing";
         setVoiceListening(active);
         if (!active) setMicLevel(0);
@@ -446,7 +447,6 @@ function StudyPage({
         const transcript = String(recognizedText || "").trim();
         if (recognitionData?.is_correct === true) {
           setVoiceError("");
-          setVoiceSuccessConfetti(true);
           handleAnswerChange(targetLetters.map((letter) => letter));
           window.setTimeout(() => {
             setVoiceSuccessConfetti(false);
@@ -713,7 +713,7 @@ function StudyPage({
             <div className="word-listening-recognition" role="status" aria-live="polite">
               <div className="word-listening-received">
                 <span className="word-listening-check" aria-hidden="true">✓</span>
-                <strong>Текст получен</strong>
+                <strong>Текст распознан</strong>
               </div>
               <p className="word-listening-processing">Распознавание…</p>
             </div>
