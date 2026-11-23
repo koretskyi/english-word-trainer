@@ -422,7 +422,12 @@ function StudyPage({
     setVoiceModeActive(true);
     setVoiceListening(true);
     const capture = startAutoVoiceCapture({
-      onStatus: (status) => setVoiceListening(status === "listening" || status === "transcribing"),
+      onStatus: (status) => {
+        const active = status === "listening" || status === "transcribing";
+        setVoiceListening(active);
+        if (!active) setMicLevel(0);
+      },
+      onLevel: (level) => setMicLevel(level),
       onText: (recognizedText) => {
         const transcript = String(recognizedText || "").trim();
         const normalized = transcript.toLowerCase().replace(/[^a-z'-]/g, " ").trim();
