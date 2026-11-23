@@ -35,16 +35,12 @@ if errorlevel 1 (
   exit /b 1
 )
 
-echo Checking local Whisper and application packages...
-python -c "import yt_dlp, fastapi, uvicorn, faster_whisper, numpy" >nul 2>nul
+echo Checking and installing Python dependencies...
+python -m pip install -r backend\requirements.txt
 if errorlevel 1 (
-  echo Installing missing Python dependencies...
-  python -m pip install -r backend\requirements.txt
-  if errorlevel 1 (
-    echo ERROR: Python dependencies installation failed.
-    pause
-    exit /b 1
-  )
+  echo ERROR: Python dependencies installation failed.
+  pause
+  exit /b 1
 )
 
 if not exist "node_modules" (
@@ -57,11 +53,21 @@ if not exist "node_modules" (
   )
 )
 
-echo Starting local Whisper API on dedicated port 8001...
-start "Local Whisper API - port 8001" /D "%CD%\backend" cmd /k "python -m uvicorn main:app --host 127.0.0.1 --port 8001"
+echo.
+echo Starting local Whisper API on port 8001...
+start "Local Whisper API - port 8001" /D "%CD%\backend" cmd /k "python -u -m uvicorn main:app --host 127.0.0.1 --port 8001"
 
-timeout /t 3 /nobreak >nul
+echo Waiting for Whisper API to become ready...
+python -c "import time,urllib.request,sys; url='http://127.0.0.1:8001/health'; exec('for i in range(20):\n try:\n  r=urllib.request.urlopen(url,timeout=1); print(r.read().decode()); sys.exit(0)\n except Exception:\n  time.sleep(1)'); print('ERROR: Whisper API did not start on port 8001. Check the Local Whisper API window above.'); sys.exit(1)"
+if errorlevel 1 (
+  echo.
+  echo Whisper API failed to start. React app will not be launched.
+  pause
+  exit /b 1
+)
 
-echo Starting React app. Keep both windows open while using it.
+echo.
+echo Whisper API is ready. Starting React app...
+echo Keep both terminal windows open while using the app.
 call npm run dev
 pause
