@@ -1,4 +1,4 @@
-export function startAutoVoiceCapture({ expectedWord = "", onStatus, onText, onError, onNoSpeech, onLevel, silenceMs = 700 }) {
+export function startAutoVoiceCapture({ expectedWord = "", onStatus, onText, onError, onNoSpeech, onLevel, silenceMs = 700, maxRecordingMs = 20000, speechConfirmMs = 350, calibrationMs = 500, noSpeechTimeoutMs = 3000 }) {
   let recorder = null;
   let stream = null;
   let audioContext = null;
@@ -115,7 +115,7 @@ export function startAutoVoiceCapture({ expectedWord = "", onStatus, onText, onE
 
         // Calibrate ambient noise first, then require a clearly louder sustained voice.
         const elapsed = now - startedAt;
-        const calibrating = elapsed < 500;
+        const calibrating = elapsed < calibrationMs;
         if (!speechStartedAt && calibrating) {
           noiseFloor = noiseFloor * 0.92 + rms * 0.08;
         }
@@ -124,7 +124,7 @@ export function startAutoVoiceCapture({ expectedWord = "", onStatus, onText, onE
         if (!speechStartedAt && !calibrating) {
           if (rms > speechThreshold) {
             if (!speechCandidateAt) speechCandidateAt = now;
-            if (now - speechCandidateAt >= 350) {
+            if (now - speechCandidateAt >= speechConfirmMs) {
               speechStartedAt = now;
               lastSoundAt = now;
             }
@@ -139,7 +139,7 @@ export function startAutoVoiceCapture({ expectedWord = "", onStatus, onText, onE
           return;
         }
 
-        if (!speechStartedAt && elapsed > 3000) {
+        if (!speechStartedAt && elapsed >= noSpeechTimeoutMs) {
           stopped = true;
           cancelled = true;
           recorder.stop();
@@ -147,7 +147,7 @@ export function startAutoVoiceCapture({ expectedWord = "", onStatus, onText, onE
           onNoSpeech?.();
           return;
         }
-        if (now - startedAt > 20000) {
+        if (now - startedAt >= maxRecordingMs) {
           stopped = true;
           recorder.stop();
           return;
