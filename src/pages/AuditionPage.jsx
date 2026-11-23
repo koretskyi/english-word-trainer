@@ -78,6 +78,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   const [autoVoiceStatus, setAutoVoiceStatus] = useState("idle");
   const [micLevel, setMicLevel] = useState(0);
   const [voiceConfetti, setVoiceConfetti] = useState(false);
+  const [voiceModeActive, setVoiceModeActive] = useState(false);
   const autoVoiceRef = useRef(null);
   const confettiTimerRef = useRef(null);
   const manualInputRef = useRef(false);
@@ -109,6 +110,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     setAutoVoiceStatus("idle");
     setMicLevel(0);
     setVoiceConfetti(false);
+    setVoiceModeActive(false);
     window.clearTimeout(confettiTimerRef.current);
     setVoiceAnswer("");
     setResult("");
@@ -136,6 +138,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
 
   function startAutomaticListening() {
     if (manualInputRef.current || !englishText || result === "correct") return;
+    setVoiceModeActive(true);
     window.clearTimeout(retryTimerRef.current);
     autoVoiceRef.current?.stop();
     setSpeechError("");
@@ -168,6 +171,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
         if (normalizeSentence(recognizedText) === normalizeSentence(englishText)) {
           setSpeechError("");
           setResult("correct");
+          setVoiceModeActive(false);
         } else {
           setSpeechError("Предложение распознано не полностью или с ошибками. Попробуй ещё раз.");
           setResult("");
@@ -206,6 +210,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
 
   function updateWordAnswer(token, nextValue) {
     manualInputRef.current = true;
+    setVoiceModeActive(false);
     window.clearTimeout(retryTimerRef.current);
     autoVoiceRef.current?.stop();
     setAutoVoiceStatus("idle");
@@ -304,32 +309,44 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
         })}
       </div>
 
-      <div className="audition-voice-area">
-        <button className={`audition-mic-button${autoVoiceStatus === "listening" ? " is-listening" : ""}`}
-          type="button" onClick={startAutomaticListening}
-          disabled={["speaking", "listening", "transcribing"].includes(autoVoiceStatus) || result === "correct" || manualInputRef.current}
-          aria-label="Включить микрофон и произнести предложение">
-          <span className="word-mic-visualizer" aria-hidden="true"
-            style={{ "--mic-level": micLevel, "--mic-scale": 1 + micLevel * 0.34 }}>
-            <span className="word-mic-glow" />
-            <svg viewBox="0 0 120 120">
-              <path d="M60 70a15 15 0 0 0 15-15V30a15 15 0 0 0-30 0v25a15 15 0 0 0 15 15Z" />
-              <path d="M90 55a30 30 0 0 1-60 0M60 85v18m-18 0h36" />
-            </svg>
-          </span>
-          {voiceConfetti && <span className="mic-success-confetti confetti" aria-hidden="true">
-            {Array.from({ length: 42 }, (_, index) => (
-              <span key={index} style={{ left: `${(index * 37) % 100}%`, animationDelay: `${(index % 12) * 0.035}s`, "--fall-duration": `${1.05 + (index % 6) * 0.1}s` }} />
-            ))}
-          </span>}
-        </button>
-        <p className="audition-mic-prompt">
-          {autoVoiceStatus === "speaking" ? "Слушай предложение…" :
-            autoVoiceStatus === "listening" ? "Микрофон активен — произнеси всё предложение целиком." :
-            autoVoiceStatus === "transcribing" ? "Распознаю речь…" :
-            voiceAnswer ? "Текст распознан" :
-            "Нажми на микрофон и произнеси всё предложение целиком."}
-        </p>
+      <div className={`audition-voice-area${voiceModeActive ? " is-active" : ""}`}>
+        {!voiceModeActive ? (
+          <button className={`button button-secondary word-microphone-button${autoVoiceStatus === "listening" ? " is-listening" : ""}`}
+            type="button" onClick={startAutomaticListening}
+            disabled={["speaking", "listening", "transcribing"].includes(autoVoiceStatus) || result === "correct" || manualInputRef.current}
+            aria-label="Ответить голосом">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4m-4 0h8"/></svg>
+            Ответить голосом
+          </button>
+        ) : (
+          <>
+            <button className={`word-listening-mic-button audition-mic-button${autoVoiceStatus === "listening" ? " is-listening" : ""}`}
+              type="button" onClick={startAutomaticListening}
+              disabled={["speaking", "listening", "transcribing"].includes(autoVoiceStatus) || result === "correct" || manualInputRef.current}
+              aria-label="Микрофон — произнеси всё предложение">
+              <span className="word-mic-visualizer" aria-hidden="true"
+                style={{ "--mic-level": micLevel, "--mic-scale": 1 + micLevel * 0.34 }}>
+                <span className="word-mic-glow" />
+                <svg viewBox="0 0 120 120">
+                  <path d="M60 70a15 15 0 0 0 15-15V30a15 15 0 0 0-30 0v25a15 15 0 0 0 15 15Z" />
+                  <path d="M90 55a30 30 0 0 1-60 0M60 85v18m-18 0h36" />
+                </svg>
+              </span>
+              {voiceConfetti && <span className="mic-success-confetti confetti" aria-hidden="true">
+                {Array.from({ length: 42 }, (_, index) => (
+                  <span key={index} style={{ left: `${(index * 37) % 100}%`, animationDelay: `${(index % 12) * 0.035}s`, "--fall-duration": `${1.05 + (index % 6) * 0.1}s` }} />
+                ))}
+              </span>}
+            </button>
+            <p className="audition-mic-prompt">
+              {autoVoiceStatus === "speaking" ? "Слушай предложение…" :
+                autoVoiceStatus === "listening" ? "Микрофон активен — произнеси всё предложение целиком." :
+                autoVoiceStatus === "transcribing" ? "Распознаю речь…" :
+                voiceAnswer ? "Текст распознан" :
+                "Произнеси всё предложение целиком."}
+            </p>
+          </>
+        )}
       </div>
       <div className="audition-audio-actions">
         <button className="button button-primary" type="button" onClick={playSentenceAndListen} disabled={result === "correct" || manualInputRef.current}>
