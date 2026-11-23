@@ -128,20 +128,10 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     return () => window.clearTimeout(timer);
   }, [dontKnowCountdown]);
 
-  // Как и в режиме «Слова»: после правильного ответа автоматически открываем следующую карточку.
-  useEffect(() => {
-    if (result !== "correct") return undefined;
-    const timer = window.setTimeout(() => {
-      setCardIndex((current) => (current + 1) % Math.max(1, filteredSentences.length));
-    }, 1000);
-    return () => window.clearTimeout(timer);
-  }, [result, filteredSentences.length]);
-
   function startAutomaticListening() {
     if (manualInputRef.current || !englishText) return;
     autoVoiceRef.current?.stop();
     const capture = startAutoVoiceCapture({
-      expectedWord: englishText,
       onStatus: setAutoVoiceStatus,
       onError: setSpeechError,
       onNoSpeech: () => {
@@ -322,6 +312,9 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
       {result === "correct" ? (
         <div className="feedback correct" role="status">
           <CorrectFeedback />
+          <button className="button button-primary" type="button" onClick={nextCard}>
+            Следующее предложение
+          </button>
         </div>
       ) : result === "incorrect" ? (
         <div className="audition-feedback audition-feedback-incorrect" role="alert">
