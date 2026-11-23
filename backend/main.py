@@ -6,10 +6,32 @@ import tempfile
 from pathlib import Path
 from urllib.parse import urlparse
 
-from fastapi import FastAPI, HTTPException
+import numpy as np
+from fastapi import FastAPI, HTTPException, Request
+from faster_whisper import WhisperModel
 from pydantic import BaseModel
 
-app = FastAPI(title="English Word Trainer YouTube Subtitles API")
+app = FastAPI(title="English Word Trainer Local Whisper API")
+
+# Load the model once and reuse it for every microphone recording.
+_whisper_model = None
+
+
+def get_whisper_model():
+    global _whisper_model
+    if _whisper_model is None:
+        try:
+            _whisper_model = WhisperModel(
+                "small",
+                device="cpu",
+                compute_type="int8",
+            )
+        except Exception as error:
+            raise HTTPException(
+                status_code=503,
+                detail=f"Не удалось загрузить локальную модель Whisper: {error}",
+            ) from error
+    return _whisper_model
 
 
 class SubtitleRequest(BaseModel):
@@ -30,10 +52,6 @@ def parse_timestamp(value: str) -> float:
 
 
 def parse_vtt(path: Path) -> list[dict]:
-    # Parse cue-by-cue rather than relying on blank-line separators.
-    # Some YouTube auto-caption VTT files place consecutive cues directly
-    # on adjacent lines; splitting only on blank lines merges them into
-    # one cue starting at 00:00 and defeats time-range filtering.
     raw = path.read_text(encoding="utf-8-sig", errors="replace")
     lines = raw.replace("\r\n", "\n").replace("\r", "\n").split("\n")
     cues = []
@@ -69,7 +87,6 @@ def parse_vtt(path: Path) -> list[dict]:
 
     flush_cue()
     return cues
-
 
 
 def normalize_subtitle_cues(cues: list[dict]) -> list[dict]:
@@ -150,6 +167,55 @@ def normalize_subtitle_cues(cues: list[dict]) -> list[dict]:
     ]
 
 
+@app.post("/api/transcribe")
+async def transcribe_audio(request: Request):
+    audio = await request.body()
+    if not audio:
+        raise HTTPException(status_code=400, detail="Получена пустая аудиозапись.")
+
+    try:
+        # MediaRecorder sends WebM/Opus (or the browser's supported audio format).
+        # FFmpeg decodes it to mono 16 kHz float audio for faster-whisper.
+        decoded = subprocess.run(
+            [
+                "ffmpeg", "-hide_banner", "-loglevel", "error",
+                "-i", "pipe:0",
+                "-f", "f32le", "-ac", "1", "-ar", "16000",
+                "pipe:1",
+            ],
+            input=audio,
+            capture_output=True,
+            timeout=30,
+            check=False,
+        )
+    except FileNotFoundError as error:
+        raise HTTPException(status_code=503, detail="FFmpeg не найден. Установи FFmpeg и добавь его в PATH.") from error
+    except subprocess.TimeoutExpired as error:
+        raise HTTPException(status_code=504, detail="Не удалось декодировать аудиозапись вовремя.") from error
+
+    if decoded.returncode != 0 or not decoded.stdout:
+        raise HTTPException(status_code=422, detail="Не удалось прочитать аудиозапись. Попробуй записать ответ ещё раз.")
+
+    audio_samples = np.frombuffer(decoded.stdout, dtype=np.float32)
+    if audio_samples.size < 1600:
+        raise HTTPException(status_code=422, detail="Запись слишком короткая. Произнеси слово ещё раз.")
+
+    model = get_whisper_model()
+    try:
+        segments, _ = model.transcribe(
+            audio_samples,
+            language="en",
+            beam_size=5,
+            vad_filter=True,
+            condition_on_previous_text=False,
+        )
+        transcript = " ".join(segment.text.strip() for segment in segments).strip()
+    except Exception as error:
+        raise HTTPException(status_code=500, detail=f"Ошибка локального распознавания Whisper: {error}") from error
+
+    return {"text": transcript, "engine": "faster-whisper small (CPU INT8)"}
+
+
 @app.post("/api/youtube-subtitles")
 async def youtube_subtitles(payload: SubtitleRequest):
     url = payload.url.strip()
@@ -204,4 +270,8 @@ async def youtube_subtitles(payload: SubtitleRequest):
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {
+        "status": "ok",
+        "whisper": "loaded" if _whisper_model is not None else "not_loaded",
+        "engine": "faster-whisper small / CPU INT8",
+    }
