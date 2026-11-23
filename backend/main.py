@@ -1,4 +1,5 @@
 import html
+import logging
 import re
 import subprocess
 import sys
@@ -12,6 +13,7 @@ from faster_whisper import WhisperModel
 from pydantic import BaseModel
 
 app = FastAPI(title="English Word Trainer Local Whisper API")
+logger = logging.getLogger("uvicorn.error")
 
 # Load the model once and reuse it for every microphone recording.
 _whisper_model = None
@@ -22,7 +24,7 @@ def get_whisper_model():
     if _whisper_model is None:
         try:
             _whisper_model = WhisperModel(
-                "small",
+                "medium",
                 device="cpu",
                 compute_type="int8",
             )
@@ -171,7 +173,9 @@ def normalize_subtitle_cues(cues: list[dict]) -> list[dict]:
 async def transcribe_audio(request: Request):
     audio = await request.body()
     if not audio:
+        logger.warning("Whisper request received with empty audio body")
         raise HTTPException(status_code=400, detail="Получена пустая аудиозапись.")
+    logger.info("Whisper audio received: %d bytes; content-type=%s", len(audio), request.headers.get("content-type", "unknown"))
 
     try:
         # MediaRecorder sends WebM/Opus (or the browser's supported audio format).
@@ -198,8 +202,10 @@ async def transcribe_audio(request: Request):
 
     audio_samples = np.frombuffer(decoded.stdout, dtype=np.float32)
     if audio_samples.size < 1600:
+        logger.warning("Whisper audio too short: %d samples", audio_samples.size)
         raise HTTPException(status_code=422, detail="Запись слишком короткая. Произнеси слово ещё раз.")
 
+    logger.info("Whisper decoded audio: %.2f seconds; expected-word=%r", audio_samples.size / 16000, request.headers.get("x-expected-word", "").strip())
     model = get_whisper_model()
     try:
         expected_word = request.headers.get("x-expected-word", "").strip()
@@ -216,6 +222,7 @@ async def transcribe_audio(request: Request):
             condition_on_previous_text=False,
         )
         transcript = " ".join(segment.text.strip() for segment in segments).strip()
+        logger.info("Whisper result: %r", transcript)
     except Exception as error:
         raise HTTPException(status_code=500, detail=f"Ошибка локального распознавания Whisper: {error}") from error
 
@@ -279,5 +286,6 @@ def health():
     return {
         "status": "ok",
         "whisper": "loaded" if _whisper_model is not None else "not_loaded",
-        "engine": "faster-whisper small / CPU INT8",
+        "model": "medium",
+        "engine": "faster-whisper medium / CPU INT8",
     }
