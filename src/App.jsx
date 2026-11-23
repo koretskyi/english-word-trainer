@@ -660,7 +660,7 @@ function StudyPage({
     <section className={"panel study-panel" + (checked && correct ? " answer-correct" : "") + (voiceModeActive ? " is-voice-listening" : "")}>
       {voiceModeActive && (
         <div className="word-listening-mode">
-          <button className={"word-listening-mic-button" + (voiceListening ? " is-listening" : "")} type="button"
+          <button className={"word-listening-mic-button" + (voiceStatus === "listening" ? " is-listening" : "")} type="button"
             onClick={startVoiceInput} disabled={voiceListening}
             aria-label={voiceListening ? "Микрофон слушает" : "Повторить голосовой ответ"}>
             <span className="word-mic-visualizer" aria-hidden="true"
