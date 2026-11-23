@@ -445,6 +445,11 @@ function StudyPage({
         setVoiceError(transcript ? "Распознано: «" + transcript + "». Попробуйте ещё раз." : "Не удалось разобрать речь. Попробуйте ещё раз.");
       },
       onError: (message) => setVoiceError(message || "Ошибка локального распознавания Whisper."),
+      onNoSpeech: () => {
+        setVoiceError("");
+        setVoiceModeActive(false);
+        setAnswer(targetLetters.map(() => ""));
+      },
     });
     voiceCaptureRef.current = capture;
     capture.start();
