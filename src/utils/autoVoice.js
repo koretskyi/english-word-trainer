@@ -6,7 +6,9 @@ export function startAutoVoiceCapture({ onStatus, onText, onError, onLevel, sile
   let stopped = false;
   let cancelled = false;
   let speechStartedAt = 0;
+  let speechCandidateAt = 0;
   let lastSoundAt = 0;
+  let noiseFloor = 0.004;
   let chunks = [];
 
   const stop = () => {
@@ -99,11 +101,25 @@ export function startAutoVoiceCapture({ onStatus, onText, onError, onLevel, sile
         const now = performance.now();
         onLevel?.(Math.min(1, rms * 35));
 
-        // A lower threshold catches normal speech from laptop/headset microphones.
-        if (rms > 0.006) {
-          if (!speechStartedAt) speechStartedAt = now;
+        // Learn the room noise level before speech; ignore brief background sounds.
+        const speechThreshold = Math.min(0.04, Math.max(0.012, noiseFloor * 2.2));
+        if (!speechStartedAt && !speechCandidateAt) {
+          noiseFloor = noiseFloor * 0.97 + rms * 0.03;
+        }
+
+        if (!speechStartedAt) {
+          if (rms > speechThreshold) {
+            if (!speechCandidateAt) speechCandidateAt = now;
+            if (now - speechCandidateAt >= 280) {
+              speechStartedAt = now;
+              lastSoundAt = now;
+            }
+          } else {
+            speechCandidateAt = 0;
+          }
+        } else if (rms > speechThreshold * 0.6) {
           lastSoundAt = now;
-        } else if (speechStartedAt && now - lastSoundAt >= silenceMs) {
+        } else if (now - lastSoundAt >= silenceMs) {
           stopped = true;
           recorder.stop();
           return;
