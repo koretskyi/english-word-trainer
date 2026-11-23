@@ -141,8 +141,13 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     if (manualInputRef.current || !englishText) return;
     autoVoiceRef.current?.stop();
     const capture = startAutoVoiceCapture({
+      expectedWord: englishText,
       onStatus: setAutoVoiceStatus,
       onError: setSpeechError,
+      onNoSpeech: () => {
+        setAutoVoiceStatus("idle");
+        setSpeechError("Не услышал речь. Нажми «Прослушать ещё раз» и повтори предложение.");
+      },
       onText: (recognizedText) => {
         if (manualInputRef.current) return;
         setVoiceAnswer(recognizedText);
