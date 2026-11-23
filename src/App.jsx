@@ -388,6 +388,7 @@ function StudyPage({
   const [dontKnowClicked, setDontKnowClicked] = useState(false);
   const [markedKnown, setMarkedKnown] = useState(false);
   const [voiceListening, setVoiceListening] = useState(false);
+  const [voiceModeActive, setVoiceModeActive] = useState(false);
   const [voiceError, setVoiceError] = useState("");
   const [micLevel, setMicLevel] = useState(0);
   const speechRecognitionRef = useRef(null);
@@ -464,21 +465,24 @@ function StudyPage({
     recognition.onstart = () => {
       voiceActiveRef.current = true;
       setVoiceListening(true);
+      setVoiceModeActive(true);
       startMicrophoneMeter();
     };
     recognition.onresult = (event) => {
       const transcript = String(event.results?.[0]?.[0]?.transcript || "")
         .toLowerCase().replace(/[^a-z'-]/g, " ").trim();
       const spokenWords = transcript.split(/\\s+/).filter(Boolean);
+      const expectedWord = sentence.word.toLowerCase().replace(/'/g, "");
       const matchedWord = spokenWords.find((spoken) =>
-        spoken.replace(/'/g, "") === sentence.word.toLowerCase().replace(/'/g, "")
+        spoken.replace(/'/g, "") === expectedWord
       );
-      const spokenWord = matchedWord || spokenWords[spokenWords.length - 1] || "";
-      if (spokenWord) {
-        const letters = [...spokenWord];
-        handleAnswerChange(targetLetters.map((_, index) => letters[index] || ""));
+      if (matchedWord) {
+        setVoiceError("");
+        setVoiceModeActive(false);
+        handleAnswerChange(targetLetters.map((letter) => letter));
       } else {
-        setVoiceError("Не удалось распознать слово. Попробуй ещё раз.");
+        setVoiceError("Пока неправильно. Попробуйте ещё раз.");
+        setAnswer(targetLetters.map(() => ""));
       }
     };
     recognition.onerror = (event) => {
@@ -701,18 +705,35 @@ function StudyPage({
   }
 
   return (
-    <section className={"panel study-panel" + (checked && correct ? " answer-correct" : "") + (voiceListening ? " is-voice-listening" : "")}>
-      {voiceListening && (
-        <div className="word-listening-mode" role="status" aria-live="polite">
-          <div className="word-mic-visualizer" aria-hidden="true"
-            style={{ "--mic-level": micLevel, "--mic-scale": 1 + micLevel * 0.34 }}>
-            <div className="word-mic-glow" />
-            <svg viewBox="0 0 120 120">
-              <path d="M60 70a15 15 0 0 0 15-15V30a15 15 0 0 0-30 0v25a15 15 0 0 0 15 15Z" />
-              <path d="M90 55a30 30 0 0 1-60 0M60 85v18m-18 0h36" />
-            </svg>
+    <section className={"panel study-panel" + (checked && correct ? " answer-correct" : "") + (voiceModeActive ? " is-voice-listening" : "")}>
+      {voiceModeActive && (
+        <div className="word-listening-mode">
+          <button className="word-listening-mic-button" type="button"
+            onClick={startVoiceInput} disabled={voiceListening}
+            aria-label={voiceListening ? "Микрофон слушает" : "Повторить голосовой ответ"}>
+            <span className="word-mic-visualizer" aria-hidden="true"
+              style={{ "--mic-level": micLevel, "--mic-scale": 1 + micLevel * 0.34 }}>
+              <span className="word-mic-glow" />
+              <svg viewBox="0 0 120 120">
+                <path d="M60 70a15 15 0 0 0 15-15V30a15 15 0 0 0-30 0v25a15 15 0 0 0 15 15Z" />
+                <path d="M90 55a30 30 0 0 1-60 0M60 85v18m-18 0h36" />
+              </svg>
+            </span>
+          </button>
+          <p className="word-listening-russian">{sentence.russian}</p>
+          <p className="word-listening-target">{sentence.russianWord || "Переведите выделенное слово"}</p>
+          <div className="word-listening-english">
+            <span>{parts[0]}</span>
+            <WordGap key={`voice-${sentence.id}-${sentence.word}`} sentence={sentence}
+              value={answer} onChange={handleAnswerChange} disabled={checked}
+              showMistakes={false} autoFocus={false} />
+            <span>{parts.slice(1).join("{word}")}</span>
           </div>
-          <p className="word-listening-prompt">{sentence.russianWord || sentence.russian}</p>
+          {voiceError && <p className="word-listening-error" role="alert">{voiceError}</p>}
+          {!voiceListening && (
+            <button className="button button-secondary word-listening-retry"
+              type="button" onClick={startVoiceInput}>Попробовать ещё раз</button>
+          )}
         </div>
       )}
       {levelSelector}
