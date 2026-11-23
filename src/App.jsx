@@ -389,6 +389,7 @@ function StudyPage({
   const [dontKnowClicked, setDontKnowClicked] = useState(false);
   const [markedKnown, setMarkedKnown] = useState(false);
   const [voiceListening, setVoiceListening] = useState(false);
+  const [voiceStatus, setVoiceStatus] = useState("idle");
   const [voiceModeActive, setVoiceModeActive] = useState(false);
   const [voiceError, setVoiceError] = useState("");
   const [micLevel, setMicLevel] = useState(0);
@@ -423,6 +424,7 @@ function StudyPage({
     setVoiceListening(true);
     const capture = startAutoVoiceCapture({
       onStatus: (status) => {
+        setVoiceStatus(status);
         const active = status === "listening" || status === "transcribing";
         setVoiceListening(active);
         if (!active) setMicLevel(0);
@@ -671,6 +673,8 @@ function StudyPage({
             </span>
           </button>
           <p className="word-listening-target">{sentence.russianWord || "Переведите слово"}</p>
+          {voiceStatus === "listening" && <p className="word-listening-status" role="status">Слушаю… Произнесите слово.</p>}
+          {voiceStatus === "transcribing" && <p className="word-listening-status is-processing" role="status">Голос получен. Распознаю слово…</p>}
           <div className="word-listening-english">
             <WordGap key={"voice-" + sentence.id + "-" + sentence.word} sentence={sentence}
               value={answer} onChange={handleAnswerChange} disabled={checked}
