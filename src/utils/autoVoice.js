@@ -1,4 +1,4 @@
-export function startAutoVoiceCapture({ onStatus, onText, onError, silenceMs = 1700 }) {
+export function startAutoVoiceCapture({ onStatus, onText, onError, onLevel, silenceMs = 1700 }) {
   let recorder = null;
   let stream = null;
   let audioContext = null;
@@ -97,6 +97,7 @@ export function startAutoVoiceCapture({ onStatus, onText, onError, silenceMs = 1
         for (let i = 0; i < samples.length; i++) energy += samples[i] * samples[i];
         const rms = Math.sqrt(energy / samples.length);
         const now = performance.now();
+        onLevel?.(Math.min(1, rms * 35));
 
         // A lower threshold catches normal speech from laptop/headset microphones.
         if (rms > 0.006) {
