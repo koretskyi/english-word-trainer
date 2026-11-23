@@ -325,7 +325,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
           <>
             <button className={`word-listening-mic-button audition-mic-button${autoVoiceStatus === "listening" ? " is-listening" : ""}`}
               type="button" onClick={startAutomaticListening}
-              disabled={["speaking", "listening", "transcribing"].includes(autoVoiceStatus) || result === "correct" || manualInputRef.current}
+              disabled={result === "correct"}
               aria-label="Микрофон — произнеси всё предложение">
               <span className="word-mic-visualizer" aria-hidden="true"
                 style={{ "--mic-level": micLevel, "--mic-scale": 1 + micLevel * 0.34 }}>
@@ -352,7 +352,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
         )}
       </div>
       <div className="audition-audio-actions">
-        <button className="button button-primary" type="button" onClick={playSentenceAndListen} disabled={result === "correct" || manualInputRef.current}>
+        <button className="button button-primary" type="button" onClick={playSentenceAndListen} disabled={result === "correct"}>
           <span aria-hidden="true">🔊</span> Прослушать ещё раз
         </button>
         <button className="button button-secondary" type="button" onClick={handleDontKnow} disabled={dontKnowCountdown !== null}>
