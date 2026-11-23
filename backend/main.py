@@ -240,11 +240,15 @@ async def transcribe_audio(request: Request):
             language="en",
             hotwords=hotwords,
             beam_size=5,
+            max_new_tokens=8,
             vad_filter=True,
             condition_on_previous_text=False,
         )
-        transcript = " ".join(segment.text.strip() for segment in segments).strip()
-        logger.info("Whisper result: %r", transcript)
+        raw_transcript = " ".join(segment.text.strip() for segment in segments).strip()
+        # Keep the response focused: at most two recognized English words.
+        recognized_words = re.findall(r"[A-Za-z]+(?:['’-][A-Za-z]+)*", raw_transcript)
+        transcript = " ".join(recognized_words[:2])
+        logger.info("Whisper result (limited to 2 words): raw=%r final=%r", raw_transcript, transcript)
     except Exception as error:
         raise HTTPException(status_code=500, detail=f"Ошибка локального распознавания Whisper: {error}") from error
 
