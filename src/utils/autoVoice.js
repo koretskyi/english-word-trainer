@@ -1,4 +1,4 @@
-export function startAutoVoiceCapture({ onStatus, onText, onError, onLevel, silenceMs = 850 }) {
+export function startAutoVoiceCapture({ onStatus, onText, onError, onNoSpeech, onLevel, silenceMs = 850 }) {
   let recorder = null;
   let stream = null;
   let audioContext = null;
@@ -125,12 +125,12 @@ export function startAutoVoiceCapture({ onStatus, onText, onError, onLevel, sile
           return;
         }
 
-        if (!speechStartedAt && now - startedAt > 12000) {
+        if (!speechStartedAt && now - startedAt > 2500) {
           stopped = true;
           cancelled = true;
           recorder.stop();
           onStatus?.("idle");
-          onError?.("Микрофон не уловил голос. Проверь выбранный микрофон и произнеси слово громче.");
+          onNoSpeech?.();
           return;
         }
         if (now - startedAt > 20000) {
