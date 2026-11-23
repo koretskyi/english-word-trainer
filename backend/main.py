@@ -202,9 +202,20 @@ async def transcribe_audio(request: Request):
 
     model = get_whisper_model()
     try:
+        expected_word = request.headers.get("x-expected-word", "").strip()
+        # A short prompt gives Whisper the vocabulary context without changing
+        # the transcript in application code. The frontend still checks the
+        # recognized text against the actual target word.
+        initial_prompt = (
+            f"The speaker is practicing the English word '{expected_word}'. "
+            "Transcribe exactly what is spoken."
+            if expected_word and len(expected_word) <= 80
+            else None
+        )
         segments, _ = model.transcribe(
             audio_samples,
             language="en",
+            initial_prompt=initial_prompt,
             beam_size=1,
             vad_filter=True,
             condition_on_previous_text=False,
