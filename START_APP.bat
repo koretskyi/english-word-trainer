@@ -57,8 +57,8 @@ if not exist "node_modules" (
   )
 )
 
-echo Starting local Whisper and YouTube Subtitles API...
-start "Local Whisper API" /D "%CD%\backend" cmd /k "python -m uvicorn main:app --host 127.0.0.1 --port 8000"
+echo Starting local Whisper API on dedicated port 8001...
+start "Local Whisper API - port 8001" /D "%CD%\backend" cmd /k "python -m uvicorn main:app --host 127.0.0.1 --port 8001"
 
 timeout /t 3 /nobreak >nul
 
