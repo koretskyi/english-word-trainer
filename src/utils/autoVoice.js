@@ -130,7 +130,7 @@ export function startAutoVoiceCapture({ expectedWord = "", onStatus, onText, onE
           return;
         }
 
-        if (!speechStartedAt && elapsed > 2000) {
+        if (!speechStartedAt && elapsed > 3000) {
           stopped = true;
           cancelled = true;
           recorder.stop();
