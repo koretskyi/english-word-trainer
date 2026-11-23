@@ -205,7 +205,7 @@ async def transcribe_audio(request: Request):
         segments, _ = model.transcribe(
             audio_samples,
             language="en",
-            beam_size=5,
+            beam_size=1,
             vad_filter=True,
             condition_on_previous_text=False,
         )
