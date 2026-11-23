@@ -391,7 +391,7 @@ function StudyPage({
   const [voiceModeActive, setVoiceModeActive] = useState(false);
   const [voiceError, setVoiceError] = useState("");
   const [micLevel, setMicLevel] = useState(0);
-  const speechRecognitionRef = useRef(null);
+  const voiceCaptureRef = useRef(null);
   const voiceActiveRef = useRef(false);
   const micStreamRef = useRef(null);
   const audioContextRef = useRef(null);
@@ -410,101 +410,40 @@ function StudyPage({
     setMicLevel(0);
   }
 
-  async function startMicrophoneMeter() {
-    if (!navigator.mediaDevices?.getUserMedia) return;
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      if (!voiceActiveRef.current) {
-        stream.getTracks().forEach((track) => track.stop());
-        return;
-      }
-      micStreamRef.current = stream;
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      if (!AudioContextClass) return;
-      const context = new AudioContextClass();
-      audioContextRef.current = context;
-      const analyser = context.createAnalyser();
-      analyser.fftSize = 256;
-      context.createMediaStreamSource(stream).connect(analyser);
-      const samples = new Uint8Array(analyser.fftSize);
-      const measure = () => {
-        analyser.getByteTimeDomainData(samples);
-        let sum = 0;
-        for (let i = 0; i < samples.length; i++) {
-          const value = (samples[i] - 128) / 128;
-          sum += value * value;
-        }
-        const rms = Math.sqrt(sum / samples.length);
-        setMicLevel(Math.min(1, rms * 5));
-        analyserFrameRef.current = requestAnimationFrame(measure);
-      };
-      measure();
-    } catch {
-      // Speech recognition may still work even if the visual audio meter is unavailable.
-    }
-  }
-
   useEffect(() => () => {
-    speechRecognitionRef.current?.stop();
-    stopMicrophoneMeter();
+    voiceCaptureRef.current?.stop();
+    setVoiceListening(false);
   }, [sentence?.id]);
 
   function startVoiceInput() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      setVoiceError("Голосовой ввод не поддерживается этим браузером. Попробуй Chrome.");
-      return;
-    }
-    speechRecognitionRef.current?.stop();
+    voiceCaptureRef.current?.stop();
     setVoiceError("");
-    const recognition = new SpeechRecognition();
-    speechRecognitionRef.current = recognition;
-    recognition.lang = "en-US";
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-    recognition.onstart = () => {
-      voiceActiveRef.current = true;
-      setVoiceListening(true);
-      setVoiceModeActive(true);
-      startMicrophoneMeter();
-    };
-    recognition.onresult = (event) => {
-      const transcript = String(event.results?.[0]?.[0]?.transcript || "")
-        .toLowerCase().replace(/[^a-z'-]/g, " ").trim();
-      const spokenWords = transcript.split(/\\s+/).filter(Boolean);
-      const expectedWord = sentence.word.toLowerCase().replace(/'/g, "");
-      const matchedWord = spokenWords.find((spoken) =>
-        spoken.replace(/'/g, "") === expectedWord
-      );
-      if (matchedWord) {
-        setVoiceError("");
-        setVoiceModeActive(false);
-        handleAnswerChange(targetLetters.map((letter) => letter));
-      } else {
-        setVoiceError("Пока неправильно. Попробуйте ещё раз.");
-        setAnswer(targetLetters.map(() => ""));
-      }
-    };
-    recognition.onerror = (event) => {
-      setVoiceError(event.error === "not-allowed"
-        ? "Разреши доступ к микрофону в браузере."
-        : "Не удалось распознать речь. Попробуй ещё раз.");
-      voiceActiveRef.current = false;
-      setVoiceListening(false);
-      stopMicrophoneMeter();
-    };
-    recognition.onend = () => {
-      voiceActiveRef.current = false;
-      setVoiceListening(false);
-      stopMicrophoneMeter();
-    };
-    try {
-      recognition.start();
-    } catch {
-      setVoiceListening(false);
-      setVoiceError("Не удалось запустить микрофон. Попробуй ещё раз.");
-    }
+    setVoiceModeActive(true);
+    setVoiceListening(true);
+    const capture = startAutoVoiceCapture({
+      onStatus: (status) => setVoiceListening(status === "listening" || status === "transcribing"),
+      onText: (recognizedText) => {
+        const transcript = String(recognizedText || "").trim();
+        const normalized = transcript.toLowerCase().replace(/[^a-z'-]/g, " ").trim();
+        const spokenWords = normalized.split(/\s+/).filter(Boolean);
+        const expectedWord = sentence.word.toLowerCase().replace(/'/g, "");
+        const matchedWord = spokenWords.find((spoken) => spoken.replace(/'/g, "") === expectedWord);
+        if (matchedWord) {
+          setVoiceError("");
+          setVoiceModeActive(false);
+          handleAnswerChange(targetLetters.map((letter) => letter));
+          return;
+        }
+        const recognizedLetters = [...normalized.replace(/\s+/g, "")];
+        setAnswer(targetLetters.map((_, index) => recognizedLetters[index] || ""));
+        setVoiceError(transcript ? "Распознано: «" + transcript + "». Попробуйте ещё раз." : "Не удалось разобрать речь. Попробуйте ещё раз.");
+      },
+      onError: (message) => setVoiceError(message || "Ошибка локального распознавания Whisper."),
+    });
+    voiceCaptureRef.current = capture;
+    capture.start();
   }
+
   const correct = Boolean(sentence) && targetLetters.length > 0 &&
     targetLetters.every((letter, position) =>
       (answer[position] || "").toLowerCase() === letter.toLowerCase()
