@@ -4,6 +4,7 @@ import CorrectFeedback from "./components/CorrectFeedback.jsx";
 import AuditionPage from "./pages/AuditionPage.jsx";
 import VideoPage from "./pages/VideoPage.jsx";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { startAutoVoiceCapture } from "./utils/autoVoice.js";
 
 
 
@@ -647,7 +648,7 @@ function StudyPage({
     <section className={"panel study-panel" + (checked && correct ? " answer-correct" : "") + (voiceModeActive ? " is-voice-listening" : "")}>
       {voiceModeActive && (
         <div className="word-listening-mode">
-          <button className="word-listening-mic-button" type="button"
+          <button className={"word-listening-mic-button" + (voiceListening ? " is-listening" : "")} type="button"
             onClick={startVoiceInput} disabled={voiceListening}
             aria-label={voiceListening ? "Микрофон слушает" : "Повторить голосовой ответ"}>
             <span className="word-mic-visualizer" aria-hidden="true"
@@ -659,14 +660,11 @@ function StudyPage({
               </svg>
             </span>
           </button>
-          <p className="word-listening-russian">{sentence.russian}</p>
-          <p className="word-listening-target">{sentence.russianWord || "Переведите выделенное слово"}</p>
+          <p className="word-listening-target">{sentence.russianWord || "Переведите слово"}</p>
           <div className="word-listening-english">
-            <span>{parts[0]}</span>
-            <WordGap key={`voice-${sentence.id}-${sentence.word}`} sentence={sentence}
+            <WordGap key={"voice-" + sentence.id + "-" + sentence.word} sentence={sentence}
               value={answer} onChange={handleAnswerChange} disabled={checked}
               showMistakes={false} autoFocus={false} />
-            <span>{parts.slice(1).join("{word}")}</span>
           </div>
           {voiceError && <p className="word-listening-error" role="alert">{voiceError}</p>}
           {!voiceListening && (
