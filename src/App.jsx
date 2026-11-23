@@ -389,11 +389,58 @@ function StudyPage({
   const [markedKnown, setMarkedKnown] = useState(false);
   const [voiceListening, setVoiceListening] = useState(false);
   const [voiceError, setVoiceError] = useState("");
+  const [micLevel, setMicLevel] = useState(0);
   const speechRecognitionRef = useRef(null);
+  const micStreamRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const analyserFrameRef = useRef(null);
   const targetLetters = sentence ? [...sentence.word] : [];
+
+  function stopMicrophoneMeter() {
+    if (analyserFrameRef.current) cancelAnimationFrame(analyserFrameRef.current);
+    analyserFrameRef.current = null;
+    micStreamRef.current?.getTracks().forEach((track) => track.stop());
+    micStreamRef.current = null;
+    if (audioContextRef.current && audioContextRef.current.state !== "closed") {
+      audioContextRef.current.close().catch(() => {});
+    }
+    audioContextRef.current = null;
+    setMicLevel(0);
+  }
+
+  async function startMicrophoneMeter() {
+    if (!navigator.mediaDevices?.getUserMedia) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      micStreamRef.current = stream;
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      const context = new AudioContextClass();
+      audioContextRef.current = context;
+      const analyser = context.createAnalyser();
+      analyser.fftSize = 256;
+      context.createMediaStreamSource(stream).connect(analyser);
+      const samples = new Uint8Array(analyser.fftSize);
+      const measure = () => {
+        analyser.getByteTimeDomainData(samples);
+        let sum = 0;
+        for (let i = 0; i < samples.length; i++) {
+          const value = (samples[i] - 128) / 128;
+          sum += value * value;
+        }
+        const rms = Math.sqrt(sum / samples.length);
+        setMicLevel(Math.min(1, rms * 5));
+        analyserFrameRef.current = requestAnimationFrame(measure);
+      };
+      measure();
+    } catch {
+      // Speech recognition may still work even if the visual audio meter is unavailable.
+    }
+  }
 
   useEffect(() => () => {
     speechRecognitionRef.current?.stop();
+    stopMicrophoneMeter();
   }, [sentence?.id]);
 
   function startVoiceInput() {
@@ -409,7 +456,10 @@ function StudyPage({
     recognition.lang = "en-US";
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
-    recognition.onstart = () => setVoiceListening(true);
+    recognition.onstart = () => {
+      setVoiceListening(true);
+      startMicrophoneMeter();
+    };
     recognition.onresult = (event) => {
       const transcript = String(event.results?.[0]?.[0]?.transcript || "")
         .toLowerCase().replace(/[^a-z'-]/g, " ").trim();
@@ -430,8 +480,12 @@ function StudyPage({
         ? "Разреши доступ к микрофону в браузере."
         : "Не удалось распознать речь. Попробуй ещё раз.");
       setVoiceListening(false);
+      stopMicrophoneMeter();
     };
-    recognition.onend = () => setVoiceListening(false);
+    recognition.onend = () => {
+      setVoiceListening(false);
+      stopMicrophoneMeter();
+    };
     try {
       recognition.start();
     } catch {
@@ -689,6 +743,16 @@ function StudyPage({
                 {voiceListening ? "Слушаю…" : "Ответить голосом"}
               </button>
               {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
+              {voiceListening && (
+                <div className="word-mic-visualizer" aria-hidden="true"
+                  style={{ "--mic-level": micLevel, "--mic-scale": 1 + micLevel * 0.34 }}>
+                  <div className="word-mic-glow" />
+                  <svg viewBox="0 0 120 120">
+                    <path d="M60 70a15 15 0 0 0 15-15V30a15 15 0 0 0-30 0v25a15 15 0 0 0 15 15Z" />
+                    <path d="M90 55a30 30 0 0 1-60 0M60 85v18m-18 0h36" />
+                  </svg>
+                </div>
+              )}
             </div>
             <div className="form-actions">
               <button className="button button-secondary button-dont-know" type="button"
