@@ -1255,10 +1255,8 @@ button:disabled {
 }
 
 .review-ladder {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  display: block;
+  width: 100%;
 }
 
 .review-ladder-caption {
@@ -1270,20 +1268,22 @@ button:disabled {
 .review-ladder-steps {
   display: flex;
   align-items: center;
-  gap: 7px;
+  width: 100%;
+  gap: 9px;
 }
 
 .review-ladder-step {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 44px;
   border: 1px solid #d9dfd0;
-  border-radius: 50%;
+  border-radius: 12px;
   background: #eef0eb;
   filter: grayscale(1);
   opacity: 0.38;
-  font-size: 19px;
+  font-size: 24px;
   transition: opacity 180ms ease, transform 180ms ease, background 180ms ease;
 }
 
