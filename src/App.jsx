@@ -77,8 +77,8 @@ function renderRussianSentence(sentence, targetWord) {
   const target = normalize(targetWord);
   if (!target) return sentence;
 
-  return String(sentence || "").split(/(\\p{L}+)/u).map((part, index) => {
-    if (!/\\p{L}/u.test(part)) return part;
+  return String(sentence || "").split(/(\p{L}+)/u).map((part, index) => {
+    if (!/\p{L}/u.test(part)) return part;
     const token = normalize(part);
     let commonLength = 0;
     while (commonLength < token.length && commonLength < target.length &&
