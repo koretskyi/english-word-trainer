@@ -857,7 +857,6 @@ function StudyPage({
       <WordImage word={sentence.word} />
       <h2 className="russian-sentence">{sentence.russian}</h2>
       <div className="english-section">
-        <p className="study-instruction">ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ: <strong className="target-translation" style={{ fontSize: "18px" }}>{sentence.russianWord || "—"}</strong></p>
         <div className="answer-area">
           <div className="english-sentence">
             <span>{parts[0]}</span>
@@ -866,6 +865,7 @@ function StudyPage({
               showMistakes={checked && !correct} />
             <span>{parts.slice(1).join("{word}")}</span>
           </div>
+          <p className="study-instruction">ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ: <strong className="target-translation" style={{ fontSize: "18px" }}>{sentence.russianWord || "—"}</strong></p>
           {!checked ? (
             <>
             <div className="form-actions word-answer-actions">
