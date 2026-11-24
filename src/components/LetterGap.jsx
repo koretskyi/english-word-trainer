@@ -176,16 +176,16 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
             spellCheck={false}
             aria-label={`Буква ${index + 1}`}
             style={{
-              width: "calc(1.2em + 2px)",
-              minWidth: "calc(1.2em + 2px)",
-              maxWidth: "calc(1.2em + 2px)",
-              flex: "0 0 calc(1.2em + 2px)",
-              height: "calc(1.65em + 2px)",
+              width: "calc(1.4em + 2px)",
+              minWidth: "calc(1.4em + 2px)",
+              maxWidth: "calc(1.4em + 2px)",
+              flex: "0 0 calc(1.4em + 2px)",
+              height: "calc(1.8em + 2px)",
               margin: 0,
               padding: "0 1px",
               textAlign: "center",
               font: "inherit",
-              fontSize: "calc(1em + 1px)",
+              fontSize: "calc(1.2em + 2px)",
               lineHeight: 1.2,
               border: "none",
               borderBottom: `2px solid ${
