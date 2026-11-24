@@ -885,21 +885,21 @@ function StudyPage({
       </div>
       <div className="english-section">
         <div className="answer-area">
-          {!checked ? (
-            <>
-            <div className="form-actions word-answer-actions">
-              <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}`}
-                type="button" onClick={startVoiceInput} disabled={voiceListening}
-                aria-label="Ввести слово голосом">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4m-4 0h8"/></svg>
-                {voiceListening ? "Слушаю…" : "Ответить голосом"}
-              </button>
-              <button className="button button-secondary button-dont-know" type="button"
-                onClick={dontKnow}>Не знаю</button>
-              {isReview && (
-                <button className="button button-primary" type="button"
-                  onClick={knowWord}>Я знаю</button>
-              )}
+          <div className="form-actions word-answer-actions">
+            <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}`}
+              type="button" onClick={startVoiceInput} disabled={voiceListening}
+              aria-label="Ввести слово голосом">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4m-4 0h8"/></svg>
+              {voiceListening ? "Слушаю…" : "Ответить голосом"}
+            </button>
+            <button className="button button-secondary button-dont-know" type="button"
+              onClick={dontKnow}>Не знаю</button>
+            {isReview && (
+              <button className="button button-primary" type="button"
+                onClick={knowWord}>Я знаю</button>
+            )}
+          </div>
+          {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
             </div>
             {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
             </>
