@@ -871,19 +871,6 @@ function StudyPage({
         <WordImage word={sentence.word} />
         <h2 className="russian-sentence">{sentence.russian}</h2>
         <div className="english-section">
-          <div className="answer-area">
-            <div className="english-sentence">
-              <span>{parts[0]}</span>
-              <WordGap key={`${sentence.id}-${sentence.word}`} sentence={sentence} value={answer}
-                onChange={handleAnswerChange} disabled={checked}
-                showMistakes={checked && !correct} />
-              <span>{parts.slice(1).join("{word}")}</span>
-            </div>
-            <p className="study-instruction">ВПИШИТЕ СЛОВО <strong className="target-translation">{sentence.russianWord || "—"}</strong> НА АНГЛИЙСКОМ:</p>
-          </div>
-        </div>
-      </div>
-      <div className="english-section">
         <div className="answer-area">
           <div className="form-actions word-answer-actions">
             <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}`}
@@ -900,52 +887,6 @@ function StudyPage({
             )}
           </div>
           {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
-            </div>
-            {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
-            </>
-          ) : (
-            <div className={"feedback " + (correct ? "correct" : "incorrect") + (markedKnown ? " marked-known" : "")}>
-              {dontKnowClicked ? (
-                <div className="answer-comparison-row dont-know-answer">
-                  <span className="answer-comparison-label">Правильный ответ</span>
-                  <div className="answer-comparison-line correct-word-line">{sentence.word}</div>
-                </div>
-              ) : !correct && !markedKnown ? (
-                <>
-                  <strong className="incorrect-feedback-title">✗ Ошибка</strong>
-                  <div className="incorrect-answer-comparison" aria-label="Правильный ответ и твой вариант">
-                    <div className="answer-comparison-row">
-                      <span className="answer-comparison-label">Правильный ответ</span>
-                      <div className="answer-comparison-line correct-word-line">{sentence.word}</div>
-                    </div>
-                    <div className="answer-comparison-row">
-                      <span className="answer-comparison-label">Ваш ответ</span>
-                      <div className="answer-comparison-line user-word-line">
-                        {targetLetters.map((letter, index) => {
-                          const userLetter = answer[index] || "";
-                          const isMistake = userLetter.toLowerCase() !== letter.toLowerCase();
-                          return (
-                            <span key={index} className={isMistake ? "user-word-letter-mistake" : ""}>
-                              {userLetter || "_"}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </>
-              ) : markedKnown ? (
-                <>
-                  <strong>✓ Слово перенесено в выученные</strong>
-                  <p>Больше не будет появляться в обучении.</p>
-                </>
-              ) : (
-                <>
-                  <CorrectFeedback showFireworks={successVisible && !isReview} />
-                </>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </section>
