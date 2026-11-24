@@ -783,7 +783,7 @@ function StudyPage({
           ) : correct ? (
             <CorrectFeedback />
           ) : (
-            <strong className="incorrect-result-message">✕ Неправильно</strong>
+            <strong className="incorrect-result-message">Ошибка — слово добавлено на повторение</strong>
           )}
         </div>
       </section>
