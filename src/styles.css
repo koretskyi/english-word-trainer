@@ -3485,3 +3485,9 @@ button:disabled {
   font-size: 13px;
 }
 .word-image-placeholder.is-empty { min-height: 0; padding: 6px; border: 0; background: transparent; }
+
+
+/* При правильном ответе оставляем только зелёную подсветку карточки. */
+.study-panel.answer-correct .feedback.correct {
+  display: none !important;
+}
