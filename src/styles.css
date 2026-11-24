@@ -3579,3 +3579,56 @@ button:disabled {
   white-space: normal;
   gap: 6px 8px;
 }
+
+
+/* Сравнение правильного и введённого слова на экране ошибки. */
+.incorrect-result-content {
+  display: grid;
+  justify-items: center;
+  gap: 22px;
+  width: 100%;
+}
+
+.incorrect-word-pair {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 14px;
+  width: 100%;
+}
+
+.correct-answer-word,
+.wrong-answer-word {
+  display: grid;
+  gap: 6px;
+  min-width: min(220px, 100%);
+  max-width: 100%;
+  padding: 12px 20px;
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+}
+
+.correct-answer-word {
+  color: #247a32;
+  background: #e4f8c9;
+  border: 1px solid #b9df91;
+}
+
+.wrong-answer-word {
+  color: #b45b68;
+  background: #fff0f1;
+  border: 1px solid #efcbd0;
+}
+
+.correct-answer-word span,
+.wrong-answer-word span {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.correct-answer-word strong,
+.wrong-answer-word strong {
+  font-size: clamp(22px, 3.5vw, 30px);
+  overflow-wrap: anywhere;
+}
