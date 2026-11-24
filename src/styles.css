@@ -1300,20 +1300,31 @@ button:disabled {
   background: #f8faff;
 }
 
-/* Компактная полоса прогресса под строкой уровня. */
+/* Полоса прогресса в одной строке с выбором уровня и повторением. */
 .learning-progress-card-compact {
-  margin: -8px 0 18px;
-  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 280px;
+  max-width: 380px;
+  min-width: 240px;
+  margin: 0 0 0 auto;
+  padding: 7px 10px;
   border-radius: 9px;
 }
 .learning-progress-card-compact .learning-progress-heading {
-  margin-bottom: 6px;
+  flex: 0 0 auto;
+  gap: 8px;
+  margin: 0;
   font-size: 12px;
+  white-space: nowrap;
 }
 .learning-progress-card-compact .learning-progress-heading strong {
   font-size: 13px;
 }
 .learning-progress-card-compact .learning-progress-track {
+  flex: 1 1 90px;
+  min-width: 60px;
   height: 5px;
 }
 
