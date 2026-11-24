@@ -310,6 +310,11 @@ button:disabled {
   font-weight: 800;
 }
 
+.russian-sentence .target-translation {
+  color: #8BCF35;
+  font-weight: 800;
+}
+
 .english-sentence {
   display: flex;
   align-items: baseline;
