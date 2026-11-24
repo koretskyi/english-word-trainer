@@ -783,7 +783,19 @@ function StudyPage({
           ) : correct ? (
             <CorrectFeedback />
           ) : (
-            <strong className="incorrect-result-message">Ошибка — слово добавлено на повторение</strong>
+            <div className="incorrect-result-content">
+              <strong className="incorrect-result-message">Ошибка — слово добавлено на повторение</strong>
+              <div className="incorrect-word-pair">
+                <div className="correct-answer-word">
+                  <span>Правильное слово</span>
+                  <strong>{sentence.word}</strong>
+                </div>
+                <div className="wrong-answer-word">
+                  <span>Ваш ответ</span>
+                  <strong>{answer.join("").trim() || "Не введено"}</strong>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </section>
