@@ -848,24 +848,30 @@ function StudyPage({
       )}
       {levelSelector}
       {statsPanel}
-      {isReview && (
-        <div className="review-card-progress">
-          <div className="review-origin-label">↻ Это слово пришло из повторения</div>
-          <ReviewLadder stage={reviewStage} />
+      <div className={isReview ? "review-card-progress" : "study-card-unframed"}>
+        {isReview && (
+          <div className="review-progress-meta">
+            <div className="review-origin-label">↻ Это слово пришло из повторения</div>
+            <ReviewLadder stage={reviewStage} />
+          </div>
+        )}
+        <WordImage word={sentence.word} />
+        <h2 className="russian-sentence">{sentence.russian}</h2>
+        <div className="english-section">
+          <div className="answer-area">
+            <div className="english-sentence">
+              <span>{parts[0]}</span>
+              <WordGap key={`${sentence.id}-${sentence.word}`} sentence={sentence} value={answer}
+                onChange={handleAnswerChange} disabled={checked}
+                showMistakes={checked && !correct} />
+              <span>{parts.slice(1).join("{word}")}</span>
+            </div>
+            <p className="study-instruction">ВПИШИТЕ СЛОВО <strong className="target-translation">{sentence.russianWord || "—"}</strong> НА АНГЛИЙСКОМ:</p>
+          </div>
         </div>
-      )}
-      <WordImage word={sentence.word} />
-      <h2 className="russian-sentence">{sentence.russian}</h2>
+      </div>
       <div className="english-section">
         <div className="answer-area">
-          <div className="english-sentence">
-            <span>{parts[0]}</span>
-            <WordGap key={`${sentence.id}-${sentence.word}`} sentence={sentence} value={answer}
-              onChange={handleAnswerChange} disabled={checked}
-              showMistakes={checked && !correct} />
-            <span>{parts.slice(1).join("{word}")}</span>
-          </div>
-          <p className="study-instruction">ВПИШИТЕ СЛОВО <strong className="target-translation">{sentence.russianWord || "—"}</strong> НА АНГЛИЙСКОМ:</p>
           {!checked ? (
             <>
             <div className="form-actions word-answer-actions">
