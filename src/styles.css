@@ -1231,11 +1231,12 @@ button:disabled {
 /* Лестница освоения слова на повторении */
 .review-card-progress {
   display: grid;
-  gap: 8px;
-  margin: 24px 0 28px;
-  padding: 18px 20px;
+  gap: 16px;
+  width: calc(100% + 24px);
+  margin: 24px 0 28px -12px;
+  padding: 24px 26px;
   border: 2px solid #8BCF35;
-  border-radius: 14px;
+  border-radius: 16px;
   background: #f7fbea;
 }
 
@@ -1245,13 +1246,13 @@ button:disabled {
 
 .review-progress-meta {
   display: grid;
-  gap: 12px;
+  gap: 17px;
 }
 
 .review-origin-label {
   color: #58752e;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 750;
 }
 
 .review-ladder {
@@ -1269,7 +1270,7 @@ button:disabled {
   display: flex;
   align-items: center;
   width: 100%;
-  gap: 9px;
+  gap: 12px;
 }
 
 .review-ladder-step {
@@ -1277,7 +1278,7 @@ button:disabled {
   place-items: center;
   flex: 1 1 0;
   min-width: 0;
-  height: 44px;
+  height: 48px;
   border: 1px solid #d9dfd0;
   border-radius: 12px;
   background: #eef0eb;
