@@ -165,6 +165,31 @@ button:disabled {
   margin-top: 22px;
 }
 
+.word-answer-actions {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.word-answer-actions .button {
+  min-height: 48px;
+  padding: 12px 20px;
+  flex: 1 1 0;
+  white-space: nowrap;
+  font-size: 15px;
+}
+
+.word-answer-actions .word-microphone-button {
+  min-width: 190px;
+}
+
+.word-answer-actions .word-microphone-button svg {
+  width: 21px;
+  height: 21px;
+}
+
 .nav-button {
   padding: 10px 14px;
   border: 1px solid var(--border);
