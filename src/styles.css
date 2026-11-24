@@ -622,7 +622,28 @@ button:disabled {
   align-items: center;
   gap: 12px;
   margin-bottom: 20px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+}
+
+.level-progress-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 4px;
+  padding: 7px 11px;
+  border: 1px solid #dbe4ee;
+  border-radius: 9px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.level-progress-inline strong {
+  color: #0f766e;
+  font-size: 16px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
 }
 
 .level-selector label {
