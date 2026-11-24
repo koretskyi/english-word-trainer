@@ -1231,11 +1231,11 @@ button:disabled {
 /* Лестница освоения слова на повторении */
 .review-card-progress {
   display: grid;
-  gap: 10px;
-  margin: 12px 0 18px;
-  padding: 14px 16px;
-  border: 1px solid #dcecc7;
-  border-radius: 12px;
+  gap: 12px;
+  margin: 24px 0 28px;
+  padding: 18px 20px;
+  border: 2px solid #8BCF35;
+  border-radius: 14px;
   background: #f7fbea;
 }
 
