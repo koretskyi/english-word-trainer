@@ -856,6 +856,12 @@ function StudyPage({
       )}
       <WordImage word={sentence.word} />
       <h2 className="russian-sentence">{sentence.russian}</h2>
+      <p className="masked-english-sentence">
+        {sentence.englishTemplate.replace(
+          "{word}",
+          `${sentence.word.slice(0, 1)}${"*".repeat(Math.max(0, sentence.word.length - 1))}`
+        )}
+      </p>
       <div className="english-section">
         <p className="study-instruction">ВПИШИТЕ СЛОВО ПРЯМО В ПРЕДЛОЖЕНИЕ: <strong className="target-translation" style={{ fontSize: "18px" }}>{sentence.russianWord || "—"}</strong></p>
         <div className="answer-area">
