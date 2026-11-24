@@ -313,6 +313,7 @@ button:disabled {
 .english-sentence {
   display: flex;
   align-items: baseline;
+  margin-bottom: 20px;
   flex-wrap: wrap;
   gap: 0 8px;
   font-size: clamp(19px, 3.5vw, 25px);
