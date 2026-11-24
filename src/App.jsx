@@ -473,7 +473,6 @@ function StudyPage({
   const [answer, setAnswer] = useState(() => createInitialAnswer(sentence));
   const [checked, setChecked] = useState(false);
   const [audioFinished, setAudioFinished] = useState(false);
-  const [dontKnowClicked, setDontKnowClicked] = useState(false);
   const [markedKnown, setMarkedKnown] = useState(false);
   const [voiceListening, setVoiceListening] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState("idle");
@@ -750,7 +749,6 @@ function StudyPage({
     setVoiceListening(false);
     setVoiceModeActive(false);
     setVoiceStatus("idle");
-    setDontKnowClicked(true);
     setChecked(true);
     onComplete(sentence.word, false);
     if (audioEnabled) speakEnglish(sentence.word);
@@ -871,6 +869,19 @@ function StudyPage({
         <WordImage word={sentence.word} />
         <h2 className="russian-sentence">{sentence.russian}</h2>
         <div className="english-section">
+          <div className="answer-area">
+            <div className="english-sentence">
+              <span>{parts[0]}</span>
+              <WordGap key={`${sentence.id}-${sentence.word}`} sentence={sentence} value={answer}
+                onChange={handleAnswerChange} disabled={checked}
+                showMistakes={checked && !correct} />
+              <span>{parts.slice(1).join("{word}")}</span>
+            </div>
+            <p className="study-instruction">ВПИШИТЕ СЛОВО <strong className="target-translation">{sentence.russianWord || "—"}</strong> НА АНГЛИЙСКОМ:</p>
+          </div>
+        </div>
+      </div>
+      <div className="english-section">
         <div className="answer-area">
           <div className="form-actions word-answer-actions">
             <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}`}
