@@ -3487,7 +3487,88 @@ button:disabled {
 .word-image-placeholder.is-empty { min-height: 0; padding: 6px; border: 0; background: transparent; }
 
 
-/* При правильном ответе оставляем только зелёную подсветку карточки. */
-.study-panel.answer-correct .feedback.correct {
-  display: none !important;
+
+
+/* Единый экран результата для всех уровней: после ответа скрываем карточку,
+   прогресс, навигацию, поля и дополнительные блоки. */
+.answer-result-panel {
+  min-height: min(62vh, 560px);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 24px;
+}
+
+.answer-result-card {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: clamp(260px, 48vh, 440px);
+  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 18px;
+  text-align: center;
+}
+
+.answer-result-card.is-correct {
+  background: #e4f8c9;
+  border-color: #8BCF35;
+  box-shadow: 0 0 0 3px rgba(139, 207, 53, 0.16), 0 8px 24px rgba(91, 145, 35, 0.12);
+}
+
+.answer-result-card.is-incorrect {
+  background: #fff1f2;
+  border-color: #fda4af;
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.10), 0 8px 24px rgba(190, 24, 93, 0.08);
+  animation: incorrect-result-shake 360ms ease-out;
+}
+
+.answer-result-card.is-known {
+  background: #e4f8c9;
+  border-color: #8BCF35;
+}
+
+.answer-result-card .feedback-fireworks {
+  z-index: 0;
+}
+
+.answer-result-card .correct-inline-message,
+.answer-result-card .incorrect-result-message,
+.answer-result-card .known-result-message {
+  position: relative;
+  z-index: 2;
+  display: block;
+  margin: 0;
+  padding: 20px;
+  font-size: clamp(38px, 6vw, 64px);
+  line-height: 1.15;
+  font-weight: 850;
+  text-align: center;
+}
+
+.answer-result-card .correct-inline-message,
+.answer-result-card .known-result-message {
+  color: #247a32;
+}
+
+.answer-result-card .incorrect-result-message {
+  color: #be123c;
+}
+
+@keyframes incorrect-result-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-7px); }
+  40%, 80% { transform: translateX(7px); }
+}
+
+@media (max-width: 600px) {
+  .answer-result-panel {
+    min-height: 58vh;
+    padding: 16px;
+  }
+
+  .answer-result-card {
+    min-height: 42vh;
+  }
 }
