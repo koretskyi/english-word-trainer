@@ -849,7 +849,7 @@ function StudyPage({
       <div className={isReview ? "review-card-progress" : "study-card-unframed"}>
         {isReview && (
           <div className="review-progress-meta">
-            <div className="review-origin-label">Повторение:</div>
+            <div className="review-origin-label">Прогресс повторения слова</div>
             <ReviewLadder stage={reviewStage} />
           </div>
         )}
