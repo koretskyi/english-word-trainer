@@ -285,9 +285,18 @@ button:disabled {
 }
 
 .russian-sentence {
-  margin: 0 0 35px;
+  margin: 0 0 6px;
   font-size: clamp(24px, 4vw, 32px);
   line-height: 1.4;
+}
+
+.masked-english-sentence {
+  margin: 0 0 28px;
+  color: var(--muted);
+  font-size: clamp(19px, 3.5vw, 25px);
+  line-height: 1.5;
+  font-weight: 600;
+  letter-spacing: 0.03em;
 }
 
 .english-section {
