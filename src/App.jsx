@@ -72,6 +72,22 @@ function normalizeWord(word) {
   return String(word || "").trim().toLowerCase();
 }
 
+function renderRussianSentence(sentence, targetWord) {
+  const target = String(targetWord || "").toLocaleLowerCase("ru").replace(/[^а-яё]/gi, "");
+  if (!target) return sentence;
+
+  return String(sentence || "").split(/(\\s+)/).map((part, index) => {
+    const token = part.toLocaleLowerCase("ru").replace(/^[^а-яё]+|[^а-яё]+$/gi, "");
+    let commonLength = 0;
+    while (commonLength < token.length && commonLength < target.length &&
+      token[commonLength] === target[commonLength]) commonLength++;
+    const matches = token.length > 0 && commonLength >= Math.min(4, target.length);
+    return matches
+      ? <span className="target-translation" key={index}>{part}</span>
+      : part;
+  });
+}
+
 function getLocalDateKey() {
   const now = new Date();
   const year = now.getFullYear();
@@ -879,7 +895,7 @@ function StudyPage({
           </div>
         )}
         <WordImage word={sentence.word} />
-        <h2 className="russian-sentence">{sentence.russian}</h2>
+        <h2 className="russian-sentence">{renderRussianSentence(sentence.russian, sentence.russianWord)}</h2>
         <div className="english-section">
           <div className="answer-area">
             <div className="english-sentence">
