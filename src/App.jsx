@@ -73,15 +73,17 @@ function normalizeWord(word) {
 }
 
 function renderRussianSentence(sentence, targetWord) {
-  const target = String(targetWord || "").toLocaleLowerCase("ru").replace(/[^а-яё]/gi, "");
+  const normalize = (value) => String(value || "").toLocaleLowerCase("ru").replace(/[^а-яё]/gi, "");
+  const target = normalize(targetWord);
   if (!target) return sentence;
 
-  return String(sentence || "").split(/(\\s+)/).map((part, index) => {
-    const token = part.toLocaleLowerCase("ru").replace(/^[^а-яё]+|[^а-яё]+$/gi, "");
+  return String(sentence || "").split(/(\\p{L}+)/u).map((part, index) => {
+    if (!/\\p{L}/u.test(part)) return part;
+    const token = normalize(part);
     let commonLength = 0;
     while (commonLength < token.length && commonLength < target.length &&
       token[commonLength] === target[commonLength]) commonLength++;
-    const matches = token.length > 0 && commonLength >= Math.min(4, target.length);
+    const matches = token.length > 0 && commonLength >= Math.min(5, target.length);
     return matches
       ? <span className="target-translation" key={index}>{part}</span>
       : part;
@@ -797,7 +799,13 @@ function StudyPage({
           {markedKnown ? (
             <strong className="known-result-message">✓ Слово перенесено в выученные</strong>
           ) : correct ? (
-            <CorrectFeedback />
+            <>
+              <CorrectFeedback />
+              <div className="correct-answer-word">
+                <span>Правильное слово</span>
+                <strong>{sentence.word}</strong>
+              </div>
+            </>
           ) : (
             <div className="incorrect-result-content">
               <strong className="incorrect-result-message">Слово добавлено на повторение</strong>
