@@ -846,11 +846,30 @@ function StudyPage({
       )}
       {levelSelector}
       {statsPanel}
-      <div className={isReview ? "review-card-progress" : "study-card-unframed"}>
+      <div className={(isReview ? "review-card-progress" : "study-card-unframed") + (checked && correct ? " answer-correct" : "")}>
         {isReview && (
           <div className="review-progress-meta">
             <div className="review-origin-label">Прогресс повторения слова</div>
             <ReviewLadder stage={reviewStage} />
+          </div>
+        )}
+        {isReview && checked && correct && successVisible && (
+          <div className="review-card-fireworks feedback-fireworks" aria-hidden="true">
+            <div className="fireworks" style={{ "--fireworks-x": "50%", "--fireworks-y": "48%" }}>
+              <span className="firework firework-one" />
+              <span className="firework firework-two" />
+              <span className="firework firework-three" />
+            </div>
+            <div className="confetti">
+              {Array.from({ length: 42 }, (_, index) => (
+                <span key={index} style={{
+                  left: `${(index * 37) % 100}%`,
+                  animationDelay: `${(index % 12) * 0.035}s`,
+                  "--fall-duration": `${1.05 + (index % 6) * 0.1}s`,
+                  "--confetti-rotation": `${index * 137}deg`,
+                }} />
+              ))}
+            </div>
           </div>
         )}
         <WordImage word={sentence.word} />
@@ -926,7 +945,7 @@ function StudyPage({
                 </>
               ) : (
                 <>
-                  <CorrectFeedback showFireworks={successVisible} />
+                  <CorrectFeedback showFireworks={successVisible && !isReview} />
                 </>
               )}
             </div>
