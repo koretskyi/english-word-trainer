@@ -1230,6 +1230,8 @@ button:disabled {
 
 /* Лестница освоения слова на повторении */
 .review-card-progress {
+  position: relative;
+  overflow: hidden;
   display: grid;
   gap: 28px;
   width: calc(100% + 60px);
@@ -1238,6 +1240,23 @@ button:disabled {
   border: 2px solid #8BCF35;
   border-radius: 18px;
   background: #f7fbea;
+}
+
+/* Успешный ответ подсвечивает саму карточку повторения */
+.review-card-progress.answer-correct {
+  background: #e4f8c9;
+  border-color: #8BCF35;
+  box-shadow: 0 0 0 3px rgba(139, 207, 53, 0.16), 0 8px 24px rgba(91, 145, 35, 0.12);
+  transition: background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.review-card-fireworks {
+  z-index: 5;
+  border-radius: inherit;
+}
+
+.review-card-fireworks .confetti span {
+  animation-name: feedback-confetti-fall;
 }
 
 /* Сокращаем расстояние между русским и английским предложениями */
