@@ -595,7 +595,7 @@ function StudyPage({
       </select>
       <div className="learning-progress-card learning-progress-card-compact" aria-label={`Прогресс уровня: ${selectedLevelProgressPercent}%`}>
         <div className="learning-progress-heading">
-          <span>Прогресс освоения уровня</span>
+          <span>Прогресс</span>
           <strong>{selectedLevelProgressPercent}%</strong>
         </div>
         <div className="learning-progress-track">
