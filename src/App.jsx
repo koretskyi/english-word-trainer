@@ -359,6 +359,96 @@ function ReviewLadder({ stage = 1, compact = false }) {
   );
 }
 
+// Загружает иллюстрацию для текущего слова напрямую из Wikimedia Commons.
+// Изображения не скачиваются в проект и не сохраняются в localStorage.
+function WordImage({ word }) {
+  const [image, setImage] = useState(null);
+  const [status, setStatus] = useState("loading");
+
+  useEffect(() => {
+    if (!word) {
+      setImage(null);
+      setStatus("empty");
+      return undefined;
+    }
+
+    const controller = new AbortController();
+    setImage(null);
+    setStatus("loading");
+
+    const params = new URLSearchParams({
+      action: "query",
+      generator: "search",
+      gsrsearch: String(word).trim(),
+      gsrnamespace: "6",
+      gsrlimit: "10",
+      prop: "imageinfo",
+      iiprop: "url|extmetadata",
+      iiurlwidth: "640",
+      format: "json",
+      origin: "*",
+    });
+
+    fetch(`https://commons.wikimedia.org/w/api.php?${params.toString()}`, {
+      signal: controller.signal,
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`Wikimedia HTTP ${response.status}`);
+        return response.json();
+      })
+      .then((data) => {
+        const pages = Object.values(data.query?.pages || {})
+          .filter((page) => page.imageinfo?.[0]?.thumburl || page.imageinfo?.[0]?.url);
+        const normalizedWord = String(word).toLowerCase().trim();
+        pages.sort((left, right) => {
+          const leftTitle = left.title.toLowerCase().replace(/[^a-z0-9]+/g, " ");
+          const rightTitle = right.title.toLowerCase().replace(/[^a-z0-9]+/g, " ");
+          const leftExact = leftTitle.includes(normalizedWord) ? 1 : 0;
+          const rightExact = rightTitle.includes(normalizedWord) ? 1 : 0;
+          return rightExact - leftExact;
+        });
+        const page = pages[0];
+        const info = page?.imageinfo?.[0];
+        if (!page || !info) throw new Error("No matching image");
+        setImage({
+          url: info.thumburl || info.url,
+          title: page.title.replace(/^File:/, "").replaceAll("_", " "),
+          source: info.descriptionurl || `https://commons.wikimedia.org/wiki/${encodeURIComponent(page.title.replaceAll(" ", "_"))}`,
+          license: info.extmetadata?.LicenseShortName?.value || "Wikimedia Commons",
+        });
+        setStatus("ready");
+      })
+      .catch((error) => {
+        if (error.name !== "AbortError") {
+          console.warn("Не удалось загрузить иллюстрацию слова:", error);
+          setImage(null);
+          setStatus("error");
+        }
+      });
+
+    return () => controller.abort();
+  }, [word]);
+
+  if (status === "loading") {
+    return <div className="word-image-placeholder" aria-live="polite">Подбираю изображение…</div>;
+  }
+  if (status !== "ready" || !image) {
+    return <div className="word-image-placeholder is-empty">Иллюстрация пока не найдена</div>;
+  }
+
+  return (
+    <figure className="word-image-card">
+      <img src={image.url} alt={`Иллюстрация: ${word}`} loading="lazy"
+        onError={() => { setImage(null); setStatus("error"); }} />
+      <figcaption>
+        <a href={image.source} target="_blank" rel="noreferrer" title={image.title}>
+          Источник: Wikimedia Commons · {image.license}
+        </a>
+      </figcaption>
+    </figure>
+  );
+}
+
 // Страница обучения с интервальным повторением.
 function StudyPage({
   sentence,
@@ -771,6 +861,7 @@ function StudyPage({
           <ReviewLadder stage={reviewStage} />
         </div>
       )}
+      <WordImage word={sentence.word} />
       <p className="eyebrow">ПЕРЕВЕДИТЕ НА АНГЛИЙСКИЙ</p>
       <h2 className="russian-sentence">{sentence.russian}</h2>
       <div className="english-section">
