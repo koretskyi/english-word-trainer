@@ -341,7 +341,6 @@ function ReviewLadder({ stage = 1, compact = false }) {
       aria-valuemax={6}
       aria-valuenow={currentStage}
     >
-      {!compact && <span className="review-ladder-caption">Путь освоения</span>}
       <div className="review-ladder-steps">
         {REVIEW_STAGE_ICONS.map((icon, index) => (
           <span
@@ -354,7 +353,6 @@ function ReviewLadder({ stage = 1, compact = false }) {
           </span>
         ))}
       </div>
-      <span className="review-ladder-count">{currentStage}/6</span>
     </div>
   );
 }
@@ -851,7 +849,7 @@ function StudyPage({
       <div className={isReview ? "review-card-progress" : "study-card-unframed"}>
         {isReview && (
           <div className="review-progress-meta">
-            <div className="review-origin-label">↻ Это слово пришло из повторения</div>
+            <div className="review-origin-label">Повторение:</div>
             <ReviewLadder stage={reviewStage} />
           </div>
         )}
