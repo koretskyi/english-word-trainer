@@ -583,6 +583,9 @@ function StudyPage({
   const selectedLevelReviewCount = reviewWords.filter(
     (item) => item.level === selectedLevel
   ).length;
+  const selectedLevelProgressPercent = totalWords
+    ? Math.round((masteredCount / totalWords) * 100)
+    : 0;
   const levelSelector = (
     <div className="level-selector">
       <label htmlFor="study-level">Уровень:</label>
@@ -604,6 +607,10 @@ function StudyPage({
         <strong>{selectedLevelReviewCount}</strong>
         <span>на повторении</span>
       </button>
+      <div className="level-progress-inline" aria-label={`Прогресс уровня ${selectedLevel}: ${selectedLevelProgressPercent}%`}>
+        <span>Прогресс:</span>
+        <strong>{selectedLevelProgressPercent}%</strong>
+      </div>
     </div>
   );
 
@@ -836,25 +843,6 @@ function StudyPage({
       )}
       {levelSelector}
       {statsPanel}
-      <div className="learning-progress-card">
-        <div className="learning-progress-heading">
-          <span>Прогресс обучения</span>
-          <strong>{totalWords ? Math.round((masteredCount / totalWords) * 100) : 0}%</strong>
-        </div>
-        <div
-          className="learning-progress-track"
-          role="progressbar"
-          aria-label={`Прогресс уровня ${selectedLevel}`}
-          aria-valuemin={0}
-          aria-valuemax={totalWords}
-          aria-valuenow={masteredCount}
-        >
-          <div className="learning-progress-fill" style={{
-            width: (totalWords ? (masteredCount / totalWords) * 100 : 0) + "%",
-          }} />
-        </div>
-        <div className="learning-progress-caption">{masteredCount} из {totalWords} слов освоено</div>
-      </div>
       {isReview && (
         <div className="review-card-progress">
           <div className="review-origin-label">↻ Это слово пришло из повторения</div>
