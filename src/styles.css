@@ -3489,14 +3489,29 @@ button:disabled {
 
 
 
-/* Единый экран результата для всех уровней: после ответа скрываем карточку,
-   прогресс, навигацию, поля и дополнительные блоки. */
+/* Единый экран результата для всех уровней: карточка очищается от задания. */
 .answer-result-panel {
+  position: relative;
   min-height: min(62vh, 560px);
   display: grid;
   place-items: center;
   overflow: hidden;
   padding: 24px;
+  border-radius: 18px;
+}
+
+.answer-result-panel.is-correct,
+.answer-result-panel.is-known {
+  background: #e4f8c9;
+  border: 2px solid #8BCF35;
+  box-shadow: 0 0 0 3px rgba(139, 207, 53, 0.16), 0 8px 24px rgba(91, 145, 35, 0.12);
+}
+
+.answer-result-panel.is-incorrect {
+  background: #fff1f2;
+  border: 2px solid #fda4af;
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.10), 0 8px 24px rgba(190, 24, 93, 0.08);
+  animation: incorrect-result-shake 360ms ease-out;
 }
 
 .answer-result-card {
@@ -3506,27 +3521,8 @@ button:disabled {
   width: 100%;
   min-height: clamp(260px, 48vh, 440px);
   overflow: hidden;
-  border: 2px solid transparent;
-  border-radius: 18px;
+  border-radius: inherit;
   text-align: center;
-}
-
-.answer-result-card.is-correct {
-  background: #e4f8c9;
-  border-color: #8BCF35;
-  box-shadow: 0 0 0 3px rgba(139, 207, 53, 0.16), 0 8px 24px rgba(91, 145, 35, 0.12);
-}
-
-.answer-result-card.is-incorrect {
-  background: #fff1f2;
-  border-color: #fda4af;
-  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.10), 0 8px 24px rgba(190, 24, 93, 0.08);
-  animation: incorrect-result-shake 360ms ease-out;
-}
-
-.answer-result-card.is-known {
-  background: #e4f8c9;
-  border-color: #8BCF35;
 }
 
 .answer-result-card .feedback-fireworks {
