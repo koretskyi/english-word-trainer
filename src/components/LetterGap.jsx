@@ -94,22 +94,30 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
       return;
     }
 
-    if (event.key === "Backspace" && !value[index]) {
+    if (event.key === "Backspace") {
       event.preventDefault();
 
-      let previous = index - 1;
-      while (previous >= 0 && !value[previous]) previous--;
+      // Если в текущей клетке есть буква — удаляем её.
+      // Если клетка пустая — удаляем ближайшую заполненную букву слева.
+      let removeIndex = value[index] ? index : index - 1;
+      while (removeIndex >= 0 && !value[removeIndex]) removeIndex--;
 
-      if (previous >= 0) {
+      // В начале слова тоже можно удалить букву: ищем первую заполненную
+      // клетку справа, если слева от курсора букв нет.
+      if (removeIndex < 0) {
+        removeIndex = value.findIndex((letter, position) => position > index && Boolean(letter));
+      }
+
+      if (removeIndex >= 0) {
         const next = [...value];
-        next[previous] = "";
+        next[removeIndex] = "";
         onChange(next);
-        focusAt(previous);
+        focusAt(removeIndex);
         return;
       }
 
-      // If this is the first filled word position, continue deleting
-      // from the end of the previous word instead of stopping here.
+      // Если в текущем слове букв нет, продолжаем удаление в предыдущем поле,
+      // если компонент используется как часть составного ввода.
       if (previousWordValue && previousWordOnChange) {
         let previousWordIndex = previousWordValue.length - 1;
         while (previousWordIndex >= 0 && !previousWordValue[previousWordIndex]) {
