@@ -285,13 +285,13 @@ button:disabled {
 }
 
 .russian-sentence {
-  margin: 0 0 35px;
+  margin: 0 0 16px;
   font-size: clamp(24px, 4vw, 32px);
   line-height: 1.4;
 }
 
 .english-section {
-  padding-top: 28px;
+  padding-top: 8px;
 }
 
 .study-instruction {
