@@ -853,25 +853,6 @@ function StudyPage({
             <ReviewLadder stage={reviewStage} />
           </div>
         )}
-        {isReview && checked && correct && successVisible && (
-          <div className="review-card-fireworks feedback-fireworks" aria-hidden="true">
-            <div className="fireworks" style={{ "--fireworks-x": "50%", "--fireworks-y": "48%" }}>
-              <span className="firework firework-one" />
-              <span className="firework firework-two" />
-              <span className="firework firework-three" />
-            </div>
-            <div className="confetti">
-              {Array.from({ length: 42 }, (_, index) => (
-                <span key={index} style={{
-                  left: `${(index * 37) % 100}%`,
-                  animationDelay: `${(index % 12) * 0.035}s`,
-                  "--fall-duration": `${1.05 + (index % 6) * 0.1}s`,
-                  "--confetti-rotation": `${index * 137}deg`,
-                }} />
-              ))}
-            </div>
-          </div>
-        )}
         <WordImage word={sentence.word} />
         <h2 className="russian-sentence">{sentence.russian}</h2>
         <div className="english-section">
