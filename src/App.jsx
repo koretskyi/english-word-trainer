@@ -792,7 +792,7 @@ function StudyPage({
                 </div>
                 <div className="wrong-answer-word">
                   <span>Ваш ответ</span>
-                  <strong>{answer.join("").trim() || "Не введено"}</strong>
+                  <strong>{answer.join("").trim()}</strong>
                 </div>
               </div>
             </div>
