@@ -1300,6 +1300,23 @@ button:disabled {
   background: #f8faff;
 }
 
+/* Компактная полоса прогресса под строкой уровня. */
+.learning-progress-card-compact {
+  margin: -8px 0 18px;
+  padding: 8px 12px;
+  border-radius: 9px;
+}
+.learning-progress-card-compact .learning-progress-heading {
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+.learning-progress-card-compact .learning-progress-heading strong {
+  font-size: 13px;
+}
+.learning-progress-card-compact .learning-progress-track {
+  height: 5px;
+}
+
 .learning-progress-heading {
   display: flex;
   align-items: center;
