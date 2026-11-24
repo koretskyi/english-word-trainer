@@ -802,7 +802,6 @@ function StudyPage({
             <>
               <CorrectFeedback />
               <div className="correct-answer-word">
-                <span>Правильное слово</span>
                 <strong>{sentence.word}</strong>
               </div>
             </>
