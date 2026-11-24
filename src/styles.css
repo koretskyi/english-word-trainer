@@ -183,6 +183,21 @@ button:disabled {
 
 .word-answer-actions .word-microphone-button {
   min-width: 190px;
+  background: #8BCF35;
+  border-color: #8BCF35;
+  color: #243414;
+}
+
+.word-answer-actions .word-microphone-button:hover:not(:disabled) {
+  background: #7fbd2e;
+  border-color: #7fbd2e;
+}
+
+.word-answer-actions .word-microphone-button.is-listening,
+.word-answer-actions .word-microphone-button:disabled {
+  background: #dff0c8;
+  border-color: #8BCF35;
+  color: #426b20;
 }
 
 .word-answer-actions .word-microphone-button svg {
