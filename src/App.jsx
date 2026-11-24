@@ -607,6 +607,15 @@ function StudyPage({
         <strong>{selectedLevelReviewCount}</strong>
         <span>на повторении</span>
       </button>
+      <div className="learning-progress-card learning-progress-card-compact" aria-label={`Прогресс уровня: ${selectedLevelProgressPercent}%`}>
+        <div className="learning-progress-heading">
+          <span>Прогресс освоения уровня</span>
+          <strong>{selectedLevelProgressPercent}%</strong>
+        </div>
+        <div className="learning-progress-track">
+          <div className="learning-progress-fill" style={{ width: `${selectedLevelProgressPercent}%` }} />
+        </div>
+      </div>
     </div>
   );
 
@@ -838,15 +847,6 @@ function StudyPage({
         </div>
       )}
       {levelSelector}
-      <div className="learning-progress-card learning-progress-card-compact" aria-label={`Прогресс уровня: ${selectedLevelProgressPercent}%`}>
-        <div className="learning-progress-heading">
-          <span>Прогресс освоения уровня</span>
-          <strong>{selectedLevelProgressPercent}%</strong>
-        </div>
-        <div className="learning-progress-track">
-          <div className="learning-progress-fill" style={{ width: `${selectedLevelProgressPercent}%` }} />
-        </div>
-      </div>
       {statsPanel}
       {isReview && (
         <div className="review-card-progress">
