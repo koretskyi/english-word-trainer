@@ -865,7 +865,7 @@ function StudyPage({
               showMistakes={checked && !correct} />
             <span>{parts.slice(1).join("{word}")}</span>
           </div>
-          <p className="study-instruction">ВПИШИТЕ СЛОВО <strong className="target-translation" style={{ fontSize: "18px" }}>{sentence.russianWord || "—"}</strong> на английском:</p>
+          <p className="study-instruction">ВПИШИТЕ СЛОВО <strong className="target-translation">{sentence.russianWord || "—"}</strong> на английском:</p>
           {!checked ? (
             <>
             <div className="form-actions word-answer-actions">
