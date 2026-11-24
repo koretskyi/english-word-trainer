@@ -136,7 +136,7 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
       style={{
         display: "inline-flex",
         alignItems: "baseline",
-        gap: "9px",
+        gap: "13px",
         whiteSpace: "nowrap",
         verticalAlign: "baseline",
       }}
