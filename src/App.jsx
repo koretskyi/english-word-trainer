@@ -608,7 +608,7 @@ function StudyPage({
         <span>на повторении</span>
       </button>
       <div className="level-progress-inline" aria-label={`Прогресс уровня ${selectedLevel}: ${selectedLevelProgressPercent}%`}>
-        <span>Прогресс:</span>
+        <span>Прогресс освоения уровня</span>
         <strong>{selectedLevelProgressPercent}%</strong>
       </div>
     </div>
