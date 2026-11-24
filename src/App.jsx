@@ -472,7 +472,6 @@ function StudyPage({
 }) {
   const [answer, setAnswer] = useState(() => createInitialAnswer(sentence));
   const [checked, setChecked] = useState(false);
-  const [successVisible, setSuccessVisible] = useState(false);
   const [audioFinished, setAudioFinished] = useState(false);
   const [dontKnowClicked, setDontKnowClicked] = useState(false);
   const [markedKnown, setMarkedKnown] = useState(false);
@@ -731,8 +730,7 @@ function StudyPage({
       setChecked(true);
       onComplete(sentence.word, isRight);
       if (isRight) {
-        // Показываем надпись и салюты сразу, не дожидаясь окончания озвучки.
-        setSuccessVisible(true);
+        // Экран результата показывается сразу; озвучка завершится отдельно.
         if (audioEnabled) {
           const started = speakEnglish(englishText, () => setAudioFinished(true));
           if (!started) setAudioFinished(true);
@@ -773,6 +771,23 @@ function StudyPage({
         <h2>На уровне {selectedLevel} пока нет доступных карточек</h2>
         <p>Новые слова закончились, а слова на повторение ещё не подошли по интервалу.</p>
         <p>Выполнено ответов: {completedCount}. Переключи уровень или добавь слова через админку.</p>
+      </section>
+    );
+  }
+
+  if (checked) {
+    const resultState = markedKnown ? "is-known" : correct ? "is-correct" : "is-incorrect";
+    return (
+      <section className={`panel study-panel answer-result-panel ${resultState}`}>
+        <div className={`answer-result-card ${resultState}`} role="status" aria-live="polite">
+          {markedKnown ? (
+            <strong className="known-result-message">✓ Слово перенесено в выученные</strong>
+          ) : correct ? (
+            <CorrectFeedback />
+          ) : (
+            <strong className="incorrect-result-message">✕ Неправильно</strong>
+          )}
+        </div>
       </section>
     );
   }
