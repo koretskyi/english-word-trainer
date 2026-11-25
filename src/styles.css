@@ -166,11 +166,17 @@ button:disabled {
 }
 
 .word-answer-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
   display: flex;
   flex-wrap: nowrap;
   align-items: stretch;
   gap: 12px;
-  margin-top: 18px;
+  margin: 18px -28px -28px;
+  padding: 14px 28px 28px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 -8px 18px rgba(30, 48, 85, 0.06);
 }
 
 .word-answer-actions .button {
@@ -308,6 +314,16 @@ button:disabled {
   text-transform: none;
   letter-spacing: normal;
   font-weight: 800;
+}
+
+.study-panel .russian-sentence,
+.study-panel .english-sentence,
+.study-panel .study-instruction {
+  text-align: center;
+}
+
+.study-panel .english-sentence {
+  justify-content: center;
 }
 
 .russian-sentence .target-translation {
