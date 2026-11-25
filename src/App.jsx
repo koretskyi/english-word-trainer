@@ -398,11 +398,12 @@ const WordImage = ({ sentence }) => {
       const context = String(sentence?.englishTemplate || "")
         .replace(/\{word\}/g, String(word)).trim();
       try {
-        // "abroad" needs a concept-specific image search, so refresh its old generic result.
-        const forceConceptSearch = key === "abroad";
+        // For "abroad", ask the local backend to validate/replace a previously
+        // cached generic image; the backend returns the saved file if it is already suitable.
+        const validateAbroadImage = key === "abroad";
 
         // Fast path: an image already saved on this computer.
-        if (!forceConceptSearch) {
+        if (!validateAbroadImage) {
           const manifestResponse = await fetch("/images/a2/manifest.json", {
             signal: controller.signal,
             cache: "no-store",
