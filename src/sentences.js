@@ -198,7 +198,7 @@ export const SENTENCES = [
   { id: "a2_008", russian: "Она хорошо ладит с коллегами.", englishTemplate: "She gets on well with her {word}.", word: "colleagues",
       russianWord: "коллеги", revealIndices: [2, 6], level: "A2" },
   { id: "a2_009", russian: "Пожалуйста, заполните эту форму.", englishTemplate: "Please fill in this {word}.", word: "form",
-      russianWord: "форма", revealIndices: [1], level: "A2" },
+      russianWord: "форма", imageQuery: "person filling in a form", revealIndices: [1], level: "A2" },
   { id: "a2_010", russian: "Сегодня на улице ветрено.", englishTemplate: "It's quite {word} outside today.", word: "windy",
       russianWord: "ветрено", revealIndices: [2], level: "A2" },
   { id: "a2_011", russian: "Я предпочитаю платить картой.", englishTemplate: "I prefer to pay by {word}.", word: "card",
