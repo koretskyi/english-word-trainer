@@ -395,14 +395,14 @@ function buildA2ImageQuery(sentence) {
   ];
   for (const [pattern, makeQuery] of rules) {
     const match = template.match(pattern);
-    if (match) return makeQuery(match).replace(/\\s+/g, " ").trim();
+    if (match) return makeQuery(match).replace(/\s+/g, " ").trim();
   }
 
   // Keep the action and target; remove grammatical scaffolding that rarely helps image search.
   let query = template
     .replace(/[.!?]/g, "")
-    .replace(/\\b(?:i|you|he|she|it|we|they|my|your|his|her|our|their|a|an|the|to|of|by|for|in|on|at|with|is|are|was|were|am|do|does|did|can|could|would|should|will|have|has|had|need|want|usually|quite|very|please)\\b/gi, " ")
-    .replace(/\\s+/g, " ")
+    .replace(/\b(?:i|you|he|she|it|we|they|my|your|his|her|our|their|a|an|the|to|of|by|for|in|on|at|with|is|are|was|were|am|do|does|did|can|could|would|should|will|have|has|had|need|want|usually|quite|very|please)\b/gi, " ")
+    .replace(/\s+/g, " ")
     .trim();
 
   return query || word;
