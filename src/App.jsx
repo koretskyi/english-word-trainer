@@ -378,34 +378,44 @@ function ReviewLadder({ stage = 1, compact = false }) {
 // Загружает локальную иллюстрацию, а при её отсутствии ищет подходящую в Openverse.
 // Загружает локальное изображение A2 или один раз получает его с Pixabay и сохраняет на диск.
 function buildA2ImageQuery(sentence) {
-  if (sentence?.imageQuery?.trim()) return sentence.imageQuery.trim();
-
   const word = String(sentence?.word || "").trim().toLowerCase();
-  const template = String(sentence?.englishTemplate || "").replace("{word}", word);
-  if (!word || !template) return word;
+  if (!word) return "";
 
-  // Turn common sentence patterns into short, visual English search phrases.
-  const rules = [
-    [/^we were late because of the\s+(.+)\.?$/i, () => `cars stuck in a ${word} jam`],
-    [/^i need to pack my things/i, () => "person packing their belongings"],
-    [/^i need to\s+(.+?)\s+the\s+(.+?)\.?$/i, (match) => `${match[1]} ${match[2]}`],
-    [/^i prefer to\s+(.+?)\s+by\s+(.+?)\.?$/i, (match) => `person ${match[1]} by ${match[2]}`],
-    [/^please fill in this\s+(.+?)\.?$/i, () => "person filling in a form"],
-    [/^she wants to study abroad\.?$/i, () => "abroad"],
-  ];
-  for (const [pattern, makeQuery] of rules) {
-    const match = template.match(pattern);
-    if (match) return makeQuery(match).replace(/\s+/g, " ").trim();
+  if (sentence?.imageQuery?.trim()) {
+    const extra = sentence.imageQuery.trim().replace(new RegExp("\\b" + word + "\\b", "gi"), "").trim();
+    return [word, extra].filter(Boolean).join(" ");
   }
 
-  // Keep the action and target; remove grammatical scaffolding that rarely helps image search.
-  let query = template
-    .replace(/[.!?]/g, "")
-    .replace(/\b(?:i|you|he|she|it|we|they|my|your|his|her|our|their|a|an|the|to|of|by|for|in|on|at|with|is|are|was|were|am|do|does|did|can|could|would|should|will|have|has|had|need|want|usually|quite|very|please)\b/gi, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+  const template = String(sentence?.englishTemplate || "").replace("{word}", word);
+  if (!template) return word;
 
-  return query || word;
+  // Build a short visual phrase from the sentence, then put the target word first.
+  let phrase = "";
+  const rules = [
+    [/^we were late because of the\\s+(.+)\\.?$/i, () => "cars stuck in a jam"],
+    [/^i prefer to\\s+(.+?)\\s+by\\s+(.+?)\\.?$/i, (match) => `person ${match[1]} by`],
+    [/^please fill in this\\s+(.+?)\\.?$/i, () => "person filling in"],
+    [/^i need to\\s+(.+?)\\s+the\\s+(.+?)\\.?$/i, (match) => `${match[1]} ${match[2]}`],
+  ];
+  for (const [pattern, makePhrase] of rules) {
+    const match = template.match(pattern);
+    if (match) {
+      phrase = makePhrase(match);
+      break;
+    }
+  }
+
+  if (!phrase) {
+    phrase = template
+      .replace(/[.!?]/g, "")
+      .replace(new RegExp("\\b" + word + "\\b", "gi"), " ")
+      .replace(/\\b(?:i|you|he|she|it|we|they|my|your|his|her|our|their|a|an|the|to|of|by|for|in|on|at|with|is|are|was|were|am|do|does|did|can|could|would|should|will|have|has|had|need|want|usually|quite|very|please)\\b/gi, " ")
+      .replace(/\\s+/g, " ")
+      .trim();
+  }
+
+  phrase = phrase.replace(new RegExp("\\b" + word + "\\b", "gi"), "").replace(/\\s+/g, " ").trim();
+  return [word, phrase].filter(Boolean).join(" ");
 }
 
 const WordImage = ({ sentence }) => {
