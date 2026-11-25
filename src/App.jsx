@@ -942,10 +942,7 @@ function StudyPage({
             <p className="study-instruction">ВПИШИТЕ СЛОВО <strong className="target-translation">{sentence.russianWord || "—"}</strong> НА АНГЛИЙСКОМ:</p>
           </div>
         </div>
-      </div>
-      <div className="english-section">
-        <div className="answer-area">
-          <div className="form-actions word-answer-actions">
+        <div className="form-actions word-answer-actions">
             <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}`}
               type="button" onClick={startVoiceInput} disabled={voiceListening}
               aria-label="Ввести слово голосом">
@@ -956,9 +953,8 @@ function StudyPage({
               onClick={dontKnow}>Не знаю</button>
             <button className="button button-primary" type="button"
               onClick={knowWord}>Я знаю</button>
-          </div>
-          {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
         </div>
+        {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
       </div>
     </section>
   );
