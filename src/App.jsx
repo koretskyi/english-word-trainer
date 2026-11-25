@@ -942,6 +942,13 @@ function StudyPage({
             <p className="study-instruction">ВПИШИТЕ СЛОВО <strong className="target-translation">{sentence.russianWord || "—"}</strong> НА АНГЛИЙСКОМ:</p>
           </div>
         </div>
+        <div className="word-learning-progress" role="progressbar"
+          aria-label="Прогресс изучения слова"
+          aria-valuemin={0} aria-valuemax={6} aria-valuenow={isReview ? reviewStage : 0}>
+          <span className="word-learning-progress-fill"
+            style={{ width: `${isReview ? (Math.min(6, reviewStage) / 6) * 100 : 0}%` }} />
+          <span className="word-learning-progress-label">Прогресс изучения слова</span>
+        </div>
         <div className="form-actions word-answer-actions">
             <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}`}
               type="button" onClick={startVoiceInput} disabled={voiceListening}
