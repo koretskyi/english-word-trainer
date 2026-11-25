@@ -398,18 +398,23 @@ const WordImage = ({ sentence }) => {
       const context = String(sentence?.englishTemplate || "")
         .replace(/\{word\}/g, String(word)).trim();
       try {
+        // "abroad" needs a concept-specific image search, so refresh its old generic result.
+        const forceConceptSearch = key === "abroad";
+
         // Fast path: an image already saved on this computer.
-        const manifestResponse = await fetch("/images/a2/manifest.json", {
-          signal: controller.signal,
-          cache: "no-store",
-        });
-        if (manifestResponse.ok) {
-          const manifest = await manifestResponse.json();
-          const localImage = manifest[key];
-          if (localImage?.src && localImage?.provider === "Pixabay") {
-            setImage(localImage);
-            setStatus("ready");
-            return;
+        if (!forceConceptSearch) {
+          const manifestResponse = await fetch("/images/a2/manifest.json", {
+            signal: controller.signal,
+            cache: "no-store",
+          });
+          if (manifestResponse.ok) {
+            const manifest = await manifestResponse.json();
+            const localImage = manifest[key];
+            if (localImage?.src && localImage?.provider === "Pixabay") {
+              setImage(localImage);
+              setStatus("ready");
+              return;
+            }
           }
         }
 
