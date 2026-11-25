@@ -344,37 +344,6 @@ function speakEnglish(text, onFinished) {
   return true;
 }
 
-const REVIEW_STAGE_ICONS = ["🌱", "🌿", "🌳", "⭐", "🏆", "👑"];
-
-function ReviewLadder({ stage = 1, compact = false }) {
-  // Stage 6 is the final interval still waiting for a successful answer.
-  // Keep the last icon empty until that final review is passed.
-  const currentStage = Math.min(5, Math.max(1, Number(stage) || 1));
-  return (
-    <div
-      className={compact ? "review-ladder review-ladder-compact" : "review-ladder"}
-      role="progressbar"
-      aria-label={`Путь освоения слова: этап ${currentStage} из 6`}
-      aria-valuemin={1}
-      aria-valuemax={6}
-      aria-valuenow={currentStage}
-    >
-      <div className="review-ladder-steps">
-        {REVIEW_STAGE_ICONS.map((icon, index) => (
-          <span
-            key={icon}
-            className={index < currentStage ? "review-ladder-step reached" : "review-ladder-step"}
-            aria-hidden="true"
-            title={`Этап ${index + 1}`}
-          >
-            {icon}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 // Загружает иллюстрацию для текущего слова напрямую из Wikimedia Commons.
 // Изображения не скачиваются в проект и не сохраняются в localStorage.
 function WordImage({ word }) {
@@ -603,14 +572,7 @@ function StudyPage({
   const levelSelector = isReview ? (
     <div className="review-progress-meta">
       <div className="review-origin-label">Прогресс повторения слова</div>
-      <div className="level-selector">
-
-      <label htmlFor="study-level">Уровень:</label>
-      <select id="study-level" value={selectedLevel}
-        onChange={(event) => setSelectedLevel(event.target.value)}>
-        {levels.map((level) => <option key={level} value={level}>{level}</option>)}
-      </select>
-      <div className="learning-progress-card learning-progress-card-compact" aria-label={`Прогресс уровня: ${selectedLevelProgressPercent}%`}>
+      <div className="learning-progress-card learning-progress-card-compact review-full-progress" aria-label={`Прогресс уровня: ${selectedLevelProgressPercent}%`}>
         <div className="learning-progress-heading">
           <span>Прогресс</span>
           <strong>{selectedLevelProgressPercent}%</strong>
@@ -619,26 +581,30 @@ function StudyPage({
           <div className="learning-progress-fill" style={{ width: `${selectedLevelProgressPercent}%` }} />
         </div>
       </div>
-      <button
-        type="button"
-        className={`level-review-shortcut${isReview ? " is-review-active" : ""}`}
-        onClick={() => {
-          setStatsLevel(selectedLevel);
-          setShowStats(true);
-        }}
-        aria-label={`Открыть статистику: ${selectedLevelReviewCount} слов на повторении уровня ${selectedLevel}`}
-        title={`Слова на повторении уровня ${selectedLevel}`}
-      >
-        <span aria-hidden="true">↻</span>
-        <strong>{selectedLevelReviewCount}</strong>
-        <span>на повторении</span>
-      </button>
-    </div>
-      <ReviewLadder stage={reviewStage} />
+      <div className="level-selector">
+        <label htmlFor="study-level">Уровень:</label>
+        <select id="study-level" value={selectedLevel}
+          onChange={(event) => setSelectedLevel(event.target.value)}>
+          {levels.map((level) => <option key={level} value={level}>{level}</option>)}
+        </select>
+        <button
+          type="button"
+          className="level-review-shortcut is-review-active"
+          onClick={() => {
+            setStatsLevel(selectedLevel);
+            setShowStats(true);
+          }}
+          aria-label={`Открыть статистику: ${selectedLevelReviewCount} слов на повторении уровня ${selectedLevel}`}
+          title={`Слова на повторении уровня ${selectedLevel}`}
+        >
+          <span aria-hidden="true">↻</span>
+          <strong>{selectedLevelReviewCount}</strong>
+          <span>на повторении</span>
+        </button>
+      </div>
     </div>
   ) : (
     <div className="level-selector">
-
       <label htmlFor="study-level">Уровень:</label>
       <select id="study-level" value={selectedLevel}
         onChange={(event) => setSelectedLevel(event.target.value)}>
@@ -655,7 +621,7 @@ function StudyPage({
       </div>
       <button
         type="button"
-        className={`level-review-shortcut${isReview ? " is-review-active" : ""}`}
+        className="level-review-shortcut"
         onClick={() => {
           setStatsLevel(selectedLevel);
           setShowStats(true);
