@@ -1972,7 +1972,7 @@ export const SENTENCES = [
       "russian": "Мне нужно записаться к стоматологу.",
       "englishTemplate": "I need to make an appointment with the {word}.",
       "word": "dentist",
-      "imageQuery": "I need a dentist appointment",
+      "imageQuery": "dentist",
       "russianWord": "стоматолог",
       "revealIndices": [0],
       "level": "A2"
@@ -2072,7 +2072,7 @@ export const SENTENCES = [
       "russian": "Она хочет учиться за границей.",
       "englishTemplate": "She wants to study {word}.",
       "word": "abroad",
-      "imageQuery": "she wants to study abroad",
+      "imageQuery": "abroad",
       "russianWord": "за границей",
       "revealIndices": [3, 4],
       "level": "A2"
@@ -2092,7 +2092,7 @@ export const SENTENCES = [
       "russian": "Наш рейс вылетает в шесть утра.",
       "englishTemplate": "Our {word} leaves at six in the morning.",
       "word": "flight",
-      "imageQuery": "our flight leaves",
+      "imageQuery": "airplane flying",
       "russianWord": "рейс",
       "revealIndices": [1, 3],
       "level": "A2"
@@ -2242,7 +2242,7 @@ export const SENTENCES = [
       "russian": "Мне нужно упаковать вещи сегодня.",
       "englishTemplate": "I need to {word} my things today.",
       "word": "pack",
-      "imageQuery": "I need to pack",
+      "imageQuery": "to pack things",
       "russianWord": "упаковывать",
       "revealIndices": [1, 3],
       "level": "A2"
