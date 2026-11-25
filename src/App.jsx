@@ -827,6 +827,25 @@ function StudyPage({
     return (
       <section className={`panel study-panel answer-result-panel ${resultState}`}>
         <div className={`answer-result-card ${resultState}`} role="status" aria-live="polite">
+          {!markedKnown && (
+            <div className={`answer-review-progress ${correct ? "is-correct" : "is-incorrect"}`}>
+              <div className="answer-review-progress-heading">
+                <strong>{correct ? "Отлично! Прогресс слова" : "Слово отправлено на повторение"}</strong>
+                <span>{correct ? (isReview ? Math.min(6, reviewStage + 1) : 6) : 1} / 6</span>
+              </div>
+              <div className="answer-review-progress-track" role="progressbar"
+                aria-label="Прогресс повторения слова" aria-valuemin={0} aria-valuemax={6}
+                aria-valuenow={correct ? (isReview ? Math.min(6, reviewStage + 1) : 6) : 1}>
+                {Array.from({ length: 6 }, (_, index) => {
+                  const progressStage = correct ? (isReview ? Math.min(6, reviewStage + 1) : 6) : 1;
+                  return <span key={index} className={index < progressStage ? "is-filled" : ""} />;
+                })}
+              </div>
+              <p>{correct
+                ? (isReview && reviewStage < 6 ? "Следующий этап повторения пройден." : "Слово освоено!")
+                : "Повтори это слово позже, чтобы закрепить его."}</p>
+            </div>
+          )}
           {markedKnown ? (
             <strong className="known-result-message">✓ Слово перенесено в выученные</strong>
           ) : correct ? (
