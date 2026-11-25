@@ -452,9 +452,6 @@ const WordImage = ({ sentence }) => {
         <a href={image.source || "https://pixabay.com/"} target="_blank" rel="noreferrer" title={image.title}>
           Источник: Pixabay{image.creator ? ` · ${image.creator}` : ""}
         </a>
-        <div style={{ marginTop: "6px", fontSize: "12px", color: "#777", overflowWrap: "anywhere" }}>
-          Запрос Pixabay: {image.searchQuery || sentence?.imageQuery || word}
-        </div>
       </figcaption>
     </figure>
   );
