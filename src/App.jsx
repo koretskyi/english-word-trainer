@@ -891,6 +891,7 @@ function StudyPage({
           ) : correct ? (
             <>
               <CorrectFeedback />
+              <WordImage sentence={sentence} />
               <div className="correct-answer-word is-correct-result">
                 <strong>{sentence.word}</strong>
               </div>
