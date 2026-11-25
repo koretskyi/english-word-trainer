@@ -484,15 +484,15 @@ def get_or_download_a2_image(payload: A2ImageRequest):
     if len(target_tokens) != 1:
         raise HTTPException(status_code=400, detail="Для поиска изображения ожидается одно английское слово.")
 
-    # Use the second exact-tag result from Pixabay's relevance-ordered results.
+    # Prefer the second exact-tag result; fall back to the first when only one exists.
     matching_hits = [
         hit for hit in hits
         if target in re.findall(r"[a-z]+", str(hit.get("tags", "")).lower())
     ]
-    if len(matching_hits) < 2:
-        raise HTTPException(status_code=404, detail=f"Pixabay нашёл меньше двух подходящих фотографий для «{word}».")
+    if not matching_hits:
+        raise HTTPException(status_code=404, detail=f"Pixabay не нашёл фотографий с точным тегом «{word}».")
 
-    selected = matching_hits[1]
+    selected = matching_hits[1] if len(matching_hits) >= 2 else matching_hits[0]
     image_url = selected.get("webformatURL")
     if not image_url:
         raise HTTPException(status_code=404, detail="Pixabay не вернул ссылку на изображение.")
