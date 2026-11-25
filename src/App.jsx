@@ -381,45 +381,84 @@ function buildA2ImageQuery(sentence) {
   const word = String(sentence?.word || "").trim().toLowerCase();
   if (!word) return "";
 
-  // Manual phrase is treated as the action + subject; target word always goes first.
-  if (sentence?.imageQuery?.trim()) {
-    const phrase = sentence.imageQuery.trim()
-      .replace(new RegExp("\\b" + word + "\\b", "gi"), "")
-      .replace(/\\s+/g, " ")
-      .trim();
-    return [word, phrase].filter(Boolean).join(" ");
-  }
-
   const template = String(sentence?.englishTemplate || "").replace("{word}", word);
   if (!template) return word;
 
-  let phrase = "";
-  const rules = [
-    [/^can you lend me your phone charger[?.!]*$/i, () => "phone charger lend"],
-    [/^we were late because of the\\s+(.+)\\.?$/i, () => "cars stuck in a jam"],
-    [/^i prefer to\\s+(.+?)\\s+by\\s+(.+?)\\.?$/i, (match) => `person ${match[1]} paying`],
-    [/^please fill in this\\s+(.+?)\\.?$/i, () => "person filling in"],
-    [/^i need to\\s+(.+?)\\s+the\\s+(.+?)\\.?$/i, (match) => `${match[1]} person`],
-  ];
-  for (const [pattern, makePhrase] of rules) {
-    const match = template.match(pattern);
-    if (match) {
-      phrase = makePhrase(match);
-      break;
-    }
+  const tokens = template
+    .toLowerCase()
+    .replace(/[’']/g, "")
+    .match(/[a-z]+/g) || [];
+
+  const stopWords = new Set([
+    "i", "you", "he", "she", "it", "we", "they", "me", "my", "your",
+    "his", "her", "our", "their", "a", "an", "the", "this", "that",
+    "to", "of", "by", "for", "in", "at", "with", "from", "because",
+    "is", "are", "am", "was", "were", "be", "been", "being", "do",
+    "does", "did", "can", "could", "would", "should", "will", "have",
+    "has", "had", "need", "prefer", "usually", "quite", "very", "more",
+    "little", "please", "dont", "me", "along", "outside", "today",
+    "yesterday", "together", "near", "well", "long", "how"
+  ]);
+
+  const verbs = new Set([
+    "make", "made", "leave", "left", "meet", "met", "speak", "spoke",
+    "receive", "received", "cook", "cooked", "buy", "bought", "get",
+    "gets", "got", "fill", "filled", "pay", "paid", "lend", "lent",
+    "enjoy", "walk", "walking", "close", "closes", "do", "does",
+    "take", "takes", "took", "look", "looking", "forget", "forgot",
+    "travel", "travels", "traveling", "run", "runs", "open", "opened",
+    "sit", "sits", "read", "reads", "eat", "eats", "drink", "drinks",
+    "like", "likes", "want", "wants", "work", "works", "go", "goes"
+  ]);
+
+  const targetIndex = tokens.indexOf(word);
+  if (targetIndex < 0) return word;
+
+  // Keep a noun immediately before the target when it forms a compound noun:
+  // "phone charger", "train station".
+  const previous = tokens[targetIndex - 1];
+  const compoundModifiers = new Set([
+    "phone", "train", "bus", "credit", "bank", "coffee", "car",
+    "flight", "ticket", "shopping", " swimming"
+  ]);
+  const compound = previous && compoundModifiers.has(previous) ? previous : "";
+
+  const meaningful = tokens.filter((token) => !stopWords.has(token));
+  const targetIsVerb = verbs.has(word);
+  const targetIsAdverb = word.endsWith("ly") && !["family", "colleague"].includes(word);
+  const targetIsAdjective = ["windy", "affordable"].includes(word);
+
+  if (targetIsVerb) {
+    return [word, ...meaningful.filter((token) => token !== word)].join(" ");
   }
 
-  if (!phrase) {
-    phrase = template
-      .replace(/[.!?]/g, "")
-      .replace(new RegExp("\\b" + word + "\\b", "gi"), " ")
-      .replace(/\\b(?:i|you|he|she|it|we|they|my|your|his|her|our|their|a|an|the|to|of|by|for|in|on|at|with|is|are|was|were|am|do|does|did|can|could|would|should|will|have|has|had|need|want|usually|quite|very|please)\\b/gi, " ")
-      .replace(/\\s+/g, " ")
-      .trim();
+  if (targetIsAdverb) {
+    const action = meaningful.find((token) => verbs.has(token) && token !== word);
+    return [action, word, ...meaningful.filter((token) => token !== word && token !== action)]
+      .filter(Boolean).join(" ");
   }
 
-  phrase = phrase.replace(new RegExp("\\b" + word + "\\b", "gi"), "").replace(/\\s+/g, " ").trim();
-  return [word, phrase].filter(Boolean).join(" ");
+  if (targetIsAdjective) {
+    return [word, ...meaningful.filter((token) => token !== word)].join(" ");
+  }
+
+  const verbCandidates = meaningful
+    .map((token, index) => ({ token, index }))
+    .filter(({ token }) => verbs.has(token) && token !== word);
+  const precedingVerbs = verbCandidates.filter(({ index }) => {
+    const originalIndex = tokens.indexOf(meaningful[index]);
+    return originalIndex < targetIndex;
+  });
+  const action = precedingVerbs.length
+    ? precedingVerbs[precedingVerbs.length - 1].token
+    : verbCandidates[0]?.token || "";
+
+  // Search queries start with the complete target noun phrase, then its action,
+  // followed by any useful remaining context. The target is never duplicated.
+  const remainder = meaningful.filter((token) =>
+    token !== word && token !== compound && token !== action
+  );
+  return [compound, word, action, ...remainder].filter(Boolean).join(" ");
 }
 
 const WordImage = ({ sentence }) => {
