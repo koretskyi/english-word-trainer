@@ -377,7 +377,8 @@ function ReviewLadder({ stage = 1, compact = false }) {
 
 // Загружает иллюстрацию для текущего слова напрямую из Wikimedia Commons.
 // Изображения не скачиваются в проект и не сохраняются в localStorage.
-function WordImage({ word }) {
+function WordImage({ sentence }) {
+  const word = sentence?.word;
   const [image, setImage] = useState(null);
   const [status, setStatus] = useState("loading");
 
@@ -412,8 +413,12 @@ function WordImage({ word }) {
 
       try {
         const params = new URLSearchParams({
-          q: String(word).trim(),
-          page_size: "10",
+          q: [
+            String(word).trim(),
+            String(sentence?.russian || "").trim(),
+            String(sentence?.englishTemplate || "").replace(/\{word\}/g, String(word)).trim(),
+          ].filter(Boolean).join(" "),
+          page_size: "20",
           mature: "false",
           filter_dead: "true",
         });
@@ -947,7 +952,7 @@ function StudyPage({
             style={{ width: `${isReview ? (Math.min(6, reviewStage) / 6) * 100 : 0}%` }} />
           <span className="word-learning-progress-label">Прогресс изучения слова</span>
         </div>
-        <WordImage word={sentence.word} />
+        <WordImage sentence={sentence} />
         <h2 className="russian-sentence">{renderRussianSentence(sentence.russian, sentence.russianWord)}</h2>
         <div className="english-section">
           <div className="answer-area">
