@@ -113,9 +113,8 @@ async function downloadWord(word) {
   const card = cardsByWord.get(word);
   // Search for the meaning shown on the actual learning card, not an isolated translation.
   // Curated visual intent stays primary; the card sentence disambiguates the context.
-  const query = searchTerms[word] || [
-    word,
-    card?.russian,
+  const query = [
+    searchTerms[word] || word,
     card?.englishTemplate?.replace(/\{word\}/g, word),
   ].filter(Boolean).join(" ");
   const params = new URLSearchParams({
@@ -170,7 +169,7 @@ async function downloadWord(word) {
   const metadata = await sharp(optimized).metadata();
   return {
     src: `/images/a2/${filename}`,
-    optimizedVersion: 1,
+    optimizedVersion: 2,
     format: "webp",
     width: metadata.width || 0,
     height: metadata.height || 0,
@@ -191,7 +190,7 @@ let downloaded = 0, skipped = 0, failed = 0;
 
 for (const word of words) {
   const existing = manifest[word];
-  if (existing?.provider === "Openverse" && existing?.optimizedVersion === 1 && existing?.src) {
+  if (existing?.provider === "Openverse" && existing?.optimizedVersion === 2 && existing?.src) {
     try {
       await access(path.join(outputDir, path.basename(existing.src)));
       console.log(`✓ ${word}: уже есть`);
