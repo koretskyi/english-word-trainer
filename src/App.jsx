@@ -448,11 +448,6 @@ const WordImage = ({ sentence }) => {
     <figure className="word-image-card">
       <img src={image.src} alt={`Иллюстрация: ${word}`} loading="lazy"
         onError={() => { setImage(null); setStatus("error"); }} />
-      <figcaption>
-        <a href={image.source || "https://pixabay.com/"} target="_blank" rel="noreferrer" title={image.title}>
-          Источник: Pixabay{image.creator ? ` · ${image.creator}` : ""}
-        </a>
-      </figcaption>
     </figure>
   );
 };
