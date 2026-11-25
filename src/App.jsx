@@ -412,7 +412,9 @@ const WordImage = ({ sentence }) => {
 
       // Curated visual descriptions prevent ambiguous words from returning unrelated images.
       const visualQueries = {
-        entrance: ["building entrance doorway front door", "entrance to a building door"],
+        entrance: ["building entrance doorway front door", "entrance door close-up with visible doorway"],
+        leave: ["person leaving home through front door", "person walking out of a house doorway"],
+        kettle: ["electric water kettle appliance close-up", "electric kettle on countertop isolated product photo"],
         medicine: ["medicine bottle pills tablets pharmacy", "medical tablets in a medicine bottle"],
         useful: ["useful everyday tool practical object", "person using a useful tool"],
       };
