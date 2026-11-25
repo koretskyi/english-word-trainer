@@ -392,27 +392,45 @@ function WordImage({ word }) {
     setImage(null);
     setStatus("loading");
 
-    const params = new URLSearchParams({
-      action: "query",
-      generator: "search",
-      gsrsearch: String(word).trim(),
-      gsrnamespace: "6",
-      gsrlimit: "10",
-      prop: "imageinfo",
-      iiprop: "url|extmetadata",
-      iiurlwidth: "640",
-      format: "json",
-      origin: "*",
-    });
+    async function loadWordImage() {
+      try {
+        // Сначала ищем заранее скачанную локальную картинку для A2.
+        const manifestResponse = await fetch("/images/a2/manifest.json", {
+          signal: controller.signal,
+        });
+        if (manifestResponse.ok) {
+          const manifest = await manifestResponse.json();
+          const localImage = manifest[String(word).toLowerCase().trim()];
+          if (localImage?.src) {
+            setImage({ ...localImage, url: localImage.src });
+            setStatus("ready");
+            return;
+          }
+        }
+      } catch (error) {
+        if (error.name === "AbortError") return;
+        // Если локальной библиотеки ещё нет, используем прежний онлайн-поиск.
+      }
 
-    fetch(`https://commons.wikimedia.org/w/api.php?${params.toString()}`, {
-      signal: controller.signal,
-    })
-      .then((response) => {
+      const params = new URLSearchParams({
+        action: "query",
+        generator: "search",
+        gsrsearch: String(word).trim(),
+        gsrnamespace: "6",
+        gsrlimit: "10",
+        prop: "imageinfo",
+        iiprop: "url|extmetadata",
+        iiurlwidth: "640",
+        format: "json",
+        origin: "*",
+      });
+
+      try {
+        const response = await fetch(`https://commons.wikimedia.org/w/api.php?${params.toString()}`, {
+          signal: controller.signal,
+        });
         if (!response.ok) throw new Error(`Wikimedia HTTP ${response.status}`);
-        return response.json();
-      })
-      .then((data) => {
+        const data = await response.json();
         const pages = Object.values(data.query?.pages || {})
           .filter((page) => page.imageinfo?.[0]?.thumburl || page.imageinfo?.[0]?.url);
         const normalizedWord = String(word).toLowerCase().trim();
@@ -433,15 +451,16 @@ function WordImage({ word }) {
           license: info.extmetadata?.LicenseShortName?.value || "Wikimedia Commons",
         });
         setStatus("ready");
-      })
-      .catch((error) => {
+      } catch (error) {
         if (error.name !== "AbortError") {
           console.warn("Не удалось загрузить иллюстрацию слова:", error);
           setImage(null);
           setStatus("error");
         }
-      });
+      }
+    }
 
+    loadWordImage();
     return () => controller.abort();
   }, [word]);
 
