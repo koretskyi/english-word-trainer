@@ -400,10 +400,10 @@ const WordImage = ({ sentence }) => {
       try {
         // For "abroad", ask the local backend to validate/replace a previously
         // cached generic image; the backend returns the saved file if it is already suitable.
-        const validateAbroadImage = key === "abroad";
+        const validateCachedImage = key === "abroad" || key === "flight";
 
         // Fast path: an image already saved on this computer.
-        if (!validateAbroadImage) {
+        if (!validateCachedImage) {
           const manifestResponse = await fetch("/images/a2/manifest.json", {
             signal: controller.signal,
             cache: "no-store",
