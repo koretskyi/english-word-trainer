@@ -420,11 +420,25 @@ const WordImage = ({ sentence }) => {
           body: JSON.stringify({ word: key, context }),
           signal: controller.signal,
         });
-        if (!response.ok) {
-          const details = await response.json().catch(() => ({}));
-          throw new Error(details.detail || `Image API HTTP ${response.status}`);
+        const responseType = response.headers.get("content-type") || "";
+        const responseBody = await response.text();
+        let responseData = {};
+        if (responseType.includes("application/json")) {
+          try {
+            responseData = JSON.parse(responseBody);
+          } catch {
+            throw new Error("Сервер изображений вернул повреждённый JSON.");
+          }
+        } else {
+          const preview = responseBody.slice(0, 120).replace(/\s+/g, " ");
+          throw new Error(
+            `Вместо JSON получен HTML/текст (HTTP ${response.status}). Проверь, что запущен актуальный backend на 127.0.0.1:8001 и открыт Vite на 5173. Ответ: ${preview}`
+          );
         }
-        const savedImage = await response.json();
+        if (!response.ok) {
+          throw new Error(responseData.detail || `Image API HTTP ${response.status}`);
+        }
+        const savedImage = responseData;
         setImage(savedImage);
         setStatus("ready");
       } catch (error) {
