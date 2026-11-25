@@ -465,7 +465,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
 
     # Reuse the local image only when it was downloaded for this exact query.
     # If an A2 exception changes its query, refresh only that word's image.
-    if existing and existing.get("searchVersion") == 6 and existing.get("searchQuery") == search_query and existing.get("src") and existing.get("provider") == "Pixabay":
+    if existing and existing.get("searchVersion") == 7 and existing.get("searchQuery") == search_query and existing.get("src") and existing.get("provider") == "Pixabay":
         existing_file = PIXABAY_ROOT / "public" / existing["src"].lstrip("/")
         if existing_file.is_file():
             return existing
@@ -512,7 +512,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         "license": "Pixabay Content License",
         "tags": str(selected.get("tags") or ""),
         "imageId": selected.get("id"),
-        "searchVersion": 6,
+        "searchVersion": 7,
         "searchQuery": search_query,
     }
     manifest[word] = entry
