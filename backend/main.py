@@ -517,7 +517,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
 
     # Reuse the local image only when it was downloaded for this exact query.
     # If an A2 exception changes its query, refresh only that word's image.
-    if existing and existing.get("searchVersion") == 9 and existing.get("searchQuery") == search_query and existing.get("src") and existing.get("provider") == "Pixabay":
+    if existing and existing.get("searchVersion") == 10 and existing.get("searchQuery") == search_query and existing.get("src") and existing.get("provider") == "Pixabay":
         existing_file = PIXABAY_ROOT / "public" / existing["src"].lstrip("/")
         if existing_file.is_file():
             return existing
@@ -536,20 +536,60 @@ def get_or_download_a2_image(payload: A2ImageRequest):
     if not hits:
         raise HTTPException(status_code=404, detail=f"Pixabay не нашёл фотографий для «{word}».")
 
-    # Only evaluate the five results requested from Pixabay. Keep Pixabay's
-    # relevance order as the tie-breaker, but prefer the result with the best tags.
-    candidates = hits[:5]
-    scored_hits = [
-        (score_pixabay_hit(hit, word, search_query), index, hit)
-        for index, hit in enumerate(candidates)
-    ]
-    scored_hits.sort(key=lambda item: (-item[0], item[1]))
+    # Rank the five primary results by tag relevance. If none reaches the
+    # minimum, retry once with a simpler query focused on the scene, not the
+    # target word (which may be abstract or absent from photo tags).
+    def rank_hits(items: list[dict]) -> list[tuple[int, int, dict]]:
+        ranked = [
+            (score_pixabay_hit(hit, word, search_query), index, hit)
+            for index, hit in enumerate(items[:5])
+        ]
+        ranked.sort(key=lambda item: (-item[0], item[1]))
+        return ranked
+
+    MIN_RELEVANCE_SCORE = 4
+    scored_hits = rank_hits(hits)
     best_score, _, selected = scored_hits[0]
+
+    if best_score < MIN_RELEVANCE_SCORE:
+        target_forms = pixabay_token_forms(word)
+        fallback_tokens = [
+            token for token in re.findall(r"[a-z]+", search_query.lower())
+            if token not in PIXABAY_TAG_STOPWORDS
+            and len(token) >= 3
+            and not (pixabay_token_forms(token) & target_forms)
+        ]
+        fallback_query = " ".join(dict.fromkeys(fallback_tokens))
+        if fallback_query and fallback_query.lower() != search_query.lower():
+            logger.info(
+                "Pixabay relevance too low for %r (score %s); retrying with %r",
+                word, best_score, fallback_query,
+            )
+            fallback_data = pixabay_search(word, fallback_query, api_key)
+            fallback_hits = fallback_data.get("hits") or []
+            if fallback_hits:
+                fallback_ranked = [
+                    (score_pixabay_hit(hit, word, fallback_query), index, hit)
+                    for index, hit in enumerate(fallback_hits[:5])
+                ]
+                fallback_ranked.sort(key=lambda item: (-item[0], item[1]))
+                fallback_score, _, fallback_selected = fallback_ranked[0]
+                if fallback_score > best_score:
+                    best_score, selected = fallback_score, fallback_selected
+                    search_query = fallback_query
+                    scored_hits = fallback_ranked
+
     logger.info(
-        "Pixabay tag ranking for %r: %s",
+        "Pixabay tag ranking for %r (best score %s): %s",
         word,
+        best_score,
         [(score, str(hit.get("tags") or "")) for score, _, hit in scored_hits],
     )
+    if best_score < MIN_RELEVANCE_SCORE:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Pixabay не нашёл достаточно подходящую фотографию для «{word}».",
+        )
     image_url = selected.get("webformatURL")
     if not image_url:
         raise HTTPException(status_code=404, detail="Pixabay не вернул ссылку на изображение.")
@@ -576,7 +616,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         "license": "Pixabay Content License",
         "tags": str(selected.get("tags") or ""),
         "imageId": selected.get("id"),
-        "searchVersion": 9,
+        "searchVersion": 10,
         "searchQuery": search_query,
     }
     manifest[word] = entry
