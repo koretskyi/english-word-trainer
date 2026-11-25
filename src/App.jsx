@@ -393,7 +393,7 @@ function buildA2ImageQuery(sentence) {
     "i", "you", "he", "she", "it", "we", "they", "me", "my", "your",
     "his", "her", "our", "their", "a", "an", "the", "this", "that",
     "to", "of", "by", "for", "in", "at", "with", "from", "because",
-    "is", "are", "am", "was", "were", "be", "been", "being", "do",
+    "is", "are", "am", "was", "were", "be", "been", "being",
     "does", "did", "can", "could", "would", "should", "will", "have",
     "has", "had", "need", "prefer", "usually", "quite", "very", "more", "enjoy", "forget", "six",
     "little", "please", "dont", "me", "along", "outside", "today",
