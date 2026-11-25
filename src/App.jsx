@@ -383,7 +383,7 @@ const WordImage = ({ sentence }) => {
   const [status, setStatus] = useState("loading");
 
   useEffect(() => {
-    if (!word) {
+    if (!word || sentence?.level !== "A2") {
       setImage(null);
       setStatus("empty");
       return undefined;
@@ -406,7 +406,7 @@ const WordImage = ({ sentence }) => {
         if (manifestResponse.ok) {
           const manifest = await manifestResponse.json();
           const localImage = manifest[key];
-          if (localImage?.src) {
+          if (localImage?.src && localImage?.provider === "Pixabay") {
             setImage(localImage);
             setStatus("ready");
             return;
