@@ -1305,8 +1305,10 @@ button:disabled {
 }
 
 .review-progress-meta {
-  width: 100%;
+  box-sizing: border-box;
+  width: calc(100% + 60px);
   max-width: none;
+  margin: 0 0 20px -30px;
   align-self: stretch;
 }
 
