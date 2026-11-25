@@ -179,7 +179,7 @@ button:disabled {
   position: absolute;
   inset: 0 auto 0 0;
   border-radius: inherit;
-  background: #8BCF35;
+  background: #3157d5;
   transition: width 220ms ease;
 }
 
