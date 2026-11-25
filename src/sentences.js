@@ -181,45 +181,65 @@ export const SENTENCES = [
       level: "A1"
     },
       // A2 — повседневные ситуации
-  { id: "a2_001", russian: "Мне нужно записаться к врачу.", englishTemplate: "I need to make an {word} with the doctor.", word: "appointment", pixabayQuery: "doctor appointment",
+  { id: "a2_001", russian: "Мне нужно записаться к врачу.", englishTemplate: "I need to make an {word} with the doctor.", word: "appointment",
+    pixabayQuery: "person booking doctor appointment",
       russianWord: "запись на приём", revealIndices: [2, 5], level: "A2" },
-  { id: "a2_002", russian: "Я забыл свой кошелёк дома.", englishTemplate: "I left my {word} at home.", word: "wallet", pixabayQuery: "wallet",
+  { id: "a2_002", russian: "Я забыл свой кошелёк дома.", englishTemplate: "I left my {word} at home.", word: "wallet",
+    pixabayQuery: "person searching for wallet at home",
       russianWord: "кошелёк", revealIndices: [2, 4], level: "A2" },
-  { id: "a2_003", russian: "Мы встретились возле вокзала.", englishTemplate: "We met near the train {word}.", word: "station", pixabayQuery: "train station",
+  { id: "a2_003", russian: "Мы встретились возле вокзала.", englishTemplate: "We met near the train {word}.", word: "station",
+    pixabayQuery: "train station entrance",
       russianWord: "вокзал", revealIndices: [2, 5], level: "A2" },
-  { id: "a2_004", russian: "Можешь говорить немного медленнее?", englishTemplate: "Could you speak a little more {word}?", word: "slowly", pixabayQuery: "person speaking",
+  { id: "a2_004", russian: "Можешь говорить немного медленнее?", englishTemplate: "Could you speak a little more {word}?", word: "slowly",
+    pixabayQuery: "person speaking slowly to someone",
       russianWord: "медленнее", revealIndices: [2, 4], level: "A2" },
-  { id: "a2_005", russian: "Я получил сообщение от друга.", englishTemplate: "I received a {word} from my friend.", word: "message", pixabayQuery: "text message phone",
+  { id: "a2_005", russian: "Я получил сообщение от друга.", englishTemplate: "I received a {word} from my friend.", word: "message",
+    pixabayQuery: "person reading text message on smartphone",
       russianWord: "сообщение", revealIndices: [2, 5], level: "A2" },
-  { id: "a2_006", russian: "Вчера мы приготовили ужин вместе.", englishTemplate: "We {word} dinner together yesterday.", word: "cooked", pixabayQuery: "cooking dinner",
+  { id: "a2_006", russian: "Вчера мы приготовили ужин вместе.", englishTemplate: "We {word} dinner together yesterday.", word: "cooked",
+    pixabayQuery: "people cooking dinner together",
       russianWord: "приготовили", revealIndices: [2, 4], level: "A2" },
-  { id: "a2_007", russian: "Мне нужно купить билет.", englishTemplate: "I need to buy a {word}.", word: "ticket", pixabayQuery: "train ticket",
+  { id: "a2_007", russian: "Мне нужно купить билет.", englishTemplate: "I need to buy a {word}.", word: "ticket",
+    pixabayQuery: "buying train ticket at ticket machine",
       russianWord: "билет", revealIndices: [2, 4], level: "A2" },
-  { id: "a2_008", russian: "Она хорошо ладит с коллегами.", englishTemplate: "She gets on well with her {word}.", word: "colleagues", pixabayQuery: "coworkers office",
+  { id: "a2_008", russian: "Она хорошо ладит с коллегами.", englishTemplate: "She gets on well with her {word}.", word: "colleagues",
+    pixabayQuery: "coworkers working together in office",
       russianWord: "коллеги", revealIndices: [2, 6], level: "A2" },
-  { id: "a2_009", russian: "Пожалуйста, заполните эту форму.", englishTemplate: "Please fill in this {word}.", word: "form", pixabayQuery: "filling out form",
+  { id: "a2_009", russian: "Пожалуйста, заполните эту форму.", englishTemplate: "Please fill in this {word}.", word: "form",
+    pixabayQuery: "person filling out paper form",
       russianWord: "форма", imageQuery: "person filling in a form", revealIndices: [1], level: "A2" },
-  { id: "a2_010", russian: "Сегодня на улице ветрено.", englishTemplate: "It's quite {word} outside today.", word: "windy", pixabayQuery: "windy weather trees",
+  { id: "a2_010", russian: "Сегодня на улице ветрено.", englishTemplate: "It's quite {word} outside today.", word: "windy",
+    pixabayQuery: "wind blowing trees outside",
       russianWord: "ветрено", revealIndices: [2], level: "A2" },
-  { id: "a2_011", russian: "Я предпочитаю платить картой.", englishTemplate: "I prefer to pay by {word}.", word: "card", pixabayQuery: "credit card payment",
+  { id: "a2_011", russian: "Я предпочитаю платить картой.", englishTemplate: "I prefer to pay by {word}.", word: "card",
+    pixabayQuery: "paying by credit card at shop",
       russianWord: "карта", imageQuery: "person paying by card", revealIndices: [1], level: "A2" },
-  { id: "a2_012", russian: "Мы опоздали из-за пробок.", englishTemplate: "We were late because of the {word}.", word: "traffic", pixabayQuery: "traffic jam cars",
+  { id: "a2_012", russian: "Мы опоздали из-за пробок.", englishTemplate: "We were late because of the {word}.", word: "traffic",
+    pixabayQuery: "traffic jam cars on road",
       russianWord: "пробки", revealIndices: [2, 5], level: "A2" },
-  { id: "a2_013", russian: "Можешь одолжить мне зарядку?", englishTemplate: "Can you lend me your phone {word}?", word: "charger", pixabayQuery: "phone charger",
+  { id: "a2_013", russian: "Можешь одолжить мне зарядку?", englishTemplate: "Can you lend me your phone {word}?", word: "charger",
+    pixabayQuery: "phone charger plugged into smartphone",
       russianWord: "зарядка", revealIndices: [2, 5], level: "A2" },
-  { id: "a2_014", russian: "Мне нравится гулять вдоль реки.", englishTemplate: "I enjoy walking along the {word}.", word: "river", pixabayQuery: "river",
+  { id: "a2_014", russian: "Мне нравится гулять вдоль реки.", englishTemplate: "I enjoy walking along the {word}.", word: "river",
+    pixabayQuery: "river flowing water landscape",
       russianWord: "река", revealIndices: [2], level: "A2" },
-  { id: "a2_015", russian: "Магазин закрывается в шесть.", englishTemplate: "The shop {word} at six.", word: "closes", pixabayQuery: "shop closed sign",
+  { id: "a2_015", russian: "Магазин закрывается в шесть.", englishTemplate: "The shop {word} at six.", word: "closes",
+    pixabayQuery: "shop closing for the day sign",
       russianWord: "закрывается", revealIndices: [2], level: "A2" },
-  { id: "a2_016", russian: "Мне нужно постирать одежду.", englishTemplate: "I need to do the {word}.", word: "laundry", pixabayQuery: "doing laundry washing machine",
+  { id: "a2_016", russian: "Мне нужно постирать одежду.", englishTemplate: "I need to do the {word}.", word: "laundry",
+    pixabayQuery: "person doing laundry washing machine",
       russianWord: "стирка", revealIndices: [2, 4], level: "A2" },
-  { id: "a2_017", russian: "Сколько времени занимает дорога?", englishTemplate: "How long does the {word} take?", word: "journey", pixabayQuery: "road journey",
+  { id: "a2_017", russian: "Сколько времени занимает дорога?", englishTemplate: "How long does the {word} take?", word: "journey",
+    pixabayQuery: "long road journey by car",
       russianWord: "поездка", revealIndices: [2, 4], level: "A2" },
-  { id: "a2_018", russian: "Я ищу недорогую квартиру.", englishTemplate: "I'm looking for an {word} apartment.", word: "affordable", pixabayQuery: "affordable apartment",
+  { id: "a2_018", russian: "Я ищу недорогую квартиру.", englishTemplate: "I'm looking for an {word} apartment.", word: "affordable",
+    pixabayQuery: "affordable apartment interior",
       russianWord: "доступный", revealIndices: [2, 6], level: "A2" },
-  { id: "a2_019", russian: "Не забудь взять зонт.", englishTemplate: "Don't forget to take your {word}.", word: "umbrella", pixabayQuery: "person holding umbrella rain",
+  { id: "a2_019", russian: "Не забудь взять зонт.", englishTemplate: "Don't forget to take your {word}.", word: "umbrella",
+    pixabayQuery: "person holding umbrella in rain",
       russianWord: "зонт", revealIndices: [2, 5], level: "A2" },
-  { id: "a2_020", russian: "Я обычно добираюсь на работу на автобусе.", englishTemplate: "I usually travel to work by {word}.", word: "bus", pixabayQuery: "city bus",
+  { id: "a2_020", russian: "Я обычно добираюсь на работу на автобусе.", englishTemplate: "I usually travel to work by {word}.", word: "bus",
+    pixabayQuery: "city bus on street",
       russianWord: "автобус", revealIndices: [1], level: "A2" },
 
   // B1 — работа, общение и повседневные решения
@@ -622,6 +642,7 @@ export const SENTENCES = [
     russian: "Можно мне одолжить твою ручку?",
     englishTemplate: "Can I {word} your pen?",
     word: "borrow",
+    pixabayQuery: "borrowing a pen from another person",
       russianWord: "одолжить",
     revealIndices: [2, 4],
     level: "A2"
@@ -631,6 +652,7 @@ export const SENTENCES = [
     russian: "Тебе нужно выбрать один вариант.",
     englishTemplate: "You need to {word} one option.",
     word: "choose",
+    pixabayQuery: "choosing one option from several choices",
       russianWord: "выбрать",
     revealIndices: [2, 4],
     level: "A2"
@@ -640,6 +662,7 @@ export const SENTENCES = [
     russian: "Мы должны решить сегодня.",
     englishTemplate: "We have to {word} today.",
     word: "decide",
+    pixabayQuery: "person making an important decision",
       russianWord: "решить",
     revealIndices: [2, 4],
     level: "A2"
@@ -649,6 +672,7 @@ export const SENTENCES = [
     russian: "Я хочу пригласить тебя на ужин.",
     englishTemplate: "I want to {word} you to dinner.",
     word: "invite",
+    pixabayQuery: "inviting a friend to dinner",
       russianWord: "пригласить",
     revealIndices: [2, 4],
     level: "A2"
@@ -658,6 +682,7 @@ export const SENTENCES = [
     russian: "Мы приехали поздно вечером.",
     englishTemplate: "We {word} late in the evening.",
     word: "arrive",
+    pixabayQuery: "person arriving late in the evening",
       russianWord: "приехать",
     revealIndices: [2, 4],
     level: "A2"
@@ -667,7 +692,7 @@ export const SENTENCES = [
     russian: "Мне нужно уйти в семь.",
     englishTemplate: "I need to {word} at seven.",
     word: "leave",
-    pixabayQuery: "leaving someone",
+    pixabayQuery: "person leaving office in the evening",
       russianWord: "уйти",
     revealIndices: [1, 3],
     level: "A2"
@@ -677,6 +702,7 @@ export const SENTENCES = [
     russian: "Когда ты вернёшься домой?",
     englishTemplate: "When will you {word} home?",
     word: "return",
+    pixabayQuery: "person returning home",
       russianWord: "вернуться",
     revealIndices: [2, 4],
     level: "A2"
@@ -686,6 +712,7 @@ export const SENTENCES = [
     russian: "Мне нужно починить велосипед.",
     englishTemplate: "I need to {word} my bicycle.",
     word: "repair",
+    pixabayQuery: "person repairing a bicycle",
       russianWord: "починить",
     revealIndices: [2, 4],
     level: "A2"
@@ -695,6 +722,7 @@ export const SENTENCES = [
     russian: "Мой телефон сломан.",
     englishTemplate: "My phone is {word}.",
     word: "broken",
+    pixabayQuery: "broken smartphone with cracked screen",
       russianWord: "сломанный",
     revealIndices: [2, 4],
     level: "A2"
@@ -704,6 +732,7 @@ export const SENTENCES = [
     russian: "Этот ресторан слишком дорогой.",
     englishTemplate: "This restaurant is too {word}.",
     word: "expensive",
+    pixabayQuery: "expensive restaurant bill",
       russianWord: "дорогой",
     revealIndices: [2, 4, 6],
     level: "A2"
@@ -713,6 +742,7 @@ export const SENTENCES = [
     russian: "Мы нашли недорогой отель.",
     englishTemplate: "We found a {word} hotel.",
     word: "cheap",
+    pixabayQuery: "cheap budget hotel room",
       russianWord: "дешёвый",
     revealIndices: [1, 3],
     level: "A2"
@@ -722,6 +752,7 @@ export const SENTENCES = [
     russian: "Автобус был переполнен.",
     englishTemplate: "The bus was {word}.",
     word: "crowded",
+    pixabayQuery: "crowded bus full of passengers",
       russianWord: "переполненный",
     revealIndices: [2, 4],
     level: "A2"
@@ -731,6 +762,7 @@ export const SENTENCES = [
     russian: "Мне нравится тихое место.",
     englishTemplate: "I like a {word} place.",
     word: "quiet",
+    pixabayQuery: "quiet peaceful room",
       russianWord: "тихий",
     revealIndices: [1, 3],
     level: "A2"
@@ -740,6 +772,7 @@ export const SENTENCES = [
     russian: "Соседи очень шумные.",
     englishTemplate: "The neighbours are very {word}.",
     word: "noisy",
+    pixabayQuery: "noisy neighbors in apartment building",
       russianWord: "шумный",
     revealIndices: [1, 3],
     level: "A2"
@@ -749,6 +782,7 @@ export const SENTENCES = [
     russian: "Овощи полезны для здоровья.",
     englishTemplate: "Vegetables are {word}.",
     word: "healthy",
+    pixabayQuery: "fresh healthy vegetables",
       russianWord: "полезный",
     revealIndices: [2, 4],
     level: "A2"
@@ -758,6 +792,7 @@ export const SENTENCES = [
     russian: "Будь осторожен на дороге.",
     englishTemplate: "Be {word} on the road.",
     word: "careful",
+    pixabayQuery: "careful pedestrian crossing road",
       russianWord: "осторожный",
     revealIndices: [2, 4],
     level: "A2"
@@ -767,6 +802,7 @@ export const SENTENCES = [
     russian: "Переходить здесь опасно.",
     englishTemplate: "It is {word} to cross here.",
     word: "dangerous",
+    pixabayQuery: "dangerous road crossing warning sign",
       russianWord: "опасный",
     revealIndices: [2, 4, 6],
     level: "A2"
@@ -776,6 +812,7 @@ export const SENTENCES = [
     russian: "Сегодня погода быстро меняется.",
     englishTemplate: "The {word} changes quickly today.",
     word: "weather",
+    pixabayQuery: "changing weather cloudy sunny sky",
       russianWord: "погода",
     revealIndices: [2, 4],
     level: "A2"
@@ -785,6 +822,7 @@ export const SENTENCES = [
     russian: "На выходных я обычно отдыхаю.",
     englishTemplate: "I usually relax at the {word}.",
     word: "weekend",
+    pixabayQuery: "relaxing at home on weekend",
       russianWord: "выходные",
     revealIndices: [2, 4],
     level: "A2"
@@ -794,6 +832,7 @@ export const SENTENCES = [
     russian: "Мы планируем летний отпуск.",
     englishTemplate: "We are planning a summer {word}.",
     word: "holiday",
+    pixabayQuery: "summer holiday beach vacation",
       russianWord: "отпуск",
     revealIndices: [2, 4],
     level: "A2"
@@ -803,6 +842,7 @@ export const SENTENCES = [
     russian: "Наш сосед очень дружелюбный.",
     englishTemplate: "Our {word} is very friendly.",
     word: "neighbour",
+    pixabayQuery: "friendly neighbors talking outside",
       russianWord: "сосед",
     revealIndices: [2, 4, 6],
     level: "A2"
@@ -812,6 +852,7 @@ export const SENTENCES = [
     russian: "Чайник стоит на кухне.",
     englishTemplate: "The {word} is in the kitchen.",
     word: "kettle",
+    pixabayQuery: "electric kettle on kitchen counter",
       russianWord: "чайник",
     revealIndices: [2, 4],
     level: "A2"
@@ -821,6 +862,7 @@ export const SENTENCES = [
     russian: "Посмотри в зеркало.",
     englishTemplate: "Look in the {word}.",
     word: "mirror",
+    pixabayQuery: "person looking in mirror",
       russianWord: "зеркало",
     revealIndices: [2, 4],
     level: "A2"
@@ -830,6 +872,7 @@ export const SENTENCES = [
     russian: "Книги стоят на полке.",
     englishTemplate: "The books are on the {word}.",
     word: "shelf",
+    pixabayQuery: "books arranged on shelf",
       russianWord: "полка",
     revealIndices: [1, 3],
     level: "A2"
@@ -839,6 +882,7 @@ export const SENTENCES = [
     russian: "Не забудь принять лекарство.",
     englishTemplate: "Don't forget to take your {word}.",
     word: "medicine",
+    pixabayQuery: "person taking medicine with water",
       russianWord: "лекарство",
     revealIndices: [2, 4, 6],
     level: "A2"
@@ -848,6 +892,7 @@ export const SENTENCES = [
     russian: "Сохрани чек из магазина.",
     englishTemplate: "Keep the shop {word}.",
     word: "receipt",
+    pixabayQuery: "paper shop receipt",
       russianWord: "чек",
     revealIndices: [2, 4],
     level: "A2"
@@ -857,6 +902,7 @@ export const SENTENCES = [
     russian: "Этот рецепт очень простой.",
     englishTemplate: "This {word} is very simple.",
     word: "recipe",
+    pixabayQuery: "person cooking from recipe cookbook",
       russianWord: "рецепт",
     revealIndices: [2, 4],
     level: "A2"
@@ -866,6 +912,7 @@ export const SENTENCES = [
     russian: "Поезд отправляется с третьей платформы.",
     englishTemplate: "The train leaves from {word} number three.",
     word: "platform",
+    pixabayQuery: "train at railway platform",
       russianWord: "платформа",
     revealIndices: [2, 4, 6],
     level: "A2"
@@ -875,6 +922,7 @@ export const SENTENCES = [
     russian: "Я хочу улучшить свой английский.",
     englishTemplate: "I want to {word} my English.",
     word: "improve",
+    pixabayQuery: "person improving English language skills",
       russianWord: "улучшить",
     revealIndices: [2, 4],
     level: "A2"
@@ -884,6 +932,7 @@ export const SENTENCES = [
     russian: "Опиши мне свой новый дом.",
     englishTemplate: "Please {word} your new home.",
     word: "describe",
+    pixabayQuery: "person describing their new home",
       russianWord: "описать",
     revealIndices: [2, 4, 6],
     level: "A2"
