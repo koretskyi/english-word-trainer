@@ -1307,6 +1307,8 @@ button:disabled {
   color: #58752e;
   font-size: 15px;
   font-weight: 750;
+  text-align: center;
+  text-transform: lowercase;
 }
 
 .review-ladder {
