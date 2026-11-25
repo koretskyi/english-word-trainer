@@ -458,7 +458,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
     PIXABAY_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
     manifest = read_image_manifest()
     existing = manifest.get(word)
-    if existing and existing.get("src"):
+    if existing and existing.get("src") and existing.get("provider") == "Pixabay":
         existing_file = PIXABAY_ROOT / "public" / existing["src"].lstrip("/")
         if existing_file.is_file():
             return existing
