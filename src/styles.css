@@ -3668,25 +3668,3 @@ button:disabled {
   line-height: 1.12;
   overflow-wrap: anywhere;
 }
-
-
-/* Review card: title spans the full progress bar; no stage-icon ladder. */
-.review-progress-meta .review-full-progress {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: none;
-  min-width: 0;
-  flex: 0 0 auto;
-  margin: 0;
-}
-.review-progress-meta .review-origin-label {
-  display: block;
-  width: 100%;
-  text-align: center;
-}
-.review-progress-meta .level-selector {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 12px;
-}
