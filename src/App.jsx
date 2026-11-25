@@ -377,88 +377,6 @@ function ReviewLadder({ stage = 1, compact = false }) {
 
 // Загружает локальную иллюстрацию, а при её отсутствии ищет подходящую в Openverse.
 // Загружает локальное изображение A2 или один раз получает его с Pixabay и сохраняет на диск.
-function buildA2ImageQuery(sentence) {
-  const word = String(sentence?.word || "").trim().toLowerCase();
-  if (!word) return "";
-
-  const template = String(sentence?.englishTemplate || "").replace("{word}", word);
-  if (!template) return word;
-
-  const tokens = template
-    .toLowerCase()
-    .replace(/[’']/g, "")
-    .match(/[a-z]+/g) || [];
-
-  const stopWords = new Set([
-    "i", "you", "he", "she", "it", "we", "they", "me", "my", "your",
-    "his", "her", "our", "their", "a", "an", "the", "this", "that",
-    "to", "of", "by", "for", "in", "at", "with", "from", "because",
-    "is", "are", "am", "was", "were", "be", "been", "being",
-    "does", "did", "can", "could", "would", "should", "will", "have",
-    "has", "had", "need", "prefer", "usually", "quite", "very", "more", "enjoy", "forget", "six",
-    "little", "please", "dont", "me", "along", "outside", "today",
-    "yesterday", "together", "near", "well", "long", "how"
-  ]);
-
-  const verbs = new Set([
-    "do", "make", "made", "leave", "left", "meet", "met", "speak", "spoke",
-    "receive", "received", "cook", "cooked", "buy", "bought", "get",
-    "gets", "got", "fill", "filled", "pay", "paid", "lend", "lent",
-    "enjoy", "walk", "walking", "close", "closes", "do", "does",
-    "take", "takes", "took", "look", "looking", "forget", "forgot",
-    "travel", "travels", "traveling", "run", "runs", "open", "opened",
-    "sit", "sits", "read", "reads", "eat", "eats", "drink", "drinks",
-    "like", "likes", "want", "wants", "work", "works", "go", "goes"
-  ]);
-
-  const targetIndex = tokens.indexOf(word);
-  if (targetIndex < 0) return word;
-
-  // Keep a noun immediately before the target when it forms a compound noun:
-  // "phone charger", "train station".
-  const previous = tokens[targetIndex - 1];
-  const compound = previous && !stopWords.has(previous) && !verbs.has(previous)
-    ? previous
-    : "";
-
-  const meaningful = tokens.filter((token) => !stopWords.has(token));
-  const targetIsVerb = verbs.has(word);
-  const targetIsAdverb = word.endsWith("ly") && !["family", "colleague"].includes(word);
-  const targetIsAdjective = ["windy", "affordable"].includes(word);
-
-  if (targetIsVerb) {
-    return [word, ...meaningful.filter((token) => token !== word)].join(" ");
-  }
-
-  if (targetIsAdverb) {
-    const action = meaningful.find((token) => verbs.has(token) && token !== word);
-    return [action, word, ...meaningful.filter((token) => token !== word && token !== action)]
-      .filter(Boolean).join(" ");
-  }
-
-  if (targetIsAdjective) {
-    return [word, ...meaningful.filter((token) => token !== word)].join(" ");
-  }
-
-  const verbCandidates = meaningful
-    .map((token, index) => ({ token, index }))
-    .filter(({ token }) => verbs.has(token) && token !== word);
-  const precedingVerbs = verbCandidates.filter(({ index }) => {
-    const originalIndex = tokens.indexOf(meaningful[index]);
-    return originalIndex < targetIndex;
-  });
-  const action = precedingVerbs.length
-    ? precedingVerbs[precedingVerbs.length - 1].token
-    : verbCandidates[0]?.token || "";
-
-  // Search queries start with the complete target noun phrase, then its action,
-  // followed by any useful remaining context. The target is never duplicated.
-  const remainder = meaningful.filter((token) =>
-    token !== word && token !== compound && token !== action
-  );
-  return [compound, word, action, ...remainder].filter(Boolean).join(" ");
-}
-
 const WordImage = ({ sentence }) => {
   const word = sentence?.word;
   const [image, setImage] = useState(null);
@@ -482,7 +400,7 @@ const WordImage = ({ sentence }) => {
         const response = await fetch("/api/a2-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ word: key, context: buildA2ImageQuery(sentence) }),
+          body: JSON.stringify({ word: key, context: sentence?.pixabayQuery || word }),
           signal: controller.signal,
         });
         const responseType = response.headers.get("content-type") || "";
@@ -517,7 +435,7 @@ const WordImage = ({ sentence }) => {
 
     loadWordImage();
     return () => controller.abort();
-  }, [word, sentence?.englishTemplate, sentence?.imageQuery]);
+  }, [word, sentence?.pixabayQuery]);
 
   if (status === "loading") {
     return <div className="word-image-placeholder" aria-live="polite">Подбираю изображение…</div>;
