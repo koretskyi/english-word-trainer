@@ -517,7 +517,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
     }
     manifest[word] = entry
     temp_manifest = PIXABAY_MANIFEST.with_suffix(".json.tmp")
-    temp_manifest.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    temp_manifest.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     temp_manifest.replace(PIXABAY_MANIFEST)
     logger.info("Saved Pixabay image for A2 word %r to %s", word, image_path)
     return entry
