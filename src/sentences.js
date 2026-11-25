@@ -202,7 +202,7 @@ export const SENTENCES = [
   { id: "a2_010", russian: "Сегодня на улице ветрено.", englishTemplate: "It's quite {word} outside today.", word: "windy",
       russianWord: "ветрено", revealIndices: [2], level: "A2" },
   { id: "a2_011", russian: "Я предпочитаю платить картой.", englishTemplate: "I prefer to pay by {word}.", word: "card",
-      russianWord: "карта", revealIndices: [1], level: "A2" },
+      russianWord: "карта", imageQuery: "person paying by card", revealIndices: [1], level: "A2" },
   { id: "a2_012", russian: "Мы опоздали из-за пробок.", englishTemplate: "We were late because of the {word}.", word: "traffic",
       russianWord: "пробки", revealIndices: [2, 5], level: "A2" },
   { id: "a2_013", russian: "Можешь одолжить мне зарядку?", englishTemplate: "Can you lend me your phone {word}?", word: "charger",
