@@ -670,10 +670,6 @@ function StudyPage({
     </div>
   );
 
-
-    </div>
-  );
-
   const statsLevelWords = reviewWords.filter((item) => item.level === statsLevel);
 
   const accuracy = stats.totalAnswers
