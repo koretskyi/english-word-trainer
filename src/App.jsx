@@ -395,13 +395,13 @@ function buildA2ImageQuery(sentence) {
     "to", "of", "by", "for", "in", "at", "with", "from", "because",
     "is", "are", "am", "was", "were", "be", "been", "being", "do",
     "does", "did", "can", "could", "would", "should", "will", "have",
-    "has", "had", "need", "prefer", "usually", "quite", "very", "more",
+    "has", "had", "need", "prefer", "usually", "quite", "very", "more", "enjoy", "forget", "six",
     "little", "please", "dont", "me", "along", "outside", "today",
     "yesterday", "together", "near", "well", "long", "how"
   ]);
 
   const verbs = new Set([
-    "make", "made", "leave", "left", "meet", "met", "speak", "spoke",
+    "do", "make", "made", "leave", "left", "meet", "met", "speak", "spoke",
     "receive", "received", "cook", "cooked", "buy", "bought", "get",
     "gets", "got", "fill", "filled", "pay", "paid", "lend", "lent",
     "enjoy", "walk", "walking", "close", "closes", "do", "does",
