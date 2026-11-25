@@ -602,39 +602,35 @@ function StudyPage({
     : 0;
   const levelSelector = isReview ? (
     <div className="review-progress-meta">
-      <div className="review-origin-label">Прогресс повторения слова</div>
       <div className="level-selector">
-
-      <label htmlFor="study-level">Уровень:</label>
-      <select id="study-level" value={selectedLevel}
-        onChange={(event) => setSelectedLevel(event.target.value)}>
-        {levels.map((level) => <option key={level} value={level}>{level}</option>)}
-      </select>
-      <div className="learning-progress-card learning-progress-card-compact" aria-label={`Прогресс уровня: ${selectedLevelProgressPercent}%`}>
-        <div className="learning-progress-heading">
-          <span>Прогресс</span>
-          <strong>{selectedLevelProgressPercent}%</strong>
+        <label htmlFor="study-level">Уровень:</label>
+        <select id="study-level" value={selectedLevel}
+          onChange={(event) => setSelectedLevel(event.target.value)}>
+          {levels.map((level) => <option key={level} value={level}>{level}</option>)}
+        </select>
+        <div className="learning-progress-card learning-progress-card-compact" aria-label={`Прогресс уровня: ${selectedLevelProgressPercent}%`}>
+          <div className="learning-progress-heading">
+            <span>Прогресс</span>
+            <strong>{selectedLevelProgressPercent}%</strong>
+          </div>
+          <div className="learning-progress-track">
+            <div className="learning-progress-fill" style={{ width: `${selectedLevelProgressPercent}%` }} />
+          </div>
         </div>
-        <div className="learning-progress-track">
-          <div className="learning-progress-fill" style={{ width: `${selectedLevelProgressPercent}%` }} />
-        </div>
+        <button
+          type="button"
+          className={`level-review-shortcut${isReview ? " is-review-active" : ""}`}
+          onClick={() => {
+            setStatsLevel(selectedLevel);
+            setShowStats(true);
+          }}
+          aria-label={`Открыть статистику: ${selectedLevelReviewCount} слов на повторении уровня ${selectedLevel}`}
+          title={`Слова на повторении уровня ${selectedLevel}`}
+        >
+          <strong>{selectedLevelReviewCount}</strong>
+          <span>на повторении</span>
+        </button>
       </div>
-      <button
-        type="button"
-        className={`level-review-shortcut${isReview ? " is-review-active" : ""}`}
-        onClick={() => {
-          setStatsLevel(selectedLevel);
-          setShowStats(true);
-        }}
-        aria-label={`Открыть статистику: ${selectedLevelReviewCount} слов на повторении уровня ${selectedLevel}`}
-        title={`Слова на повторении уровня ${selectedLevel}`}
-      >
-        <span aria-hidden="true">↻</span>
-        <strong>{selectedLevelReviewCount}</strong>
-        <span>на повторении</span>
-      </button>
-    </div>
-      <ReviewLadder stage={reviewStage} />
     </div>
   ) : (
     <div className="level-selector">
