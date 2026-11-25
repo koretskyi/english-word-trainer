@@ -472,8 +472,19 @@ def get_or_download_a2_image(payload: A2ImageRequest):
 
     data = pixabay_search(word, payload.context, api_key)
     hits = data.get("hits") or []
+
+    # Context can make Pixabay's search too restrictive. Retry with the
+    # vocabulary word alone before giving up.
+    if not hits and payload.context.strip():
+        logger.info("Pixabay returned no contextual results for %r; retrying word-only search", word)
+        data = pixabay_search(word, "", api_key)
+        hits = data.get("hits") or []
+
     if not hits:
-        raise HTTPException(status_code=404, detail=f"Pixabay не нашёл изображение для «{word}».")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Pixabay не нашёл фотографий для «{word}» даже без контекста предложения."
+        )
 
     stop_words = {"the", "a", "an", "and", "or", "of", "in", "on", "at", "to", "for", "with", "from", "by", "is", "are", "my", "your"}
     terms = [term for term in re.findall(r"[a-z]{3,}", f"{word} {payload.context}".lower()) if term not in stop_words]
