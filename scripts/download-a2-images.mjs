@@ -61,10 +61,9 @@ const searchTerms = {
 };
 
 const source = await readFile(sourcePath, "utf8");
-const blocks = [...source.matchAll(/\{\s*id:\s*"([^"]+)"([\s\S]*?)\n\s*\}/g)];
+const blocks = source.split(/(?=\{\s*id:\s*")/);
 const words = blocks
-  .map((match) => {
-    const body = match[2];
+  .map((body) => {
     const word = body.match(/\bword:\s*"([^"]+)"/)?.[1];
     const level = body.match(/\blevel:\s*"([^"]+)"/)?.[1];
     return level === "A2" && word ? word.trim().toLowerCase() : null;
