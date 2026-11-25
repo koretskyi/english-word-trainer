@@ -1321,6 +1321,35 @@ button:disabled {
   display: contents;
 }
 
+/* Новая карточка плавно открывается снизу вверх при смене слова. */
+@keyframes study-card-reveal-up {
+  from {
+    clip-path: inset(100% 0 0 0);
+    opacity: 0.35;
+    transform: translateY(10px);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.review-card-progress {
+  animation: study-card-reveal-up 480ms cubic-bezier(0.22, 0.7, 0.25, 1) both;
+}
+
+.study-card-unframed > * {
+  animation: study-card-reveal-up 480ms cubic-bezier(0.22, 0.7, 0.25, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .review-card-progress,
+  .study-card-unframed > * {
+    animation: none;
+  }
+}
+
 .review-progress-meta {
   box-sizing: border-box;
   display: flex;
