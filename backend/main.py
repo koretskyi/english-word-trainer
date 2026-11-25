@@ -461,10 +461,11 @@ def get_or_download_a2_image(payload: A2ImageRequest):
     PIXABAY_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
     manifest = read_image_manifest()
     existing = manifest.get(word)
+    search_query = payload.context.strip() or word
 
-    # Version 2 images were searched using ONLY the vocabulary word.
-    # Older images may have been selected using unrelated words from the sentence.
-    if existing and existing.get("searchVersion") == 6 and existing.get("src") and existing.get("provider") == "Pixabay":
+    # Reuse the local image only when it was downloaded for this exact query.
+    # If an A2 exception changes its query, refresh only that word's image.
+    if existing and existing.get("searchVersion") == 6 and existing.get("searchQuery") == search_query and existing.get("src") and existing.get("provider") == "Pixabay":
         existing_file = PIXABAY_ROOT / "public" / existing["src"].lstrip("/")
         if existing_file.is_file():
             return existing
@@ -476,8 +477,8 @@ def get_or_download_a2_image(payload: A2ImageRequest):
             detail="Не найден PIXABAY_API_KEY. Добавь ключ в .env.local в корне проекта и перезапусти приложение.",
         )
 
-    # Search using the curated English subject + predicate + target-word phrase.
-    search_query = payload.context.strip() or word
+    # Search using the curated English subject + predicate + target-word phrase,
+    # or the word-specific exception supplied by the sentence data.
     data = pixabay_search(word, search_query, api_key)
     hits = data.get("hits") or []
     if not hits:
