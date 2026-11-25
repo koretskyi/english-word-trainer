@@ -396,7 +396,7 @@ const WordImage = ({ sentence }) => {
     async function loadWordImage() {
       const key = String(word).toLowerCase().trim();
       const context = String(sentence?.englishTemplate || "")
-        .replace(/\\{word\\}/g, String(word)).trim();
+        .replace(/\{word\}/g, String(word)).trim();
       try {
         // Fast path: an image already saved on this computer.
         const manifestResponse = await fetch("/images/a2/manifest.json", {
