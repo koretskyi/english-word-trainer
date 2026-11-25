@@ -417,11 +417,9 @@ function buildA2ImageQuery(sentence) {
   // Keep a noun immediately before the target when it forms a compound noun:
   // "phone charger", "train station".
   const previous = tokens[targetIndex - 1];
-  const compoundModifiers = new Set([
-    "phone", "train", "bus", "credit", "bank", "coffee", "car",
-    "flight", "ticket", "shopping", " swimming"
-  ]);
-  const compound = previous && compoundModifiers.has(previous) ? previous : "";
+  const compound = previous && !stopWords.has(previous) && !verbs.has(previous)
+    ? previous
+    : "";
 
   const meaningful = tokens.filter((token) => !stopWords.has(token));
   const targetIsVerb = verbs.has(word);
