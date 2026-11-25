@@ -500,6 +500,7 @@ function StudyPage({
   const [micLevel, setMicLevel] = useState(0);
   const [voiceSuccessConfetti, setVoiceSuccessConfetti] = useState(false);
   const voiceCaptureRef = useRef(null);
+  const wordAnswerActionsRef = useRef(null);
   const voiceActiveRef = useRef(false);
   const micStreamRef = useRef(null);
   const audioContextRef = useRef(null);
@@ -522,6 +523,11 @@ function StudyPage({
     voiceCaptureRef.current?.stop();
     setVoiceListening(false);
   }, [sentence?.id]);
+
+  useEffect(() => {
+    if (!sentence) return;
+    wordAnswerActionsRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [sentence?.id, sentence?.word]);
 
   function startVoiceInput() {
     voiceCaptureRef.current?.stop();
@@ -949,7 +955,7 @@ function StudyPage({
             <p className="study-instruction">ВПИШИТЕ СЛОВО <strong className="target-translation">{sentence.russianWord || "—"}</strong> НА АНГЛИЙСКОМ:</p>
           </div>
         </div>
-        <div className="form-actions word-answer-actions">
+        <div ref={wordAnswerActionsRef} className="form-actions word-answer-actions">
             <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}`}
               type="button" onClick={startVoiceInput} disabled={voiceListening}
               aria-label="Ввести слово голосом">
