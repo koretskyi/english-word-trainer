@@ -377,6 +377,37 @@ function ReviewLadder({ stage = 1, compact = false }) {
 
 // Загружает локальную иллюстрацию, а при её отсутствии ищет подходящую в Openverse.
 // Загружает локальное изображение A2 или один раз получает его с Pixabay и сохраняет на диск.
+function buildA2ImageQuery(sentence) {
+  if (sentence?.imageQuery?.trim()) return sentence.imageQuery.trim();
+
+  const word = String(sentence?.word || "").trim().toLowerCase();
+  const template = String(sentence?.englishTemplate || "").replace("{word}", word);
+  if (!word || !template) return word;
+
+  // Turn common sentence patterns into short, visual English search phrases.
+  const rules = [
+    [/^we were late because of the\s+(.+)\.?$/i, () => `cars stuck in a ${word} jam`],
+    [/^i need to pack my things/i, () => "person packing their belongings"],
+    [/^i need to\s+(.+?)\s+the\s+(.+?)\.?$/i, (match) => `${match[1]} ${match[2]}`],
+    [/^i prefer to\s+(.+?)\s+by\s+(.+?)\.?$/i, (match) => `person ${match[1]} by ${match[2]}`],
+    [/^please fill in this\s+(.+?)\.?$/i, () => "person filling in a form"],
+    [/^she wants to study abroad\.?$/i, () => "abroad"],
+  ];
+  for (const [pattern, makeQuery] of rules) {
+    const match = template.match(pattern);
+    if (match) return makeQuery(match).replace(/\\s+/g, " ").trim();
+  }
+
+  // Keep the action and target; remove grammatical scaffolding that rarely helps image search.
+  let query = template
+    .replace(/[.!?]/g, "")
+    .replace(/\\b(?:i|you|he|she|it|we|they|my|your|his|her|our|their|a|an|the|to|of|by|for|in|on|at|with|is|are|was|were|am|do|does|did|can|could|would|should|will|have|has|had|need|want|usually|quite|very|please)\\b/gi, " ")
+    .replace(/\\s+/g, " ")
+    .trim();
+
+  return query || word;
+}
+
 const WordImage = ({ sentence }) => {
   const word = sentence?.word;
   const [image, setImage] = useState(null);
@@ -400,7 +431,7 @@ const WordImage = ({ sentence }) => {
         const response = await fetch("/api/a2-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ word: key, context: sentence?.imageQuery || key }),
+          body: JSON.stringify({ word: key, context: buildA2ImageQuery(sentence) }),
           signal: controller.signal,
         });
         const responseType = response.headers.get("content-type") || "";
@@ -435,7 +466,7 @@ const WordImage = ({ sentence }) => {
 
     loadWordImage();
     return () => controller.abort();
-  }, [word, sentence?.englishTemplate]);
+  }, [word, sentence?.englishTemplate, sentence?.imageQuery]);
 
   if (status === "loading") {
     return <div className="word-image-placeholder" aria-live="polite">Подбираю изображение…</div>;
