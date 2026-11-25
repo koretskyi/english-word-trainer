@@ -1304,9 +1304,31 @@ button:disabled {
   box-shadow: 0 0 0 1px #d8edc7 inset;
 }
 
-.review-progress-meta .level-selector {
+.review-progress-meta {
   width: 100%;
+  max-width: none;
+  align-self: stretch;
+}
+
+.review-progress-meta .level-selector {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: none;
   margin: 0;
+}
+
+.review-progress-meta .learning-progress-card-compact {
+  flex: 1 1 220px;
+  width: auto;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+}
+
+.review-progress-meta .level-review-shortcut {
+  flex: 0 0 auto;
 }
 
 .review-origin-label {
