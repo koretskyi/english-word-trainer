@@ -63,11 +63,17 @@ const searchTerms = {
 
 const source = await readFile(sourcePath, "utf8");
 const blocks = source.split(/(?=\{\s*id:\s*")/);
-const words = blocks.map((body) => {
+const cards = blocks.map((body) => {
   const word = body.match(/\bword:\s*"([^"]+)"/)?.[1];
   const level = body.match(/\blevel:\s*"([^"]+)"/)?.[1];
-  return level === "A2" && word ? word.trim().toLowerCase() : null;
+  const russian = body.match(/\brussian:\s*"([^"]+)"/)?.[1] || "";
+  const englishTemplate = body.match(/\benglishTemplate:\s*"([^"]+)"/)?.[1] || "";
+  return level === "A2" && word
+    ? { word: word.trim().toLowerCase(), russian, englishTemplate }
+    : null;
 }).filter(Boolean);
+const words = cards.map((card) => card.word);
+const cardsByWord = new Map(cards.map((card) => [card.word, card]));
 
 if (!words.length) throw new Error("Не удалось найти слова уровня A2 в src/sentences.js");
 await mkdir(outputDir, { recursive: true });
@@ -104,7 +110,14 @@ async function fetchImage(item) {
 }
 
 async function downloadWord(word) {
-  const query = searchTerms[word] || word;
+  const card = cardsByWord.get(word);
+  // Search for the meaning shown on the actual learning card, not an isolated translation.
+  // Curated visual intent stays primary; the card sentence disambiguates the context.
+  const query = searchTerms[word] || [
+    word,
+    card?.russian,
+    card?.englishTemplate?.replace(/\{word\}/g, word),
+  ].filter(Boolean).join(" ");
   const params = new URLSearchParams({
     q: query,
     page_size: "20",
@@ -119,22 +132,16 @@ async function downloadWord(word) {
   const results = (data.results || []).filter((item) => item.url || item.thumbnail);
   if (!results.length) throw new Error("Openverse не нашёл изображение");
 
-  // Openverse already ranks by relevance; prefer a usable landscape/square image.
-  results.sort((a, b) => {
-    const score = (item) => {
-      let value = 0;
-      if (item.width && item.height && Math.min(item.width, item.height) >= 300) value += 3;
-      if (item.mature) value -= 100;
-      if (item.filetype && !["svg"].includes(item.filetype)) value += 1;
-      return value;
-    };
-    return score(b) - score(a);
-  });
+  // Keep Openverse's relevance ranking. Re-sorting by image dimensions can
+  // accidentally promote an unrelated but larger image (for example, a cake).
+  const relevantResults = results.filter((item) =>
+    !item.mature && (!item.filetype || item.filetype.toLowerCase() !== "svg")
+  );
 
   let selected;
   let image;
   let lastError;
-  for (const item of results.slice(0, 8)) {
+  for (const item of relevantResults.slice(0, 8)) {
     try {
       image = await fetchImage(item);
       selected = item;
