@@ -166,17 +166,15 @@ button:disabled {
 }
 
 .word-answer-actions {
-  position: sticky;
-  bottom: 0;
-  z-index: 20;
+  position: static;
   display: flex;
   flex-wrap: nowrap;
   align-items: stretch;
   gap: 12px;
-  margin: 18px -28px -28px;
-  padding: 14px 28px 28px;
-  background: rgba(255, 255, 255, 0.97);
-  box-shadow: 0 -8px 18px rgba(30, 48, 85, 0.06);
+  margin: 12px 0 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .word-answer-actions .button {
