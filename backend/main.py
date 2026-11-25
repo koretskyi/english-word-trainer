@@ -408,7 +408,10 @@ def safe_image_word(value: str) -> str:
 
 def pixabay_search(word: str, context: str, api_key: str) -> dict:
     PIXABAY_QUERY_CACHE.mkdir(parents=True, exist_ok=True)
-    query = re.sub(r"[^a-zA-Z0-9 ]", " ", f"{word} {context}")
+    # Use the prepared English subject + predicate + target-word phrase.
+    # Fall back to the vocabulary word when no phrase is supplied.
+    raw_query = context.strip() or word
+    query = re.sub(r"[^a-zA-Z0-9 ]", " ", raw_query)
     query = re.sub(r"\s+", " ", query).strip()[:100]
     cache_key = re.sub(r"[^a-z0-9]+", "-", query.lower()).strip("-") or safe_image_word(word)
     cache_file = PIXABAY_QUERY_CACHE / f"{cache_key}.json"
@@ -461,7 +464,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
 
     # Version 2 images were searched using ONLY the vocabulary word.
     # Older images may have been selected using unrelated words from the sentence.
-    if existing and existing.get("searchVersion") == 5 and existing.get("src") and existing.get("provider") == "Pixabay":
+    if existing and existing.get("searchVersion") == 6 and existing.get("src") and existing.get("provider") == "Pixabay":
         existing_file = PIXABAY_ROOT / "public" / existing["src"].lstrip("/")
         if existing_file.is_file():
             return existing
@@ -473,8 +476,9 @@ def get_or_download_a2_image(payload: A2ImageRequest):
             detail="Не найден PIXABAY_API_KEY. Добавь ключ в .env.local в корне проекта и перезапусти приложение.",
         )
 
-    # Search and rank by the target vocabulary word only. Ignore sentence context completely.
-    data = pixabay_search(word, "", api_key)
+    # Search using the curated English subject + predicate + target-word phrase.
+    search_query = payload.context.strip() or word
+    data = pixabay_search(word, search_query, api_key)
     hits = data.get("hits") or []
     if not hits:
         raise HTTPException(status_code=404, detail=f"Pixabay не нашёл фотографий для «{word}».")
@@ -507,7 +511,8 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         "license": "Pixabay Content License",
         "tags": str(selected.get("tags") or ""),
         "imageId": selected.get("id"),
-        "searchVersion": 5,
+        "searchVersion": 6,
+        "searchQuery": search_query,
     }
     manifest[word] = entry
     manifest_text = json.dumps(manifest, ensure_ascii=False, indent=2) + "\n"
@@ -521,5 +526,5 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         except OSError:
             pass
         PIXABAY_MANIFEST.write_text(manifest_text, encoding="utf-8")
-    logger.info("Saved word-only Pixabay image for A2 word %r to %s", word, image_path)
+    logger.info("Saved Pixabay image for A2 word %r using query %r to %s", word, search_query, image_path)
     return entry
