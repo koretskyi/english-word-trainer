@@ -458,7 +458,10 @@ def get_or_download_a2_image(payload: A2ImageRequest):
     PIXABAY_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
     manifest = read_image_manifest()
     existing = manifest.get(word)
-    if existing and existing.get("src") and existing.get("provider") == "Pixabay":
+    # "abroad" is a concept rather than a concrete object; replace any earlier
+    # generic/study-related image with a travel-focused illustration.
+    force_concept_refresh = word == "abroad"
+    if not force_concept_refresh and existing and existing.get("src") and existing.get("provider") == "Pixabay":
         existing_file = PIXABAY_ROOT / "public" / existing["src"].lstrip("/")
         if existing_file.is_file():
             return existing
@@ -470,12 +473,18 @@ def get_or_download_a2_image(payload: A2ImageRequest):
             detail="Не найден PIXABAY_API_KEY. Добавь ключ в .env.local в корне проекта и перезапусти приложение.",
         )
 
-    data = pixabay_search(word, payload.context, api_key)
+    # Some vocabulary items describe a broad idea or expression. Searching the
+    # whole example sentence can return an image for an unrelated noun.
+    concept_queries = {
+        "abroad": "travel foreign country international trip passport airport",
+    }
+    search_context = concept_queries.get(word, payload.context)
+    data = pixabay_search(word, search_context, api_key)
     hits = data.get("hits") or []
 
-    # Context can make Pixabay's search too restrictive. Retry with the
-    # vocabulary word alone before giving up.
-    if not hits and payload.context.strip():
+    # Context can make ordinary searches too restrictive. Retry with the
+    # vocabulary word alone before giving up (except curated concept searches).
+    if not hits and search_context.strip() and word not in concept_queries:
         logger.info("Pixabay returned no contextual results for %r; retrying word-only search", word)
         data = pixabay_search(word, "", api_key)
         hits = data.get("hits") or []
@@ -487,7 +496,8 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         )
 
     stop_words = {"the", "a", "an", "and", "or", "of", "in", "on", "at", "to", "for", "with", "from", "by", "is", "are", "my", "your"}
-    terms = [term for term in re.findall(r"[a-z]{3,}", f"{word} {payload.context}".lower()) if term not in stop_words]
+    ranking_context = search_context if word in concept_queries else payload.context
+    terms = [term for term in re.findall(r"[a-z]{3,}", f"{word} {ranking_context}".lower()) if term not in stop_words]
     ranked = []
     for hit in hits:
         tags = str(hit.get("tags", "")).lower()
