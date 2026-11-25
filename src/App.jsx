@@ -395,35 +395,12 @@ const WordImage = ({ sentence }) => {
 
     async function loadWordImage() {
       const key = String(word).toLowerCase().trim();
-      const context = String(sentence?.englishTemplate || "")
-        .replace(/\{word\}/g, String(word)).trim();
       try {
-        // For "abroad", ask the local backend to validate/replace a previously
-        // cached generic image; the backend returns the saved file if it is already suitable.
-        const validateCachedImage = key === "abroad" || key === "flight";
-
-        // Fast path: an image already saved on this computer.
-        if (!validateCachedImage) {
-          const manifestResponse = await fetch("/images/a2/manifest.json", {
-            signal: controller.signal,
-            cache: "no-store",
-          });
-          if (manifestResponse.ok) {
-            const manifest = await manifestResponse.json();
-            const localImage = manifest[key];
-            if (localImage?.src && localImage?.provider === "Pixabay") {
-              setImage(localImage);
-              setStatus("ready");
-              return;
-            }
-          }
-        }
-
-        // First view only: backend searches Pixabay, downloads the file and updates manifest.
+        // Backend validates the versioned local cache and searches by target word only.
         const response = await fetch("/api/a2-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ word: key, context }),
+          body: JSON.stringify({ word: key }),
           signal: controller.signal,
         });
         const responseType = response.headers.get("content-type") || "";
