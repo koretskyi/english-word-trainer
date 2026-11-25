@@ -394,7 +394,6 @@ function WordImage({ word }) {
 
     async function loadWordImage() {
       try {
-        // Сначала ищем заранее скачанную локальную картинку для A2.
         const manifestResponse = await fetch("/images/a2/manifest.json", {
           signal: controller.signal,
         });
@@ -409,46 +408,29 @@ function WordImage({ word }) {
         }
       } catch (error) {
         if (error.name === "AbortError") return;
-        // Если локальной библиотеки ещё нет, используем прежний онлайн-поиск.
       }
 
-      const params = new URLSearchParams({
-        action: "query",
-        generator: "search",
-        gsrsearch: String(word).trim(),
-        gsrnamespace: "6",
-        gsrlimit: "10",
-        prop: "imageinfo",
-        iiprop: "url|extmetadata",
-        iiurlwidth: "640",
-        format: "json",
-        origin: "*",
-      });
-
       try {
-        const response = await fetch(`https://commons.wikimedia.org/w/api.php?${params.toString()}`, {
+        const params = new URLSearchParams({
+          q: String(word).trim(),
+          page_size: "10",
+          mature: "false",
+          filter_dead: "true",
+        });
+        const response = await fetch(`https://api.openverse.org/v1/images/?${params}`, {
           signal: controller.signal,
+          headers: { Accept: "application/json" },
         });
-        if (!response.ok) throw new Error(`Wikimedia HTTP ${response.status}`);
+        if (!response.ok) throw new Error(`Openverse HTTP ${response.status}`);
         const data = await response.json();
-        const pages = Object.values(data.query?.pages || {})
-          .filter((page) => page.imageinfo?.[0]?.thumburl || page.imageinfo?.[0]?.url);
-        const normalizedWord = String(word).toLowerCase().trim();
-        pages.sort((left, right) => {
-          const leftTitle = left.title.toLowerCase().replace(/[^a-z0-9]+/g, " ");
-          const rightTitle = right.title.toLowerCase().replace(/[^a-z0-9]+/g, " ");
-          const leftExact = leftTitle.includes(normalizedWord) ? 1 : 0;
-          const rightExact = rightTitle.includes(normalizedWord) ? 1 : 0;
-          return rightExact - leftExact;
-        });
-        const page = pages[0];
-        const info = page?.imageinfo?.[0];
-        if (!page || !info) throw new Error("No matching image");
+        const item = (data.results || []).find((result) => result.url || result.thumbnail);
+        if (!item) throw new Error("No matching image");
         setImage({
-          url: info.thumburl || info.url,
-          title: page.title.replace(/^File:/, "").replaceAll("_", " "),
-          source: info.descriptionurl || `https://commons.wikimedia.org/wiki/${encodeURIComponent(page.title.replaceAll(" ", "_"))}`,
-          license: info.extmetadata?.LicenseShortName?.value || "Wikimedia Commons",
+          url: item.thumbnail || item.url,
+          title: item.title || word,
+          source: item.foreign_landing_url || item.detail_url || "https://openverse.org/",
+          creator: item.creator || "Unknown",
+          license: item.license || "Openverse",
         });
         setStatus("ready");
       } catch (error) {
@@ -477,7 +459,7 @@ function WordImage({ word }) {
         onError={() => { setImage(null); setStatus("error"); }} />
       <figcaption>
         <a href={image.source} target="_blank" rel="noreferrer" title={image.title}>
-          Источник: Wikimedia Commons · {image.license}
+          Источник: Openverse · {image.license}{image.creator ? ` · ${image.creator}` : ""}
         </a>
       </figcaption>
     </figure>
