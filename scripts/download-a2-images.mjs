@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile, access } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import sharp from "sharp";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const sourcePath = path.join(root, "src", "sentences.js");
@@ -142,10 +143,32 @@ async function downloadWord(word) {
   }
   if (!selected || !image) throw lastError || new Error("не удалось скачать ни один результат");
 
-  const filename = `${word}.${image.extension}`;
-  await writeFile(path.join(outputDir, filename), image.bytes);
+  // Normalize every downloaded image to a small, consistently sized WebP.
+  // Try progressively lower quality until the image is near the 120 KB target.
+  let optimized;
+  let qualityUsed = 78;
+  for (const quality of [78, 70, 62, 55, 48]) {
+    const candidate = await sharp(image.bytes, { animated: false })
+      .rotate()
+      .resize(640, 640, { fit: "inside", withoutEnlargement: true })
+      .webp({ quality, effort: 6, smartSubsample: true })
+      .toBuffer();
+    optimized = candidate;
+    qualityUsed = quality;
+    if (candidate.length <= 120 * 1024) break;
+  }
+
+  const filename = `${word}.webp`;
+  await writeFile(path.join(outputDir, filename), optimized);
+  const metadata = await sharp(optimized).metadata();
   return {
     src: `/images/a2/${filename}`,
+    optimizedVersion: 1,
+    format: "webp",
+    width: metadata.width || 0,
+    height: metadata.height || 0,
+    sizeBytes: optimized.length,
+    quality: qualityUsed,
     provider: "Openverse",
     title: selected.title || word,
     source: selected.foreign_landing_url || selected.detail_url || "https://openverse.org/",
@@ -161,7 +184,7 @@ let downloaded = 0, skipped = 0, failed = 0;
 
 for (const word of words) {
   const existing = manifest[word];
-  if (existing?.provider === "Openverse" && existing?.src) {
+  if (existing?.provider === "Openverse" && existing?.optimizedVersion === 1 && existing?.src) {
     try {
       await access(path.join(outputDir, path.basename(existing.src)));
       console.log(`✓ ${word}: уже есть`);
@@ -171,7 +194,7 @@ for (const word of words) {
   }
   try {
     manifest[word] = await downloadWord(word);
-    console.log(`↓ ${word}: ${manifest[word].title}`);
+    console.log(`↓ ${word}: ${manifest[word].title} — ${(manifest[word].sizeBytes / 1024).toFixed(1)} KB, ${manifest[word].width}×${manifest[word].height} WebP`);
     downloaded++;
   } catch (error) {
     console.warn(`! ${word}: ${error.message}`);
@@ -183,5 +206,5 @@ for (const word of words) {
 await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + "\n", "utf8");
 console.log("\nГотово.");
 console.log(`Скачано: ${downloaded}; уже было: ${skipped}; ошибки: ${failed}; всего слов: ${words.length}.`);
-console.log("Автор, источник и лицензия сохранены в public/images/a2/manifest.json.");
+console.log("Изображения сохранены в WebP (максимум 640×640); автор, источник и лицензия — в manifest.json.");
 if (failed) console.log("Повторный запуск попробует скачать отсутствующие изображения ещё раз.");
