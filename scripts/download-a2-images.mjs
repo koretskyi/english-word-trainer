@@ -50,7 +50,8 @@ const searchTerms = {
   weekend: "weekend calendar Saturday Sunday",
   holiday: "beach holiday vacation",
   neighbour: "neighbors talking outside houses",
-  kettle: "electric kettle kitchen",
+  leave: "person leaving through doorway walking away from house",
+  kettle: "electric water kettle appliance product photo isolated",
   mirror: "wall mirror reflection",
   shelf: "bookshelf books",
   medicine: "medicine bottle tablets",
@@ -169,7 +170,7 @@ async function downloadWord(word) {
   const metadata = await sharp(optimized).metadata();
   return {
     src: `/images/a2/${filename}`,
-    optimizedVersion: 2,
+    optimizedVersion: 3,
     format: "webp",
     width: metadata.width || 0,
     height: metadata.height || 0,
@@ -190,7 +191,7 @@ let downloaded = 0, skipped = 0, failed = 0;
 
 for (const word of words) {
   const existing = manifest[word];
-  if (existing?.provider === "Openverse" && existing?.optimizedVersion === 2 && existing?.src) {
+  if (existing?.provider === "Openverse" && existing?.optimizedVersion === 3 && existing?.src) {
     try {
       await access(path.join(outputDir, path.basename(existing.src)));
       console.log(`✓ ${word}: уже есть`);
