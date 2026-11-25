@@ -634,10 +634,6 @@ function StudyPage({
         <span>на повторении</span>
       </button>
     </div>
-  );
-
-
-      </div>
       <ReviewLadder stage={reviewStage} />
     </div>
   ) : (
