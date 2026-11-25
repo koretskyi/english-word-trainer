@@ -773,7 +773,7 @@ function StudyPage({
   }
 
   function knowWord() {
-    if (!sentence || !isReview || checked) return;
+    if (!sentence || checked) return;
     setMarkedKnown(true);
     setChecked(true);
     onKnow();
@@ -927,10 +927,8 @@ function StudyPage({
             </button>
             <button className="button button-secondary button-dont-know" type="button"
               onClick={dontKnow}>Не знаю</button>
-            {isReview && (
-              <button className="button button-primary" type="button"
-                onClick={knowWord}>Я знаю</button>
-            )}
+            <button className="button button-primary" type="button"
+              onClick={knowWord}>Я знаю</button>
           </div>
           {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
         </div>
@@ -1654,7 +1652,6 @@ export default function App() {
     setActiveWordKey(key);
     setLearningData((previous) => {
       const old = previous.words[key];
-      if (!old || old.status !== "REVIEW") return previous;
       return {
         ...previous,
         words: {
