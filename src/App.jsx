@@ -381,21 +381,24 @@ function buildA2ImageQuery(sentence) {
   const word = String(sentence?.word || "").trim().toLowerCase();
   if (!word) return "";
 
+  // Manual phrase is treated as the action + subject; target word always goes first.
   if (sentence?.imageQuery?.trim()) {
-    const extra = sentence.imageQuery.trim().replace(new RegExp("\\b" + word + "\\b", "gi"), "").trim();
-    return [word, extra].filter(Boolean).join(" ");
+    const phrase = sentence.imageQuery.trim()
+      .replace(new RegExp("\\b" + word + "\\b", "gi"), "")
+      .replace(/\\s+/g, " ")
+      .trim();
+    return [word, phrase].filter(Boolean).join(" ");
   }
 
   const template = String(sentence?.englishTemplate || "").replace("{word}", word);
   if (!template) return word;
 
-  // Build a short visual phrase from the sentence, then put the target word first.
   let phrase = "";
   const rules = [
     [/^we were late because of the\\s+(.+)\\.?$/i, () => "cars stuck in a jam"],
-    [/^i prefer to\\s+(.+?)\\s+by\\s+(.+?)\\.?$/i, (match) => `person ${match[1]} by`],
+    [/^i prefer to\\s+(.+?)\\s+by\\s+(.+?)\\.?$/i, (match) => `person ${match[1]} paying`],
     [/^please fill in this\\s+(.+?)\\.?$/i, () => "person filling in"],
-    [/^i need to\\s+(.+?)\\s+the\\s+(.+?)\\.?$/i, (match) => `${match[1]} ${match[2]}`],
+    [/^i need to\\s+(.+?)\\s+the\\s+(.+?)\\.?$/i, (match) => `${match[1]} person`],
   ];
   for (const [pattern, makePhrase] of rules) {
     const match = template.match(pattern);
