@@ -461,7 +461,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
 
     # Version 2 images were searched using ONLY the vocabulary word.
     # Older images may have been selected using unrelated words from the sentence.
-    if existing and existing.get("searchVersion") == 4 and existing.get("src") and existing.get("provider") == "Pixabay":
+    if existing and existing.get("searchVersion") == 5 and existing.get("src") and existing.get("provider") == "Pixabay":
         existing_file = PIXABAY_ROOT / "public" / existing["src"].lstrip("/")
         if existing_file.is_file():
             return existing
@@ -479,20 +479,8 @@ def get_or_download_a2_image(payload: A2ImageRequest):
     if not hits:
         raise HTTPException(status_code=404, detail=f"Pixabay не нашёл фотографий для «{word}».")
 
-    target = word.strip().lower()
-    target_tokens = re.findall(r"[a-z]+", target)
-    if len(target_tokens) != 1:
-        raise HTTPException(status_code=400, detail="Для поиска изображения ожидается одно английское слово.")
-
-    # Prefer the second exact-tag result; fall back to the first when only one exists.
-    matching_hits = [
-        hit for hit in hits
-        if target in re.findall(r"[a-z]+", str(hit.get("tags", "")).lower())
-    ]
-    if not matching_hits:
-        raise HTTPException(status_code=404, detail=f"Pixabay не нашёл фотографий с точным тегом «{word}».")
-
-    selected = matching_hits[1] if len(matching_hits) >= 2 else matching_hits[0]
+    # Match Pixabay's search page order: choose the second result, or the first if it is the only one.
+    selected = hits[1] if len(hits) >= 2 else hits[0]
     image_url = selected.get("webformatURL")
     if not image_url:
         raise HTTPException(status_code=404, detail="Pixabay не вернул ссылку на изображение.")
@@ -519,7 +507,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         "license": "Pixabay Content License",
         "tags": str(selected.get("tags") or ""),
         "imageId": selected.get("id"),
-        "searchVersion": 4,
+        "searchVersion": 5,
     }
     manifest[word] = entry
     manifest_text = json.dumps(manifest, ensure_ascii=False, indent=2) + "\n"
