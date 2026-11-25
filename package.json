@@ -5,10 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "predev": "npm run images:a2",
     "build": "vite build",
-    "preview": "vite preview",
-    "images:a2": "node scripts/download-a2-images.mjs"
+    "preview": "vite preview"
   },
   "engines": {
     "node": ">=18.0.0"
