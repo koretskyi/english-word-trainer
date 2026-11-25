@@ -576,7 +576,6 @@ def get_or_download_a2_image(payload: A2ImageRequest):
                 fallback_score, _, fallback_selected = fallback_ranked[0]
                 if fallback_score > best_score:
                     best_score, selected = fallback_score, fallback_selected
-                    search_query = fallback_query
                     scored_hits = fallback_ranked
 
     logger.info(
