@@ -1,6 +1,12 @@
 import gc
 import html
 import logging
+import json
+import os
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
 import re
 import subprocess
 import sys
@@ -364,3 +370,154 @@ def health():
         "model": _whisper_model_size or "medium (default)",
         "engine": f"faster-whisper {_whisper_model_size or 'medium (default)'} / CPU INT8",
     }
+
+
+# Pixabay images are fetched only when a learner opens a card without a local image.
+# The selected file and manifest are stored on this computer; repeat views are local.
+PIXABAY_ROOT = Path(__file__).resolve().parent.parent
+PIXABAY_IMAGE_DIR = PIXABAY_ROOT / "public" / "images" / "a2"
+PIXABAY_MANIFEST = PIXABAY_IMAGE_DIR / "manifest.json"
+PIXABAY_QUERY_CACHE = PIXABAY_ROOT / ".cache" / "pixabay"
+PIXABAY_CACHE_TTL = 24 * 60 * 60
+
+
+def get_pixabay_api_key() -> str:
+    key = os.environ.get("PIXABAY_API_KEY", "").strip()
+    if key:
+        return key
+    env_file = PIXABAY_ROOT / ".env.local"
+    if env_file.exists():
+        for line in env_file.read_text(encoding="utf-8").splitlines():
+            match = re.match(r"^\s*PIXABAY_API_KEY\s*=\s*(.*?)\s*$", line)
+            if match:
+                return match.group(1).strip().strip('"').strip("'")
+    return ""
+
+
+def read_image_manifest() -> dict:
+    try:
+        data = json.loads(PIXABAY_MANIFEST.read_text(encoding="utf-8"))
+        return data if isinstance(data, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def safe_image_word(value: str) -> str:
+    return re.sub(r"[^a-z0-9-]", "", value.lower().strip().replace(" ", "-"))[:60]
+
+
+def pixabay_search(word: str, context: str, api_key: str) -> dict:
+    PIXABAY_QUERY_CACHE.mkdir(parents=True, exist_ok=True)
+    query = re.sub(r"[^a-zA-Z0-9 ]", " ", f"{word} {context}")
+    query = re.sub(r"\s+", " ", query).strip()[:100]
+    cache_key = re.sub(r"[^a-z0-9]+", "-", query.lower()).strip("-") or safe_image_word(word)
+    cache_file = PIXABAY_QUERY_CACHE / f"{cache_key}.json"
+    if cache_file.exists() and time.time() - cache_file.stat().st_mtime < PIXABAY_CACHE_TTL:
+        try:
+            return json.loads(cache_file.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            pass
+
+    params = urllib.parse.urlencode({
+        "key": api_key,
+        "q": query,
+        "image_type": "photo",
+        "orientation": "all",
+        "safesearch": "true",
+        "order": "relevance",
+        "per_page": "30",
+    })
+    request = urllib.request.Request(
+        f"https://pixabay.com/api/?{params}",
+        headers={"User-Agent": "EnglishWordTrainer/1.0"},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as error:
+        raise HTTPException(status_code=502, detail=f"Pixabay API вернул HTTP {error.code}.") from error
+    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as error:
+        raise HTTPException(status_code=502, detail="Не удалось получить результаты Pixabay.") from error
+
+    cache_file.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+    return payload
+
+
+class A2ImageRequest(BaseModel):
+    word: str
+    context: str = ""
+
+
+@app.post("/api/a2-image")
+def get_or_download_a2_image(payload: A2ImageRequest):
+    word = payload.word.strip().lower()
+    slug = safe_image_word(word)
+    if not slug or not re.fullmatch(r"[a-z][a-z0-9 -]{0,59}", word):
+        raise HTTPException(status_code=400, detail="Некорректное слово для изображения.")
+
+    PIXABAY_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
+    manifest = read_image_manifest()
+    existing = manifest.get(word)
+    if existing and existing.get("src"):
+        existing_file = PIXABAY_ROOT / "public" / existing["src"].lstrip("/")
+        if existing_file.is_file():
+            return existing
+
+    api_key = get_pixabay_api_key()
+    if not api_key:
+        raise HTTPException(
+            status_code=503,
+            detail="Не найден PIXABAY_API_KEY. Добавь ключ в .env.local в корне проекта и перезапусти приложение.",
+        )
+
+    data = pixabay_search(word, payload.context, api_key)
+    hits = data.get("hits") or []
+    if not hits:
+        raise HTTPException(status_code=404, detail=f"Pixabay не нашёл изображение для «{word}».")
+
+    stop_words = {"the", "a", "an", "and", "or", "of", "in", "on", "at", "to", "for", "with", "from", "by", "is", "are", "my", "your"}
+    terms = [term for term in re.findall(r"[a-z]{3,}", f"{word} {payload.context}".lower()) if term not in stop_words]
+    ranked = []
+    for hit in hits:
+        tags = str(hit.get("tags", "")).lower()
+        title_terms = re.findall(r"[a-z]{3,}", tags)
+        score = sum(1 for term in set(terms) if term in title_terms)
+        if word in title_terms:
+            score += 3
+        ranked.append((score, int(hit.get("likes", 0)), hit))
+    ranked.sort(key=lambda item: (item[0], item[1]), reverse=True)
+    selected = next((hit for score, _, hit in ranked if score > 0), ranked[0][2])
+
+    image_url = selected.get("webformatURL")
+    if not image_url:
+        raise HTTPException(status_code=404, detail="Pixabay не вернул ссылку на изображение.")
+    try:
+        image_request = urllib.request.Request(image_url, headers={"User-Agent": "EnglishWordTrainer/1.0"})
+        with urllib.request.urlopen(image_request, timeout=25) as response:
+            image_bytes = response.read()
+            content_type = response.headers.get("Content-Type", "")
+    except (urllib.error.URLError, TimeoutError) as error:
+        raise HTTPException(status_code=502, detail="Не удалось скачать изображение с Pixabay.") from error
+
+    if not content_type.startswith("image/") or len(image_bytes) < 1500:
+        raise HTTPException(status_code=502, detail="Pixabay вернул некорректный файл изображения.")
+
+    filename = f"{slug}.jpg"
+    image_path = PIXABAY_IMAGE_DIR / filename
+    image_path.write_bytes(image_bytes)
+    entry = {
+        "src": f"/images/a2/{filename}",
+        "provider": "Pixabay",
+        "title": str(selected.get("tags") or word),
+        "source": str(selected.get("pageURL") or "https://pixabay.com/"),
+        "creator": str(selected.get("user") or ""),
+        "license": "Pixabay Content License",
+        "tags": str(selected.get("tags") or ""),
+        "imageId": selected.get("id"),
+    }
+    manifest[word] = entry
+    temp_manifest = PIXABAY_MANIFEST.with_suffix(".json.tmp")
+    temp_manifest.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    temp_manifest.replace(PIXABAY_MANIFEST)
+    logger.info("Saved Pixabay image for A2 word %r to %s", word, image_path)
+    return entry
