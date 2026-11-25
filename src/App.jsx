@@ -450,15 +450,26 @@ const WordImage = ({ sentence }) => {
               }
               if (!response.ok) throw new Error(`Openverse HTTP ${response.status}`);
               const data = await response.json();
-              const item = (data.results || []).find((result) =>
-                (result.url || result.thumbnail) && !result.mature
-                && (!result.filetype || result.filetype.toLowerCase() !== "svg")
-              );
-              if (item) {
-                selected = item;
+              const stopWords = new Set(["the","a","an","and","or","of","in","on","at","to","for","with","from","by","is","are","person","people","photo","image","picture"]);
+              const terms = [...new Set((query.toLowerCase().match(/[a-z]{3,}/g) || []).filter((term) => !stopWords.has(term)))];
+              const ranked = (data.results || [])
+                .filter((result) => (result.url || result.thumbnail) && !result.mature
+                  && (!result.filetype || result.filetype.toLowerCase() !== "svg"))
+                .map((result) => {
+                  const tags = Array.isArray(result.tags)
+                    ? result.tags.map((tag) => typeof tag === "string" ? tag : tag?.name || "").join(" ")
+                    : "";
+                  const metadata = [result.title, result.description, result.name, tags].filter(Boolean).join(" ").toLowerCase();
+                  const matched = terms.filter((term) => metadata.includes(term));
+                  return { result, score: matched.length + (metadata.includes(key) ? 2 : 0), matches: matched.length };
+                })
+                .filter((entry) => entry.matches >= 2 || entry.score >= 3)
+                .sort((a, b) => b.score - a.score);
+              if (ranked.length) {
+                selected = ranked[0].result;
                 break;
               }
-              lastError = new Error(`Нет результатов по запросу: ${query}`);
+              lastError = new Error(`Нет достаточно релевантных результатов по запросу: ${query}`);
               break;
             } catch (error) {
               if (error.name === "AbortError") return;
