@@ -1972,6 +1972,7 @@ export const SENTENCES = [
       "russian": "Мне нужно записаться к стоматологу.",
       "englishTemplate": "I need to make an appointment with the {word}.",
       "word": "dentist",
+      "imageQuery": "I need a dentist appointment",
       "russianWord": "стоматолог",
       "revealIndices": [0],
       "level": "A2"
@@ -1981,6 +1982,7 @@ export const SENTENCES = [
       "russian": "Поднимитесь по лестнице на второй этаж.",
       "englishTemplate": "Go up the {word} to the second floor.",
       "word": "stairs",
+      "imageQuery": "you go up stairs",
       "russianWord": "лестница",
       "revealIndices": [0, 1],
       "level": "A2"
@@ -1990,6 +1992,7 @@ export const SENTENCES = [
       "russian": "Лифт сегодня не работает.",
       "englishTemplate": "The {word} is not working today.",
       "word": "elevator",
+      "imageQuery": "elevator is not working",
       "russianWord": "лифт",
       "revealIndices": [6],
       "level": "A2"
@@ -1999,6 +2002,7 @@ export const SENTENCES = [
       "russian": "У нас есть бронь на двоих.",
       "englishTemplate": "We have a {word} for two people.",
       "word": "reservation",
+      "imageQuery": "we have a reservation",
       "russianWord": "бронь",
       "revealIndices": [2],
       "level": "A2"
@@ -2008,6 +2012,7 @@ export const SENTENCES = [
       "russian": "Мой чемодан слишком тяжёлый.",
       "englishTemplate": "My {word} is too heavy.",
       "word": "suitcase",
+      "imageQuery": "my suitcase is heavy",
       "russianWord": "чемодан",
       "revealIndices": [3, 6],
       "level": "A2"
@@ -2017,6 +2022,7 @@ export const SENTENCES = [
       "russian": "Не забудь взять паспорт.",
       "englishTemplate": "Do not forget to take your {word}.",
       "word": "passport",
+      "imageQuery": "you take a passport",
       "russianWord": "паспорт",
       "revealIndices": [1],
       "level": "A2"
@@ -2026,6 +2032,7 @@ export const SENTENCES = [
       "russian": "Главный вход находится с другой стороны.",
       "englishTemplate": "The main {word} is on the other side.",
       "word": "entrance",
+      "imageQuery": "main entrance is on the other side",
       "russianWord": "вход",
       "revealIndices": [0, 1],
       "level": "A2"
@@ -2035,6 +2042,7 @@ export const SENTENCES = [
       "russian": "Где ближайший выход?",
       "englishTemplate": "Where is the nearest {word}?",
       "word": "exit",
+      "imageQuery": "nearest exit is here",
       "russianWord": "выход",
       "revealIndices": [1, 2],
       "level": "A2"
@@ -2044,6 +2052,7 @@ export const SENTENCES = [
       "russian": "Можете показать мне правильное направление?",
       "englishTemplate": "Can you show me the right {word}?",
       "word": "direction",
+      "imageQuery": "you show the right direction",
       "russianWord": "направление",
       "revealIndices": [0, 2],
       "level": "A2"
@@ -2053,6 +2062,7 @@ export const SENTENCES = [
       "russian": "Мы посмотрели на карту города.",
       "englishTemplate": "We looked at a {word} of the city.",
       "word": "map",
+      "imageQuery": "we look at a map",
       "russianWord": "карта",
       "revealIndices": [1, 2],
       "level": "A2"
@@ -2062,6 +2072,7 @@ export const SENTENCES = [
       "russian": "Она хочет учиться за границей.",
       "englishTemplate": "She wants to study {word}.",
       "word": "abroad",
+      "imageQuery": "she wants to study abroad",
       "russianWord": "за границей",
       "revealIndices": [3, 4],
       "level": "A2"
@@ -2071,6 +2082,7 @@ export const SENTENCES = [
       "russian": "Наш рейс задержали на час.",
       "englishTemplate": "Our flight had a one-hour {word}.",
       "word": "delay",
+      "imageQuery": "our flight had a delay",
       "russianWord": "задержка",
       "revealIndices": [1, 2],
       "level": "A2"
@@ -2080,6 +2092,7 @@ export const SENTENCES = [
       "russian": "Наш рейс вылетает в шесть утра.",
       "englishTemplate": "Our {word} leaves at six in the morning.",
       "word": "flight",
+      "imageQuery": "our flight leaves",
       "russianWord": "рейс",
       "revealIndices": [1, 3],
       "level": "A2"
@@ -2089,6 +2102,7 @@ export const SENTENCES = [
       "russian": "Время отправления указано на билете.",
       "englishTemplate": "The {word} time is printed on the ticket.",
       "word": "departure",
+      "imageQuery": "departure time is printed",
       "russianWord": "отправление",
       "revealIndices": [0, 6],
       "level": "A2"
@@ -2098,6 +2112,7 @@ export const SENTENCES = [
       "russian": "Я попросил вернуть деньги за билет.",
       "englishTemplate": "I asked for a {word} for the ticket.",
       "word": "refund",
+      "imageQuery": "I asked for a refund",
       "russianWord": "возврат денег",
       "revealIndices": [1, 3, 5],
       "level": "A2"
@@ -2107,6 +2122,7 @@ export const SENTENCES = [
       "russian": "В этом магазине можно сделать обмен.",
       "englishTemplate": "You can make an {word} in this shop.",
       "word": "exchange",
+      "imageQuery": "you make an exchange",
       "russianWord": "обмен",
       "revealIndices": [0, 4],
       "level": "A2"
@@ -2116,6 +2132,7 @@ export const SENTENCES = [
       "russian": "Нам пришлось стоять в длинной очереди.",
       "englishTemplate": "We had to stand in a long {word}.",
       "word": "queue",
+      "imageQuery": "we stand in a queue",
       "russianWord": "очередь",
       "revealIndices": [3, 4],
       "level": "A2"
@@ -2125,6 +2142,7 @@ export const SENTENCES = [
       "russian": "Попросите счёт, пожалуйста.",
       "englishTemplate": "Could we have the {word}, please?",
       "word": "bill",
+      "imageQuery": "we ask for the bill",
       "russianWord": "счёт",
       "revealIndices": [0, 3],
       "level": "A2"
@@ -2134,6 +2152,7 @@ export const SENTENCES = [
       "russian": "Наш заказ скоро будет готов.",
       "englishTemplate": "Our {word} will be ready soon.",
       "word": "order",
+      "imageQuery": "our order will be ready",
       "russianWord": "заказ",
       "revealIndices": [1, 3],
       "level": "A2"
@@ -2143,6 +2162,7 @@ export const SENTENCES = [
       "russian": "Можно посмотреть меню?",
       "englishTemplate": "Can we see the {word}?",
       "word": "menu",
+      "imageQuery": "we see the menu",
       "russianWord": "меню",
       "revealIndices": [0, 1],
       "level": "A2"
@@ -2152,6 +2172,7 @@ export const SENTENCES = [
       "russian": "Покупатель задал вопрос продавцу.",
       "englishTemplate": "The {word} asked the shop assistant a question.",
       "word": "customer",
+      "imageQuery": "customer asks a question",
       "russianWord": "покупатель",
       "revealIndices": [0, 6],
       "level": "A2"
@@ -2161,6 +2182,7 @@ export const SENTENCES = [
       "russian": "У меня нет наличных с собой.",
       "englishTemplate": "I do not have any {word} with me.",
       "word": "cash",
+      "imageQuery": "I do not have cash",
       "russianWord": "наличные",
       "revealIndices": [1, 2, 3],
       "level": "A2"
@@ -2170,6 +2192,7 @@ export const SENTENCES = [
       "russian": "Я нашёл монету на полу.",
       "englishTemplate": "I found a {word} on the floor.",
       "word": "coin",
+      "imageQuery": "I found a coin",
       "russianWord": "монета",
       "revealIndices": [2, 3],
       "level": "A2"
@@ -2179,6 +2202,7 @@ export const SENTENCES = [
       "russian": "Я заберу посылку после работы.",
       "englishTemplate": "I will collect the {word} after work.",
       "word": "parcel",
+      "imageQuery": "I collect a parcel",
       "russianWord": "посылка",
       "revealIndices": [0, 1],
       "level": "A2"
@@ -2188,6 +2212,7 @@ export const SENTENCES = [
       "russian": "Мы почти закончили работу.",
       "englishTemplate": "We have {word} finished the work.",
       "word": "nearly",
+      "imageQuery": "we have nearly finished",
       "russianWord": "почти",
       "revealIndices": [0, 2],
       "level": "A2"
@@ -2197,6 +2222,7 @@ export const SENTENCES = [
       "russian": "Он, вероятно, придёт позже.",
       "englishTemplate": "He will {word} come later.",
       "word": "probably",
+      "imageQuery": "he will probably come",
       "russianWord": "вероятно",
       "revealIndices": [1, 6],
       "level": "A2"
@@ -2206,6 +2232,7 @@ export const SENTENCES = [
       "russian": "Можешь одолжить мне свою ручку?",
       "englishTemplate": "Can you {word} me your pen?",
       "word": "lend",
+      "imageQuery": "you lend a pen",
       "russianWord": "одалживать",
       "revealIndices": [0, 2],
       "level": "A2"
@@ -2215,6 +2242,7 @@ export const SENTENCES = [
       "russian": "Мне нужно упаковать вещи сегодня.",
       "englishTemplate": "I need to {word} my things today.",
       "word": "pack",
+      "imageQuery": "I need to pack",
       "russianWord": "упаковывать",
       "revealIndices": [1, 3],
       "level": "A2"
@@ -2224,6 +2252,7 @@ export const SENTENCES = [
       "russian": "Не опоздай на автобус.",
       "englishTemplate": "Do not {word} the bus.",
       "word": "miss",
+      "imageQuery": "you miss the bus",
       "russianWord": "опоздать на",
       "revealIndices": [0, 1, 2],
       "level": "A2"
@@ -2233,6 +2262,7 @@ export const SENTENCES = [
       "russian": "Я заберу документы завтра.",
       "englishTemplate": "I will {word} the documents tomorrow.",
       "word": "collect",
+      "imageQuery": "I will collect documents",
       "russianWord": "забирать",
       "revealIndices": [0, 5],
       "level": "A2"
