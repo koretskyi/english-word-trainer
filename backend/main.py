@@ -461,7 +461,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
 
     # Version 2 images were searched using ONLY the vocabulary word.
     # Older images may have been selected using unrelated words from the sentence.
-    if existing and existing.get("searchVersion") == 3 and existing.get("src") and existing.get("provider") == "Pixabay":
+    if existing and existing.get("searchVersion") == 4 and existing.get("src") and existing.get("provider") == "Pixabay":
         existing_file = PIXABAY_ROOT / "public" / existing["src"].lstrip("/")
         if existing_file.is_file():
             return existing
@@ -484,17 +484,15 @@ def get_or_download_a2_image(payload: A2ImageRequest):
     if len(target_tokens) != 1:
         raise HTTPException(status_code=400, detail="Для поиска изображения ожидается одно английское слово.")
 
-    # Keep Pixabay's own relevance order. Likes do not indicate semantic relevance.
-    selected = next(
-        (
-            hit for hit in hits
-            if target in re.findall(r"[a-z]+", str(hit.get("tags", "")).lower())
-        ),
-        None,
-    )
-    if not selected:
-        raise HTTPException(status_code=404, detail=f"Pixabay не нашёл достаточно точного изображения для «{word}».")
+    # Use the second exact-tag result from Pixabay's relevance-ordered results.
+    matching_hits = [
+        hit for hit in hits
+        if target in re.findall(r"[a-z]+", str(hit.get("tags", "")).lower())
+    ]
+    if len(matching_hits) < 2:
+        raise HTTPException(status_code=404, detail=f"Pixabay нашёл меньше двух подходящих фотографий для «{word}».")
 
+    selected = matching_hits[1]
     image_url = selected.get("webformatURL")
     if not image_url:
         raise HTTPException(status_code=404, detail="Pixabay не вернул ссылку на изображение.")
@@ -521,7 +519,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         "license": "Pixabay Content License",
         "tags": str(selected.get("tags") or ""),
         "imageId": selected.get("id"),
-        "searchVersion": 3,
+        "searchVersion": 4,
     }
     manifest[word] = entry
     manifest_text = json.dumps(manifest, ensure_ascii=False, indent=2) + "\n"
