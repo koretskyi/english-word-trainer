@@ -359,8 +359,8 @@ button:disabled {
 }
 
 .russian-sentence .target-translation {
-  color: #8BCF35;
-  font-weight: 800;
+  color: #8BCF35 !important;
+  font-weight: 800 !important;
 }
 
 .english-sentence {
