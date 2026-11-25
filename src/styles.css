@@ -3753,3 +3753,15 @@ button:disabled {
   line-height: 1.12;
   overflow-wrap: anywhere;
 }
+
+
+/* Слово на экране правильного ответа: спокойный синий акцент без обводки. */
+.correct-answer-word.is-correct-result {
+  color: #3157d5;
+  background: #eef2ff;
+  border: 0;
+  box-shadow: none;
+}
+.correct-answer-word.is-correct-result strong {
+  color: inherit;
+}
