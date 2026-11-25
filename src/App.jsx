@@ -376,6 +376,7 @@ function ReviewLadder({ stage = 1, compact = false }) {
 }
 
 // Загружает локальную иллюстрацию, а при её отсутствии ищет подходящую в Openverse.
+// Загружает локальное изображение A2 или один раз получает его с Pixabay и сохраняет на диск.
 const WordImage = ({ sentence }) => {
   const word = sentence?.word;
   const [image, setImage] = useState(null);
@@ -393,107 +394,42 @@ const WordImage = ({ sentence }) => {
     setStatus("loading");
 
     async function loadWordImage() {
+      const key = String(word).toLowerCase().trim();
+      const context = String(sentence?.englishTemplate || "")
+        .replace(/\\{word\\}/g, String(word)).trim();
       try {
+        // Fast path: an image already saved on this computer.
         const manifestResponse = await fetch("/images/a2/manifest.json", {
           signal: controller.signal,
+          cache: "no-store",
         });
         if (manifestResponse.ok) {
           const manifest = await manifestResponse.json();
-          const localImage = manifest[String(word).toLowerCase().trim()];
+          const localImage = manifest[key];
           if (localImage?.src) {
-            setImage({ ...localImage, url: localImage.src });
+            setImage(localImage);
             setStatus("ready");
             return;
           }
         }
-      } catch (error) {
-        if (error.name === "AbortError") return;
-      }
 
-      // Curated visual descriptions prevent ambiguous words from returning unrelated images.
-      const visualQueries = {
-        entrance: ["building entrance doorway front door", "entrance door close-up with visible doorway"],
-        leave: ["person leaving home through front door", "person walking out of a house doorway"],
-        kettle: ["electric water kettle appliance close-up", "electric kettle on countertop isolated product photo"],
-        medicine: ["medicine bottle pills tablets pharmacy", "medical tablets in a medicine bottle"],
-        useful: ["useful everyday tool practical object", "person using a useful tool"],
-      };
-      const key = String(word).toLowerCase().trim();
-      const contextualSentence = String(sentence?.englishTemplate || "")
-        .replace(/\{word\}/g, String(word)).trim();
-      const queries = [
-        ...(visualQueries[key] || []),
-        [String(word), contextualSentence].filter(Boolean).join(" "),
-        String(word),
-      ].filter((query, index, all) => query && all.indexOf(query) === index);
-
-      try {
-        let selected = null;
-        let lastError = null;
-
-        for (const query of queries) {
-          for (let attempt = 0; attempt < 3; attempt += 1) {
-            if (controller.signal.aborted) return;
-            try {
-              const params = new URLSearchParams({
-                q: query,
-                page_size: "20",
-                mature: "false",
-                filter_dead: "true",
-              });
-              const response = await fetch(`https://api.openverse.org/v1/images/?${params}`, {
-                signal: controller.signal,
-                headers: { Accept: "application/json" },
-              });
-              if (response.status === 503 || response.status === 429) {
-                throw new Error(`Openverse временно недоступен (HTTP ${response.status})`);
-              }
-              if (!response.ok) throw new Error(`Openverse HTTP ${response.status}`);
-              const data = await response.json();
-              const stopWords = new Set(["the","a","an","and","or","of","in","on","at","to","for","with","from","by","is","are","person","people","photo","image","picture"]);
-              const terms = [...new Set((query.toLowerCase().match(/[a-z]{3,}/g) || []).filter((term) => !stopWords.has(term)))];
-              const ranked = (data.results || [])
-                .filter((result) => (result.url || result.thumbnail) && !result.mature
-                  && (!result.filetype || result.filetype.toLowerCase() !== "svg"))
-                .map((result) => {
-                  const tags = Array.isArray(result.tags)
-                    ? result.tags.map((tag) => typeof tag === "string" ? tag : tag?.name || "").join(" ")
-                    : "";
-                  const metadata = [result.title, result.description, result.name, tags].filter(Boolean).join(" ").toLowerCase();
-                  const matched = terms.filter((term) => metadata.includes(term));
-                  return { result, score: matched.length + (metadata.includes(key) ? 2 : 0), matches: matched.length };
-                })
-                .filter((entry) => entry.matches >= 2 || entry.score >= 3)
-                .sort((a, b) => b.score - a.score);
-              if (ranked.length) {
-                selected = ranked[0].result;
-                break;
-              }
-              lastError = new Error(`Нет достаточно релевантных результатов по запросу: ${query}`);
-              break;
-            } catch (error) {
-              if (error.name === "AbortError") return;
-              lastError = error;
-              if (attempt < 2) {
-                await new Promise((resolve) => window.setTimeout(resolve, 700 * (attempt + 1)));
-              }
-            }
-          }
-          if (selected) break;
-        }
-
-        if (!selected) throw lastError || new Error("Openverse не нашёл изображение");
-        setImage({
-          url: selected.thumbnail || selected.url,
-          title: selected.title || word,
-          source: selected.foreign_landing_url || selected.detail_url || "https://openverse.org/",
-          creator: selected.creator || "Unknown",
-          license: selected.license || "Openverse",
+        // First view only: backend searches Pixabay, downloads the file and updates manifest.
+        const response = await fetch("/api/a2-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ word: key, context }),
+          signal: controller.signal,
         });
+        if (!response.ok) {
+          const details = await response.json().catch(() => ({}));
+          throw new Error(details.detail || `Image API HTTP ${response.status}`);
+        }
+        const savedImage = await response.json();
+        setImage(savedImage);
         setStatus("ready");
       } catch (error) {
         if (error.name !== "AbortError") {
-          console.warn("Не удалось загрузить иллюстрацию слова:", error);
+          console.warn("Не удалось сохранить иллюстрацию слова:", error);
           setImage(null);
           setStatus("error");
         }
@@ -502,7 +438,7 @@ const WordImage = ({ sentence }) => {
 
     loadWordImage();
     return () => controller.abort();
-  }, [word, sentence?.englishTemplate, sentence?.russian]);
+  }, [word, sentence?.englishTemplate]);
 
   if (status === "loading") {
     return <div className="word-image-placeholder" aria-live="polite">Подбираю изображение…</div>;
@@ -513,11 +449,11 @@ const WordImage = ({ sentence }) => {
 
   return (
     <figure className="word-image-card">
-      <img src={image.url} alt={`Иллюстрация: ${word}`} loading="lazy"
+      <img src={image.src} alt={`Иллюстрация: ${word}`} loading="lazy"
         onError={() => { setImage(null); setStatus("error"); }} />
       <figcaption>
-        <a href={image.source} target="_blank" rel="noreferrer" title={image.title}>
-          Источник: Openverse · {image.license}{image.creator ? ` · ${image.creator}` : ""}
+        <a href={image.source || "https://pixabay.com/"} target="_blank" rel="noreferrer" title={image.title}>
+          Источник: Pixabay{image.creator ? ` · ${image.creator}` : ""}
         </a>
       </figcaption>
     </figure>
