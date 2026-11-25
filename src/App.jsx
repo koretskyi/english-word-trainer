@@ -630,6 +630,12 @@ function StudyPage({
         <strong>{selectedLevelReviewCount}</strong>
         <span>на повторении</span>
       </button>
+      {isReview && (
+        <div className="review-progress-meta">
+          <div className="review-origin-label">Прогресс повторения слова</div>
+          <ReviewLadder stage={reviewStage} />
+        </div>
+      )}
     </div>
   );
 
@@ -895,12 +901,6 @@ function StudyPage({
       {levelSelector}
       {statsPanel}
       <div className={(isReview ? "review-card-progress" : "study-card-unframed") + (checked && correct ? " answer-correct" : "")}>
-        {isReview && (
-          <div className="review-progress-meta">
-            <div className="review-origin-label">Прогресс повторения слова</div>
-            <ReviewLadder stage={reviewStage} />
-          </div>
-        )}
         <WordImage word={sentence.word} />
         <h2 className="russian-sentence">{renderRussianSentence(sentence.russian, sentence.russianWord)}</h2>
         <div className="english-section">
