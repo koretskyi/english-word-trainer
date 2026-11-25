@@ -428,7 +428,7 @@ def pixabay_search(word: str, context: str, api_key: str) -> dict:
         "orientation": "all",
         "safesearch": "true",
         "order": "relevance",
-        "per_page": "30",
+        "per_page": "5",
     })
     request = urllib.request.Request(
         f"https://pixabay.com/api/?{params}",
@@ -444,6 +444,58 @@ def pixabay_search(word: str, context: str, api_key: str) -> dict:
 
     cache_file.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
     return payload
+
+
+PIXABAY_TAG_STOPWORDS = {
+    "a", "an", "the", "and", "or", "but", "to", "of", "in", "on", "at",
+    "by", "for", "from", "with", "without", "is", "are", "was", "were",
+    "be", "been", "being", "it", "its", "this", "that", "these", "those",
+    "i", "you", "he", "she", "we", "they", "my", "your", "his", "her",
+    "our", "their", "me", "him", "them", "can", "could", "would", "should",
+    "do", "does", "did", "have", "has", "had", "need", "want", "like",
+}
+
+
+def pixabay_token_forms(value: str) -> set[str]:
+    token = re.sub(r"[^a-z]", "", value.lower())
+    if len(token) < 3:
+        return set()
+    forms = {token}
+    if token.endswith("ies") and len(token) > 4:
+        forms.add(token[:-3] + "y")
+    if token.endswith("ing") and len(token) > 5:
+        forms.add(token[:-3])
+        forms.add(token[:-3] + "e")
+    if token.endswith("ed") and len(token) > 4:
+        forms.add(token[:-2])
+        forms.add(token[:-1])
+    if token.endswith("es") and len(token) > 4:
+        forms.add(token[:-2])
+    elif token.endswith("s") and len(token) > 3:
+        forms.add(token[:-1])
+    return forms
+
+
+def score_pixabay_hit(hit: dict, word: str, context: str) -> int:
+    """Rank one of the five Pixabay results using its descriptive tags."""
+    tag_text = str(hit.get("tags") or "").lower()
+    tag_tokens = set(re.findall(r"[a-z]+", tag_text))
+    tag_forms = set().union(*(pixabay_token_forms(token) for token in tag_tokens)) if tag_tokens else set()
+
+    target_forms = pixabay_token_forms(word)
+    score = 10 if target_forms and target_forms.intersection(tag_forms) else 0
+
+    context_tokens = [
+        token for token in re.findall(r"[a-z]+", context.lower())
+        if token not in PIXABAY_TAG_STOPWORDS and len(token) >= 3
+    ]
+    context_forms = set().union(*(pixabay_token_forms(token) for token in context_tokens)) if context_tokens else set()
+    score += 2 * len(context_forms.intersection(tag_forms))
+
+    # Prefer results whose tags describe several parts of the intended scene.
+    if len(context_forms.intersection(tag_forms)) >= 2:
+        score += 2
+    return score
 
 
 class A2ImageRequest(BaseModel):
@@ -465,7 +517,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
 
     # Reuse the local image only when it was downloaded for this exact query.
     # If an A2 exception changes its query, refresh only that word's image.
-    if existing and existing.get("searchVersion") == 8 and existing.get("searchQuery") == search_query and existing.get("src") and existing.get("provider") == "Pixabay":
+    if existing and existing.get("searchVersion") == 9 and existing.get("searchQuery") == search_query and existing.get("src") and existing.get("provider") == "Pixabay":
         existing_file = PIXABAY_ROOT / "public" / existing["src"].lstrip("/")
         if existing_file.is_file():
             return existing
@@ -484,8 +536,20 @@ def get_or_download_a2_image(payload: A2ImageRequest):
     if not hits:
         raise HTTPException(status_code=404, detail=f"Pixabay не нашёл фотографий для «{word}».")
 
-    # Match Pixabay's search page order: choose the second result, or the first if it is the only one.
-    selected = hits[1] if len(hits) >= 2 else hits[0]
+    # Only evaluate the five results requested from Pixabay. Keep Pixabay's
+    # relevance order as the tie-breaker, but prefer the result with the best tags.
+    candidates = hits[:5]
+    scored_hits = [
+        (score_pixabay_hit(hit, word, search_query), index, hit)
+        for index, hit in enumerate(candidates)
+    ]
+    scored_hits.sort(key=lambda item: (-item[0], item[1]))
+    best_score, _, selected = scored_hits[0]
+    logger.info(
+        "Pixabay tag ranking for %r: %s",
+        word,
+        [(score, str(hit.get("tags") or "")) for score, _, hit in scored_hits],
+    )
     image_url = selected.get("webformatURL")
     if not image_url:
         raise HTTPException(status_code=404, detail="Pixabay не вернул ссылку на изображение.")
@@ -512,7 +576,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         "license": "Pixabay Content License",
         "tags": str(selected.get("tags") or ""),
         "imageId": selected.get("id"),
-        "searchVersion": 8,
+        "searchVersion": 9,
         "searchQuery": search_query,
     }
     manifest[word] = entry
