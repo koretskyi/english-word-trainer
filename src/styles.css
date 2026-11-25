@@ -3565,7 +3565,7 @@ button:disabled {
 }
 
 
-/* Иллюстрации слов: только внешний URL, без локального хранения файлов. */
+/* Иллюстрация слова в учебной карточке. */
 .word-image-card {
   display: flex;
   flex-direction: column;
