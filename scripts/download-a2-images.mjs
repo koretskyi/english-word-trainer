@@ -132,23 +132,43 @@ async function downloadWord(word) {
   const results = (data.results || []).filter((item) => item.url || item.thumbnail);
   if (!results.length) throw new Error("Openverse не нашёл изображение");
 
-  // Keep Openverse's relevance ranking. Re-sorting by image dimensions can
-  // accidentally promote an unrelated but larger image (for example, a cake).
-  const relevantResults = results.filter((item) =>
-    !item.mature && (!item.filetype || item.filetype.toLowerCase() !== "svg")
-  );
+  // Rank results by their actual metadata. Openverse's first result can be
+  // visually unrelated, so never download it just because it is first.
+  const stopWords = new Set(["the","a","an","and","or","of","in","on","at","to","for","with","from","by","is","are","person","people","photo","image","picture"]);
+  const wordsFrom = (value) => String(value || "").toLowerCase().match(/[a-z]{3,}/g) || [];
+  const queryTerms = [...new Set(wordsFrom(query).filter((term) => !stopWords.has(term)))];
+  const metadataText = (item) => {
+    const tags = Array.isArray(item.tags)
+      ? item.tags.map((tag) => typeof tag === "string" ? tag : tag?.name || "").join(" ")
+      : "";
+    return [item.title, item.description, item.name, tags].filter(Boolean).join(" ").toLowerCase();
+  };
+  const rankedResults = results
+    .filter((item) => !item.mature && (!item.filetype || item.filetype.toLowerCase() !== "svg"))
+    .map((item) => {
+      const metadata = metadataText(item);
+      const matched = queryTerms.filter((term) => metadata.includes(term));
+      const exactWord = metadata.includes(word);
+      return { item, score: matched.length + (exactWord ? 2 : 0), matched };
+    })
+    .filter((entry) => entry.matched.length >= 2 || entry.score >= 3)
+    .sort((a, b) => b.score - a.score);
+
+  if (!rankedResults.length) {
+    throw new Error("Не нашёл фото с достаточно релевантным названием/тегами — пропускаю, чтобы не показывать случайную картинку");
+  }
 
   let selected;
   let image;
   let lastError;
-  for (const item of relevantResults.slice(0, 8)) {
+  for (const { item } of rankedResults.slice(0, 10)) {
     try {
       image = await fetchImage(item);
       selected = item;
       break;
     } catch (error) { lastError = error; }
   }
-  if (!selected || !image) throw lastError || new Error("не удалось скачать ни один результат");
+  if (!selected || !image) throw lastError || new Error("не удалось скачать ни один релевантный результат");
 
   // Normalize every downloaded image to a small, consistently sized WebP.
   // Try progressively lower quality until the image is near the 120 KB target.
@@ -170,7 +190,7 @@ async function downloadWord(word) {
   const metadata = await sharp(optimized).metadata();
   return {
     src: `/images/a2/${filename}`,
-    optimizedVersion: 3,
+    optimizedVersion: 4,
     format: "webp",
     width: metadata.width || 0,
     height: metadata.height || 0,
@@ -191,7 +211,7 @@ let downloaded = 0, skipped = 0, failed = 0;
 
 for (const word of words) {
   const existing = manifest[word];
-  if (existing?.provider === "Openverse" && existing?.optimizedVersion === 3 && existing?.src) {
+  if (existing?.provider === "Openverse" && existing?.optimizedVersion === 4 && existing?.src) {
     try {
       await access(path.join(outputDir, path.basename(existing.src)));
       console.log(`✓ ${word}: уже есть`);
