@@ -527,8 +527,10 @@ function StudyPage({
   useEffect(() => {
     if (!sentence) return;
     const timer = window.setTimeout(() => {
-      wordAnswerActionsRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-    }, 550);
+      const actions = wordAnswerActionsRef.current;
+      if (!actions) return;
+      actions.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+    }, 650);
     return () => window.clearTimeout(timer);
   }, [sentence?.id, sentence?.word]);
 
