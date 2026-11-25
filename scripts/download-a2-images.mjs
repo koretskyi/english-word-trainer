@@ -146,6 +146,7 @@ async function downloadWord(word) {
   await writeFile(path.join(outputDir, filename), image.bytes);
   return {
     src: `/images/a2/${filename}`,
+    provider: "Openverse",
     title: selected.title || word,
     source: selected.foreign_landing_url || selected.detail_url || "https://openverse.org/",
     creator: selected.creator || "Unknown",
@@ -160,7 +161,7 @@ let downloaded = 0, skipped = 0, failed = 0;
 
 for (const word of words) {
   const existing = manifest[word];
-  if (existing?.src) {
+  if (existing?.provider === "Openverse" && existing?.src) {
     try {
       await access(path.join(outputDir, path.basename(existing.src)));
       console.log(`✓ ${word}: уже есть`);
