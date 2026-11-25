@@ -464,7 +464,10 @@ def get_or_download_a2_image(payload: A2ImageRequest):
     old_abroad_image = word == "abroad" and any(
         term in existing_tags for term in ("study", "student", "school", "classroom", "book", "university")
     )
-    if not old_abroad_image and existing and existing.get("src") and existing.get("provider") == "Pixabay":
+    bird_flight_image = word == "flight" and any(
+        term in existing_tags for term in ("pigeon", "dove", "bird", "sparrow", "wildlife", "animal")
+    )
+    if not old_abroad_image and not bird_flight_image and existing and existing.get("src") and existing.get("provider") == "Pixabay":
         existing_file = PIXABAY_ROOT / "public" / existing["src"].lstrip("/")
         if existing_file.is_file():
             return existing
@@ -477,7 +480,8 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         )
 
     # "abroad" is searched by the vocabulary word alone, not by its example sentence.
-    search_context = "" if word == "abroad" else payload.context
+    # Disambiguate the airline meaning of "flight" so Pixabay does not return birds in flight.
+    search_context = "" if word == "abroad" else ("airline airplane airport aircraft passenger" if word == "flight" else payload.context)
     data = pixabay_search(word, search_context, api_key)
     hits = data.get("hits") or []
 
