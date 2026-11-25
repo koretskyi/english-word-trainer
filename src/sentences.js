@@ -667,6 +667,7 @@ export const SENTENCES = [
     russian: "Мне нужно уйти в семь.",
     englishTemplate: "I need to {word} at seven.",
     word: "leave",
+    pixabayQuery: "leaving someone",
       russianWord: "уйти",
     revealIndices: [1, 3],
     level: "A2"
