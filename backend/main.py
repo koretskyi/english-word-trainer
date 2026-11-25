@@ -512,7 +512,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         "license": "Pixabay Content License",
         "tags": str(selected.get("tags") or ""),
         "imageId": selected.get("id"),
-        "searchVersion": 7,
+        "searchVersion": 8,
         "searchQuery": search_query,
     }
     manifest[word] = entry
