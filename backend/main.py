@@ -458,16 +458,10 @@ def get_or_download_a2_image(payload: A2ImageRequest):
     PIXABAY_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
     manifest = read_image_manifest()
     existing = manifest.get(word)
-    # Replace a previously cached study-related illustration for "abroad";
-    # once a travel image is saved, reuse it on every subsequent card opening.
-    existing_tags = str((existing or {}).get("tags", "")).lower()
-    old_abroad_image = word == "abroad" and any(
-        term in existing_tags for term in ("study", "student", "school", "classroom", "book", "university")
-    )
-    bird_flight_image = word == "flight" and any(
-        term in existing_tags for term in ("pigeon", "dove", "bird", "sparrow", "wildlife", "animal")
-    )
-    if not old_abroad_image and not bird_flight_image and existing and existing.get("src") and existing.get("provider") == "Pixabay":
+
+    # Version 2 images were searched using ONLY the vocabulary word.
+    # Older images may have been selected using unrelated words from the sentence.
+    if existing and existing.get("searchVersion") == 2 and existing.get("src") and existing.get("provider") == "Pixabay":
         existing_file = PIXABAY_ROOT / "public" / existing["src"].lstrip("/")
         if existing_file.is_file():
             return existing
@@ -479,38 +473,30 @@ def get_or_download_a2_image(payload: A2ImageRequest):
             detail="Не найден PIXABAY_API_KEY. Добавь ключ в .env.local в корне проекта и перезапусти приложение.",
         )
 
-    # "abroad" is searched by the vocabulary word alone, not by its example sentence.
-    # Disambiguate the airline meaning of "flight" so Pixabay does not return birds in flight.
-    search_context = "" if word == "abroad" else ("airline airplane airport aircraft passenger" if word == "flight" else payload.context)
-    data = pixabay_search(word, search_context, api_key)
+    # Search and rank by the target vocabulary word only. Ignore sentence context completely.
+    data = pixabay_search(word, "", api_key)
     hits = data.get("hits") or []
-
-    # Context can make ordinary searches too restrictive. Retry with the
-    # vocabulary word alone before giving up.
-    if not hits and search_context.strip():
-        logger.info("Pixabay returned no contextual results for %r; retrying word-only search", word)
-        data = pixabay_search(word, "", api_key)
-        hits = data.get("hits") or []
-
     if not hits:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Pixabay не нашёл фотографий для «{word}» даже без контекста предложения."
-        )
+        raise HTTPException(status_code=404, detail=f"Pixabay не нашёл фотографий для «{word}».")
 
-    stop_words = {"the", "a", "an", "and", "or", "of", "in", "on", "at", "to", "for", "with", "from", "by", "is", "are", "my", "your"}
-    terms = [term for term in re.findall(r"[a-z]{3,}", f"{word} {search_context}".lower()) if term not in stop_words]
+    target = word.strip().lower()
+    target_tokens = re.findall(r"[a-z]+", target)
+    if len(target_tokens) != 1:
+        raise HTTPException(status_code=400, detail="Для поиска изображения ожидается одно английское слово.")
+
+    # Require an explicit target-word tag; never select an unrelated first result.
     ranked = []
     for hit in hits:
         tags = str(hit.get("tags", "")).lower()
-        title_terms = re.findall(r"[a-z]{3,}", tags)
-        score = sum(1 for term in set(terms) if term in title_terms)
-        if word in title_terms:
-            score += 3
-        ranked.append((score, int(hit.get("likes", 0)), hit))
-    ranked.sort(key=lambda item: (item[0], item[1]), reverse=True)
-    selected = next((hit for score, _, hit in ranked if score > 0), ranked[0][2])
+        title_terms = re.findall(r"[a-z]+", tags)
+        if target in title_terms:
+            ranked.append((int(hit.get("likes", 0)), hit))
 
+    if not ranked:
+        raise HTTPException(status_code=404, detail=f"Pixabay не нашёл достаточно точного изображения для «{word}».")
+
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    selected = ranked[0][1]
     image_url = selected.get("webformatURL")
     if not image_url:
         raise HTTPException(status_code=404, detail="Pixabay не вернул ссылку на изображение.")
@@ -537,6 +523,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         "license": "Pixabay Content License",
         "tags": str(selected.get("tags") or ""),
         "imageId": selected.get("id"),
+        "searchVersion": 2,
     }
     manifest[word] = entry
     manifest_text = json.dumps(manifest, ensure_ascii=False, indent=2) + "\n"
@@ -545,12 +532,10 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         temp_manifest.write_text(manifest_text, encoding="utf-8")
         temp_manifest.replace(PIXABAY_MANIFEST)
     except PermissionError:
-        # Windows may deny atomic replacement while the Vite dev server or
-        # another process has the manifest open. Fall back to direct writing.
         try:
             temp_manifest.unlink(missing_ok=True)
         except OSError:
             pass
         PIXABAY_MANIFEST.write_text(manifest_text, encoding="utf-8")
-    logger.info("Saved Pixabay image for A2 word %r to %s", word, image_path)
+    logger.info("Saved word-only Pixabay image for A2 word %r to %s", word, image_path)
     return entry
