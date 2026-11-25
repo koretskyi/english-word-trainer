@@ -375,9 +375,8 @@ function ReviewLadder({ stage = 1, compact = false }) {
   );
 }
 
-// Загружает иллюстрацию для текущего слова напрямую из Wikimedia Commons.
-// Изображения не скачиваются в проект и не сохраняются в localStorage.
-function WordImage({ sentence }) {
+// Загружает локальную иллюстрацию, а при её отсутствии ищет подходящую в Openverse.
+const WordImage = ({ sentence }) => {
   const word = sentence?.word;
   const [image, setImage] = useState(null);
   const [status, setStatus] = useState("loading");
@@ -411,31 +410,72 @@ function WordImage({ sentence }) {
         if (error.name === "AbortError") return;
       }
 
+      // Curated visual descriptions prevent ambiguous words from returning unrelated images.
+      const visualQueries = {
+        entrance: ["building entrance doorway front door", "entrance to a building door"],
+        medicine: ["medicine bottle pills tablets pharmacy", "medical tablets in a medicine bottle"],
+        useful: ["useful everyday tool practical object", "person using a useful tool"],
+      };
+      const key = String(word).toLowerCase().trim();
+      const contextualSentence = String(sentence?.englishTemplate || "")
+        .replace(/\{word\}/g, String(word)).trim();
+      const queries = [
+        ...(visualQueries[key] || []),
+        [String(word), contextualSentence].filter(Boolean).join(" "),
+        String(word),
+      ].filter((query, index, all) => query && all.indexOf(query) === index);
+
       try {
-        const params = new URLSearchParams({
-          q: [
-            String(word).trim(),
-            String(sentence?.russian || "").trim(),
-            String(sentence?.englishTemplate || "").replace(/\{word\}/g, String(word)).trim(),
-          ].filter(Boolean).join(" "),
-          page_size: "20",
-          mature: "false",
-          filter_dead: "true",
-        });
-        const response = await fetch(`https://api.openverse.org/v1/images/?${params}`, {
-          signal: controller.signal,
-          headers: { Accept: "application/json" },
-        });
-        if (!response.ok) throw new Error(`Openverse HTTP ${response.status}`);
-        const data = await response.json();
-        const item = (data.results || []).find((result) => result.url || result.thumbnail);
-        if (!item) throw new Error("No matching image");
+        let selected = null;
+        let lastError = null;
+
+        for (const query of queries) {
+          for (let attempt = 0; attempt < 3; attempt += 1) {
+            if (controller.signal.aborted) return;
+            try {
+              const params = new URLSearchParams({
+                q: query,
+                page_size: "20",
+                mature: "false",
+                filter_dead: "true",
+              });
+              const response = await fetch(`https://api.openverse.org/v1/images/?${params}`, {
+                signal: controller.signal,
+                headers: { Accept: "application/json" },
+              });
+              if (response.status === 503 || response.status === 429) {
+                throw new Error(`Openverse временно недоступен (HTTP ${response.status})`);
+              }
+              if (!response.ok) throw new Error(`Openverse HTTP ${response.status}`);
+              const data = await response.json();
+              const item = (data.results || []).find((result) =>
+                (result.url || result.thumbnail) && !result.mature
+                && (!result.filetype || result.filetype.toLowerCase() !== "svg")
+              );
+              if (item) {
+                selected = item;
+                break;
+              }
+              lastError = new Error(`Нет результатов по запросу: ${query}`);
+              break;
+            } catch (error) {
+              if (error.name === "AbortError") return;
+              lastError = error;
+              if (attempt < 2) {
+                await new Promise((resolve) => window.setTimeout(resolve, 700 * (attempt + 1)));
+              }
+            }
+          }
+          if (selected) break;
+        }
+
+        if (!selected) throw lastError || new Error("Openverse не нашёл изображение");
         setImage({
-          url: item.thumbnail || item.url,
-          title: item.title || word,
-          source: item.foreign_landing_url || item.detail_url || "https://openverse.org/",
-          creator: item.creator || "Unknown",
-          license: item.license || "Openverse",
+          url: selected.thumbnail || selected.url,
+          title: selected.title || word,
+          source: selected.foreign_landing_url || selected.detail_url || "https://openverse.org/",
+          creator: selected.creator || "Unknown",
+          license: selected.license || "Openverse",
         });
         setStatus("ready");
       } catch (error) {
@@ -449,7 +489,7 @@ function WordImage({ sentence }) {
 
     loadWordImage();
     return () => controller.abort();
-  }, [word]);
+  }, [word, sentence?.englishTemplate, sentence?.russian]);
 
   if (status === "loading") {
     return <div className="word-image-placeholder" aria-live="polite">Подбираю изображение…</div>;
@@ -469,7 +509,7 @@ function WordImage({ sentence }) {
       </figcaption>
     </figure>
   );
-}
+};
 
 // Страница обучения с интервальным повторением.
 function StudyPage({
