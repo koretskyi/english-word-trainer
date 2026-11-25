@@ -928,6 +928,13 @@ function StudyPage({
       {levelSelector}
       {statsPanel}
       <div className={(isReview ? "review-card-progress" : "study-card-unframed") + (checked && correct ? " answer-correct" : "")}>
+        <div className="word-learning-progress" role="progressbar"
+          aria-label="Прогресс изучения слова"
+          aria-valuemin={0} aria-valuemax={6} aria-valuenow={isReview ? reviewStage : 0}>
+          <span className="word-learning-progress-fill"
+            style={{ width: `${isReview ? (Math.min(6, reviewStage) / 6) * 100 : 0}%` }} />
+          <span className="word-learning-progress-label">Прогресс изучения слова</span>
+        </div>
         <WordImage word={sentence.word} />
         <h2 className="russian-sentence">{renderRussianSentence(sentence.russian, sentence.russianWord)}</h2>
         <div className="english-section">
@@ -941,13 +948,6 @@ function StudyPage({
             </div>
             <p className="study-instruction">ВПИШИТЕ СЛОВО <strong className="target-translation">{sentence.russianWord || "—"}</strong> НА АНГЛИЙСКОМ:</p>
           </div>
-        </div>
-        <div className="word-learning-progress" role="progressbar"
-          aria-label="Прогресс изучения слова"
-          aria-valuemin={0} aria-valuemax={6} aria-valuenow={isReview ? reviewStage : 0}>
-          <span className="word-learning-progress-fill"
-            style={{ width: `${isReview ? (Math.min(6, reviewStage) / 6) * 100 : 0}%` }} />
-          <span className="word-learning-progress-label">Прогресс изучения слова</span>
         </div>
         <div className="form-actions word-answer-actions">
             <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}`}
