@@ -395,7 +395,7 @@ function buildA2ImageQuery(sentence) {
 
   let phrase = "";
   const rules = [
-    [/^can you lend me your phone charger[?.!]*$/i, () => "lending person phone"],
+    [/^can you lend me your phone charger[?.!]*$/i, () => "phone charger lend"],
     [/^we were late because of the\\s+(.+)\\.?$/i, () => "cars stuck in a jam"],
     [/^i prefer to\\s+(.+?)\\s+by\\s+(.+?)\\.?$/i, (match) => `person ${match[1]} paying`],
     [/^please fill in this\\s+(.+?)\\.?$/i, () => "person filling in"],
