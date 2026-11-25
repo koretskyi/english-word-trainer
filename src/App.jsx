@@ -927,7 +927,7 @@ function StudyPage({
       )}
       {levelSelector}
       {statsPanel}
-      <div className={(isReview ? "review-card-progress" : "study-card-unframed") + (checked && correct ? " answer-correct" : "")}>
+      <div key={`${sentence.id}-${sentence.word}-${isReview ? "review" : "study"}`} className={(isReview ? "review-card-progress" : "study-card-unframed") + (checked && correct ? " answer-correct" : "")}>
         <div className="word-learning-progress" role="progressbar"
           aria-label="Прогресс изучения слова"
           aria-valuemin={0} aria-valuemax={6} aria-valuenow={isReview ? reviewStage : 0}>
