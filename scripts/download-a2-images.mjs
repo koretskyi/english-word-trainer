@@ -8,151 +8,155 @@ const outputDir = path.join(root, "public", "images", "a2");
 const manifestPath = path.join(outputDir, "manifest.json");
 
 const searchTerms = {
-  appointment: "calendar appointment doctor",
-  wallet: "wallet",
-  station: "railway station",
+  appointment: "doctor appointment patient consultation",
+  wallet: "leather wallet purse",
+  station: "train railway station building",
   slowly: "snail moving slowly",
-  message: "text message smartphone",
-  cooked: "cooked meal food",
-  ticket: "train ticket",
-  colleagues: "colleagues coworkers office",
-  form: "paper form document",
+  message: "person sending text message smartphone",
+  cooked: "cooked dinner meal plate",
+  ticket: "train ticket travel",
+  colleagues: "coworkers colleagues working together office",
+  form: "paper application form filling",
   windy: "wind blowing trees",
-  card: "bank card",
-  traffic: "traffic jam cars",
-  charger: "mobile phone charger",
-  river: "river landscape",
-  closes: "shop closing door",
-  laundry: "laundry washing clothes",
-  journey: "train journey travel",
-  affordable: "affordable price price tag",
-  umbrella: "umbrella",
-  bus: "city bus",
-  borrow: "borrowing a book",
-  choose: "choosing between options",
-  decide: "making a decision",
-  invite: "invitation card",
-  arrive: "arriving at airport",
-  leave: "leaving home suitcase",
-  return: "return parcel package",
-  repair: "repair tools",
-  broken: "broken object",
-  expensive: "expensive price tag",
-  cheap: "cheap sale price tag",
-  crowded: "crowded public place",
-  quiet: "quiet library",
-  noisy: "noisy street",
-  healthy: "healthy food",
-  careful: "caution careful handling",
+  card: "contactless bank card payment",
+  traffic: "traffic jam cars road",
+  charger: "mobile phone charger cable",
+  river: "river flowing landscape",
+  closes: "shop closing shutter",
+  laundry: "washing clothes laundry basket",
+  journey: "train journey countryside",
+  affordable: "affordable apartment rental price",
+  umbrella: "open umbrella rain",
+  bus: "city bus public transport",
+  borrow: "person borrowing a book from library",
+  choose: "choosing between two options",
+  decide: "person making a decision",
+  invite: "invitation birthday party card",
+  arrive: "passenger arriving at airport",
+  leave: "person leaving home suitcase",
+  return: "returning parcel package post office",
+  repair: "person repairing household item tools",
+  broken: "broken household object",
+  expensive: "luxury expensive price tag",
+  cheap: "low price discount price tag",
+  crowded: "crowded bus passengers",
+  quiet: "quiet peaceful library",
+  noisy: "busy noisy city street",
+  healthy: "healthy balanced food plate",
+  careful: "person handling fragile glass carefully",
   dangerous: "danger warning sign",
-  weather: "weather cloudy sunny",
-  weekend: "weekend calendar",
-  holiday: "holiday vacation beach",
-  neighbour: "neighbors talking",
-  kettle: "electric kettle",
-  mirror: "wall mirror",
-  shelf: "bookshelf",
-  medicine: "medicine bottle",
-  receipt: "shopping receipt",
-  recipe: "recipe cooking ingredients",
-  platform: "railway platform",
-  improve: "improvement progress",
-  describe: "person describing something",
+  weather: "sunny cloudy rainy weather",
+  weekend: "weekend calendar Saturday Sunday",
+  holiday: "beach holiday vacation",
+  neighbour: "neighbors talking outside houses",
+  kettle: "electric kettle kitchen",
+  mirror: "wall mirror reflection",
+  shelf: "bookshelf books",
+  medicine: "medicine bottle tablets",
+  receipt: "printed shopping receipt",
+  recipe: "cooking recipe ingredients cookbook",
+  platform: "railway station train platform",
+  improve: "progress improvement growing plant",
+  describe: "person explaining describing object",
 };
 
 const source = await readFile(sourcePath, "utf8");
 const blocks = source.split(/(?=\{\s*id:\s*")/);
-const words = blocks
-  .map((body) => {
-    const word = body.match(/\bword:\s*"([^"]+)"/)?.[1];
-    const level = body.match(/\blevel:\s*"([^"]+)"/)?.[1];
-    return level === "A2" && word ? word.trim().toLowerCase() : null;
-  })
-  .filter(Boolean);
+const words = blocks.map((body) => {
+  const word = body.match(/\bword:\s*"([^"]+)"/)?.[1];
+  const level = body.match(/\blevel:\s*"([^"]+)"/)?.[1];
+  return level === "A2" && word ? word.trim().toLowerCase() : null;
+}).filter(Boolean);
 
 if (!words.length) throw new Error("Не удалось найти слова уровня A2 в src/sentences.js");
-
 await mkdir(outputDir, { recursive: true });
 
 let manifest = {};
-try {
-  manifest = JSON.parse(await readFile(manifestPath, "utf8"));
-} catch {
-  manifest = {};
+try { manifest = JSON.parse(await readFile(manifestPath, "utf8")); } catch {}
+
+function extensionFrom(item, response) {
+  const type = response.headers.get("content-type") || "";
+  if (/image\/jpeg/i.test(type)) return "jpg";
+  if (/image\/png/i.test(type)) return "png";
+  if (/image\/webp/i.test(type)) return "webp";
+  if (/image\/gif/i.test(type)) return "gif";
+  const filetype = String(item.filetype || "").toLowerCase();
+  return ["jpg", "jpeg", "png", "webp", "gif"].includes(filetype) ? filetype.replace("jpeg", "jpg") : "jpg";
 }
 
-function extensionFromContentType(contentType, url) {
-  if (/image\/jpeg/i.test(contentType)) return "jpg";
-  if (/image\/png/i.test(contentType)) return "png";
-  if (/image\/webp/i.test(contentType)) return "webp";
-  if (/image\/gif/i.test(contentType)) return "gif";
-  if (/image\/svg\+xml/i.test(contentType)) return "svg";
-  const match = url.match(/\.(jpe?g|png|webp|gif|svg)(?:[?#]|$)/i);
-  return match ? match[1].toLowerCase().replace("jpeg", "jpg") : "jpg";
+async function fetchImage(item) {
+  const candidates = [item.url, item.thumbnail].filter(Boolean);
+  let lastError;
+  for (const url of [...new Set(candidates)]) {
+    try {
+      const response = await fetch(url, { headers: { "User-Agent": "EnglishWordTrainer/1.0 (local vocabulary image library)" } });
+      if (!response.ok) throw new Error(`image HTTP ${response.status}`);
+      const contentType = response.headers.get("content-type") || "";
+      if (!contentType.startsWith("image/")) throw new Error("ответ не является изображением");
+      const bytes = Buffer.from(await response.arrayBuffer());
+      if (bytes.length < 1500) throw new Error("изображение слишком маленькое или пустое");
+      if (bytes.length > 8 * 1024 * 1024 && url === item.url && item.thumbnail) continue;
+      return { bytes, extension: extensionFrom(item, response) };
+    } catch (error) { lastError = error; }
+  }
+  throw lastError || new Error("не удалось скачать изображение");
 }
 
 async function downloadWord(word) {
   const query = searchTerms[word] || word;
   const params = new URLSearchParams({
-    action: "query",
-    generator: "search",
-    gsrsearch: query,
-    gsrnamespace: "6",
-    gsrlimit: "15",
-    prop: "imageinfo",
-    iiprop: "url|extmetadata",
-    iiurlwidth: "640",
-    format: "json",
-    origin: "*",
+    q: query,
+    page_size: "20",
+    mature: "false",
+    filter_dead: "true",
+  });
+  const response = await fetch(`https://api.openverse.org/v1/images/?${params}`, {
+    headers: { "User-Agent": "EnglishWordTrainer/1.0 (educational vocabulary project)", Accept: "application/json" },
+  });
+  if (!response.ok) throw new Error(`Openverse API HTTP ${response.status}`);
+  const data = await response.json();
+  const results = (data.results || []).filter((item) => item.url || item.thumbnail);
+  if (!results.length) throw new Error("Openverse не нашёл изображение");
+
+  // Openverse already ranks by relevance; prefer a usable landscape/square image.
+  results.sort((a, b) => {
+    const score = (item) => {
+      let value = 0;
+      if (item.width && item.height && Math.min(item.width, item.height) >= 300) value += 3;
+      if (item.mature) value -= 100;
+      if (item.filetype && !["svg"].includes(item.filetype)) value += 1;
+      return value;
+    };
+    return score(b) - score(a);
   });
 
-  const searchResponse = await fetch(`https://commons.wikimedia.org/w/api.php?${params}`, {
-    headers: { "User-Agent": "EnglishWordTrainer/1.0 (local vocabulary image downloader)" },
-  });
-  if (!searchResponse.ok) throw new Error(`Wikimedia search HTTP ${searchResponse.status}`);
-  const data = await searchResponse.json();
-  const pages = Object.values(data.query?.pages || {})
-    .filter((page) => page.imageinfo?.[0]?.thumburl || page.imageinfo?.[0]?.url);
+  let selected;
+  let image;
+  let lastError;
+  for (const item of results.slice(0, 8)) {
+    try {
+      image = await fetchImage(item);
+      selected = item;
+      break;
+    } catch (error) { lastError = error; }
+  }
+  if (!selected || !image) throw lastError || new Error("не удалось скачать ни один результат");
 
-  if (!pages.length) throw new Error("изображение не найдено");
-
-  const normalized = word.toLowerCase();
-  pages.sort((a, b) => {
-    const titleA = a.title.toLowerCase().replace(/[^a-z0-9]+/g, " ");
-    const titleB = b.title.toLowerCase().replace(/[^a-z0-9]+/g, " ");
-    const exactA = titleA.includes(normalized) ? 1 : 0;
-    const exactB = titleB.includes(normalized) ? 1 : 0;
-    return exactB - exactA;
-  });
-
-  // For concept words, use the first result for the more descriptive search phrase.
-  const selected = pages[0];
-  const info = selected.imageinfo[0];
-  const imageUrl = info.thumburl || info.url;
-  const imageResponse = await fetch(imageUrl, {
-    headers: { "User-Agent": "EnglishWordTrainer/1.0 (local vocabulary image downloader)" },
-  });
-  if (!imageResponse.ok) throw new Error(`image HTTP ${imageResponse.status}`);
-
-  const contentType = imageResponse.headers.get("content-type") || "";
-  if (!contentType.startsWith("image/")) throw new Error("сервер вернул не изображение");
-  const extension = extensionFromContentType(contentType, imageUrl);
-  const filename = `${word.replace(/[^a-z0-9-]/g, "-")}.${extension}`;
-  await writeFile(path.join(outputDir, filename), Buffer.from(await imageResponse.arrayBuffer()));
-
+  const filename = `${word}.${image.extension}`;
+  await writeFile(path.join(outputDir, filename), image.bytes);
   return {
     src: `/images/a2/${filename}`,
-    title: selected.title.replace(/^File:/, "").replaceAll("_", " "),
-    source: info.descriptionurl || `https://commons.wikimedia.org/wiki/${encodeURIComponent(selected.title.replaceAll(" ", "_"))}`,
-    license: info.extmetadata?.LicenseShortName?.value || "Wikimedia Commons",
+    title: selected.title || word,
+    source: selected.foreign_landing_url || selected.detail_url || "https://openverse.org/",
+    creator: selected.creator || "Unknown",
+    license: selected.license || "License not specified",
+    licenseUrl: selected.license_url || "",
+    attribution: selected.attribution || "",
   };
 }
 
-console.log(`Найдено слов A2: ${words.length}. Сохраняю картинки в public/images/a2 ...`);
-
-let downloaded = 0;
-let skipped = 0;
-let failed = 0;
+console.log(`Найдено слов A2: ${words.length}. Скачиваю изображения из Openverse в public/images/a2 ...`);
+let downloaded = 0, skipped = 0, failed = 0;
 
 for (const word of words) {
   const existing = manifest[word];
@@ -162,11 +166,8 @@ for (const word of words) {
       console.log(`✓ ${word}: уже есть`);
       skipped++;
       continue;
-    } catch {
-      // Re-download missing local file.
-    }
+    } catch {}
   }
-
   try {
     manifest[word] = await downloadWord(word);
     console.log(`↓ ${word}: ${manifest[word].title}`);
@@ -175,11 +176,11 @@ for (const word of words) {
     console.warn(`! ${word}: ${error.message}`);
     failed++;
   }
-
-  await new Promise((resolve) => setTimeout(resolve, 250));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 }
 
 await writeFile(manifestPath, JSON.stringify(manifest, null, 2) + "\n", "utf8");
 console.log("\nГотово.");
-console.log(`Скачано: ${downloaded}; уже было: ${skipped}; не найдено: ${failed}; всего слов: ${words.length}.`);
-console.log("Сведения об источниках и лицензиях сохранены в public/images/a2/manifest.json.");
+console.log(`Скачано: ${downloaded}; уже было: ${skipped}; ошибки: ${failed}; всего слов: ${words.length}.`);
+console.log("Автор, источник и лицензия сохранены в public/images/a2/manifest.json.");
+if (failed) console.log("Повторный запуск попробует скачать отсутствующие изображения ещё раз.");
