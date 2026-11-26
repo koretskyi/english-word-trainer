@@ -814,7 +814,7 @@ function StudyPage({
   const resultState = markedKnown ? "is-known" : correct ? "is-correct" : "is-incorrect";
 
   return (
-    <section className={`panel study-panel${checked ? ` answer-result-panel ${resultState}` : checked && correct ? " answer-correct" : ""}${voiceModeActive ? " is-voice-listening" : ""}`}>
+    <section className={`panel study-panel${checked ? ` answer-result-panel ${resultState}` : ""}${voiceModeActive ? " is-voice-listening" : ""}`}>
       {voiceModeActive && (
         <div className="word-listening-mode">
           <button className={"word-listening-mic-button" + (voiceStatus === "listening" ? " is-listening" : "")} type="button"
@@ -880,9 +880,9 @@ function StudyPage({
           )}
         </div>
       )}
-      {levelSelector}
-      {statsPanel}
-      <div key={`${sentence.id}-${sentence.word}-${isReview ? "review" : "study"}`} className={(isReview ? "review-card-progress" : "study-card-unframed") + (checked && correct ? " answer-correct" : "")}>
+      {!checked && levelSelector}
+      {!checked && statsPanel}
+      <div key={`${sentence.id}-${sentence.word}-${isReview ? "review" : "study"}`} className={isReview ? "review-card-progress" : "study-card-unframed"}>
         {checked ? (
           <div className={`answer-result-card ${resultState}`} role="status" aria-live="polite">
             {!markedKnown && (
