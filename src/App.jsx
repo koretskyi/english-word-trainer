@@ -3,7 +3,7 @@ import WordGap from "./components/LetterGap.jsx";
 import CorrectFeedback from "./components/CorrectFeedback.jsx";
 import AuditionPage from "./pages/AuditionPage.jsx";
 import VideoPage from "./pages/VideoPage.jsx";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { startAutoVoiceCapture } from "./utils/autoVoice.js";
 
 
@@ -882,7 +882,7 @@ function StudyPage({
       )}
       {!checked && levelSelector}
       {!checked && statsPanel}
-      <div key={`${sentence.id}-${sentence.word}-${isReview ? "review" : "study"}`} className={isReview ? "review-card-progress" : "study-card-unframed"}>
+      <div key={`${sentence.id}-${sentence.word}`} className={`${isReview ? "review-card-progress" : "study-card-unframed"}${checked ? " is-answered" : ""}`}>
         {checked ? (
           <div className={`answer-result-card ${resultState}`} role="status" aria-live="polite">
             {!markedKnown && (
@@ -1537,7 +1537,6 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
 
 // Главный компонент приложения.
 export default function App() {
-  const studyScrollYRef = useRef(typeof window !== "undefined" ? window.scrollY : 0);
   const [sentences, setSentences] = useState(loadSentences);
   const [videos, setVideos] = useState(loadVideos);
   const [completedVideoIds, setCompletedVideoIds] = useState(loadCompletedVideoIds);
@@ -1576,20 +1575,6 @@ export default function App() {
   const sentence = activeWordKey
     ? filteredSentences.find((item) => normalizeWord(item.word) === activeWordKey) || candidate
     : candidate;
-
-  useEffect(() => {
-    const rememberStudyScroll = () => {
-      if (page === "study" && !showStats) studyScrollYRef.current = window.scrollY;
-    };
-    window.addEventListener("scroll", rememberStudyScroll, { passive: true });
-    return () => window.removeEventListener("scroll", rememberStudyScroll);
-  }, [page, showStats]);
-
-  useLayoutEffect(() => {
-    if (page === "study" && !showStats) {
-      window.scrollTo({ top: studyScrollYRef.current, left: 0, behavior: "instant" });
-    }
-  }, [page, showStats, sentence?.id]);
 
   const levelWords = new Set(filteredSentences.map((item) => normalizeWord(item.word)).filter(Boolean));
   const totalWords = levelWords.size;
