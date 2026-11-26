@@ -3735,7 +3735,7 @@ button:disabled {
 
 @media (max-width: 600px) {
   .answer-result-panel {
-    min-height: 58vh;
+    min-height: 0;
     padding: 16px;
   }
 
