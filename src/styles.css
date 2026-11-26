@@ -1284,12 +1284,14 @@ button:disabled {
 /* Лестница освоения слова на повторении */
 .review-card-progress {
   position: relative;
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
   overflow: hidden;
   display: grid;
-  gap: 28px;
-  width: calc(100% + 60px);
-  margin: 30px 0 36px -30px;
-  padding: 20px 40px;
+  gap: 24px;
+  margin: 24px 0 28px;
+  padding: 20px 24px;
   border: 2px solid #8BCF35;
   border-radius: 18px;
   background: #f7fbea;
@@ -3682,11 +3684,17 @@ button:disabled {
 
 .answer-result-card {
   position: relative;
-  display: grid;
-  place-items: center;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
   width: 100%;
+  min-width: 0;
   min-height: clamp(260px, 48vh, 440px);
-  overflow: hidden;
+  padding: 18px 0;
+  overflow: visible;
   border-radius: inherit;
   text-align: center;
 }
@@ -3734,6 +3742,14 @@ button:disabled {
 
   .answer-result-card {
     min-height: 42vh;
+    gap: 12px;
+    padding: 12px 0;
+  }
+
+  .review-card-progress {
+    gap: 18px;
+    margin: 18px 0 22px;
+    padding: 16px 14px;
   }
 }
 
