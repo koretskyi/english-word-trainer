@@ -487,7 +487,6 @@ function StudyPage({
   const [micLevel, setMicLevel] = useState(0);
   const [voiceSuccessConfetti, setVoiceSuccessConfetti] = useState(false);
   const voiceCaptureRef = useRef(null);
-  const wordAnswerActionsRef = useRef(null);
   const voiceActiveRef = useRef(false);
   const micStreamRef = useRef(null);
   const audioContextRef = useRef(null);
@@ -510,16 +509,6 @@ function StudyPage({
     voiceCaptureRef.current?.stop();
     setVoiceListening(false);
   }, [sentence?.id]);
-
-  useEffect(() => {
-    if (!sentence) return;
-    const timer = window.setTimeout(() => {
-      const actions = wordAnswerActionsRef.current;
-      if (!actions) return;
-      actions.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
-    }, 650);
-    return () => window.clearTimeout(timer);
-  }, [sentence?.id, sentence?.word]);
 
   function startVoiceInput() {
     voiceCaptureRef.current?.stop();
@@ -822,62 +811,10 @@ function StudyPage({
     );
   }
 
-  if (checked) {
-    const resultState = markedKnown ? "is-known" : correct ? "is-correct" : "is-incorrect";
-    return (
-      <section className={`panel study-panel answer-result-panel ${resultState}`}>
-        <div className={`answer-result-card ${resultState}`} role="status" aria-live="polite">
-          {!markedKnown && (
-            <div className={`answer-review-progress ${correct ? "is-correct" : "is-incorrect"}`}>
-              <div className="answer-review-progress-heading">
-                <strong>{correct ? "Отлично! Прогресс слова" : "Слово отправлено на повторение"}</strong>
-                <span>{correct ? (isReview ? Math.min(6, reviewStage + 1) : 6) : 1} / 6</span>
-              </div>
-              <div className="answer-review-progress-track" role="progressbar"
-                aria-label="Прогресс повторения слова" aria-valuemin={0} aria-valuemax={6}
-                aria-valuenow={correct ? (isReview ? Math.min(6, reviewStage + 1) : 6) : 1}>
-                {Array.from({ length: 6 }, (_, index) => {
-                  const progressStage = correct ? (isReview ? Math.min(6, reviewStage + 1) : 6) : 1;
-                  return <span key={index} className={index < progressStage ? "is-filled" : ""} />;
-                })}
-              </div>
-              <p>{correct
-                ? (isReview && reviewStage < 6 ? "Следующий этап повторения пройден." : "Слово освоено!")
-                : "Повтори это слово позже, чтобы закрепить его."}</p>
-            </div>
-          )}
-          {markedKnown ? (
-            <strong className="known-result-message">✓ Слово перенесено в выученные</strong>
-          ) : correct ? (
-            <>
-              <CorrectFeedback />
-              <WordImage sentence={sentence} />
-              <div className="correct-answer-word is-correct-result">
-                <strong>{sentence.word}</strong>
-              </div>
-            </>
-          ) : (
-            <div className="incorrect-result-content">
-              <strong className="incorrect-result-message">Слово добавлено на повторение</strong>
-              <div className="incorrect-word-pair">
-                <div className="correct-answer-word">
-                  <span>Правильное слово</span>
-                  <strong>{sentence.word}</strong>
-                </div>
-                <div className="wrong-answer-word">
-                  <span>Ваш ответ</span>
-                  <strong>{answer.join("").trim()}</strong>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </section>
-    );
-  }
+  const resultState = markedKnown ? "is-known" : correct ? "is-correct" : "is-incorrect";
 
   return (
-    <section className={"panel study-panel" + (checked && correct ? " answer-correct" : "") + (voiceModeActive ? " is-voice-listening" : "")}>
+    <section className={`panel study-panel${checked ? ` answer-result-panel ${resultState}` : checked && correct ? " answer-correct" : ""}${voiceModeActive ? " is-voice-listening" : ""}`}>
       {voiceModeActive && (
         <div className="word-listening-mode">
           <button className={"word-listening-mic-button" + (voiceStatus === "listening" ? " is-listening" : "")} type="button"
@@ -946,6 +883,55 @@ function StudyPage({
       {levelSelector}
       {statsPanel}
       <div key={`${sentence.id}-${sentence.word}-${isReview ? "review" : "study"}`} className={(isReview ? "review-card-progress" : "study-card-unframed") + (checked && correct ? " answer-correct" : "")}>
+        {checked ? (
+          <div className={`answer-result-card ${resultState}`} role="status" aria-live="polite">
+            {!markedKnown && (
+              <div className={`answer-review-progress ${correct ? "is-correct" : "is-incorrect"}`}>
+                <div className="answer-review-progress-heading">
+                  <strong>{correct ? "Отлично! Прогресс слова" : "Слово отправлено на повторение"}</strong>
+                  <span>{correct ? (isReview ? Math.min(6, reviewStage + 1) : 6) : 1} / 6</span>
+                </div>
+                <div className="answer-review-progress-track" role="progressbar"
+                  aria-label="Прогресс повторения слова" aria-valuemin={0} aria-valuemax={6}
+                  aria-valuenow={correct ? (isReview ? Math.min(6, reviewStage + 1) : 6) : 1}>
+                  {Array.from({ length: 6 }, (_, index) => {
+                    const progressStage = correct ? (isReview ? Math.min(6, reviewStage + 1) : 6) : 1;
+                    return <span key={index} className={index < progressStage ? "is-filled" : ""} />;
+                  })}
+                </div>
+                <p>{correct
+                  ? (isReview && reviewStage < 6 ? "Следующий этап повторения пройден." : "Слово освоено!")
+                  : "Повтори это слово позже, чтобы закрепить его."}</p>
+              </div>
+            )}
+            {markedKnown ? (
+              <strong className="known-result-message">✓ Слово перенесено в выученные</strong>
+            ) : correct ? (
+              <>
+                <CorrectFeedback />
+                <WordImage sentence={sentence} />
+                <div className="correct-answer-word is-correct-result">
+                  <strong>{sentence.word}</strong>
+                </div>
+              </>
+            ) : (
+              <div className="incorrect-result-content">
+                <strong className="incorrect-result-message">Слово добавлено на повторение</strong>
+                <div className="incorrect-word-pair">
+                  <div className="correct-answer-word">
+                    <span>Правильное слово</span>
+                    <strong>{sentence.word}</strong>
+                  </div>
+                  <div className="wrong-answer-word">
+                    <span>Ваш ответ</span>
+                    <strong>{answer.join("").trim()}</strong>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
         <div className="word-learning-progress" role="progressbar"
           aria-label="Прогресс изучения слова"
           aria-valuemin={0} aria-valuemax={6} aria-valuenow={isReview ? reviewStage : 0}>
@@ -967,7 +953,7 @@ function StudyPage({
             <p className="study-instruction">ВПИШИТЕ СЛОВО <strong className="target-translation">{sentence.russianWord || "—"}</strong> НА АНГЛИЙСКОМ:</p>
           </div>
         </div>
-        <div ref={wordAnswerActionsRef} className="form-actions word-answer-actions">
+        <div className="form-actions word-answer-actions">
             <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}`}
               type="button" onClick={startVoiceInput} disabled={voiceListening}
               aria-label="Ввести слово голосом">
@@ -980,6 +966,8 @@ function StudyPage({
               onClick={knowWord}>Я знаю</button>
         </div>
         {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
+</>
+        )}
       </div>
     </section>
   );
