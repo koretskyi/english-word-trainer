@@ -3875,3 +3875,96 @@ button:disabled {
     padding: 14px 10px;
   }
 }
+
+
+/* Corrected fixed geometry: keep every study-card element visible. */
+.study-card-shell {
+  box-sizing: border-box;
+  height: 640px;
+  min-height: 640px;
+  overflow: visible;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 20px 24px;
+}
+
+.study-card-shell > * {
+  flex-shrink: 0;
+}
+
+.study-card-shell .word-learning-progress {
+  flex: 0 0 24px;
+  margin: 0;
+}
+
+.study-card-shell .word-image-card {
+  flex: 0 0 auto;
+  margin: 8px auto 10px;
+}
+
+.study-card-shell .word-image-card img {
+  height: 190px;
+  max-height: 190px;
+}
+
+.study-card-shell .word-image-placeholder {
+  flex: 0 0 auto;
+  margin: 8px auto 10px;
+}
+
+.study-card-shell .russian-sentence {
+  flex: 0 0 auto;
+  margin: 0 0 -8px;
+}
+
+.study-card-shell .english-section,
+.study-card-shell .answer-area {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.study-card-shell .english-sentence {
+  margin-bottom: 10px;
+}
+
+.study-card-shell .study-instruction {
+  margin-bottom: 4px;
+}
+
+.study-card-shell .word-answer-actions {
+  flex: 0 0 auto;
+  margin-top: 4px;
+}
+
+.study-card-shell > .answer-result-card {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  overflow: visible;
+}
+
+.study-card-shell .answer-review-progress {
+  flex-shrink: 0;
+}
+
+@media (max-width: 700px) {
+  .study-card-shell {
+    height: 660px;
+    min-height: 660px;
+    padding: 16px 12px;
+    gap: 10px;
+  }
+
+  .study-card-shell .word-image-card img {
+    height: 170px;
+    max-height: 170px;
+  }
+}
+
+@media (max-width: 420px) {
+  .study-card-shell {
+    height: 680px;
+    min-height: 680px;
+    padding: 14px 10px;
+  }
+}
