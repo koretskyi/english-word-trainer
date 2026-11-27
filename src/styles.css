@@ -368,10 +368,15 @@ button:disabled {
   align-items: baseline;
   margin-bottom: 20px;
   flex-wrap: wrap;
-  gap: 0 8px;
+  column-gap: 0;
+  row-gap: 0;
   font-size: clamp(19px, 3.5vw, 25px);
   line-height: 2.2;
   overflow-wrap: anywhere;
+}
+
+.english-sentence > span {
+  white-space: pre-wrap;
 }
 
 .word-gap {
@@ -1323,33 +1328,13 @@ button:disabled {
   display: contents;
 }
 
-/* Новая карточка плавно открывается снизу вверх при смене слова. */
-@keyframes study-card-reveal-up {
-  from {
-    clip-path: inset(100% 0 0 0);
-    opacity: 0.35;
-    transform: translateY(10px);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.review-card-progress:not(.is-answered) {
-  animation: study-card-reveal-up 480ms cubic-bezier(0.22, 0.7, 0.25, 1) both;
-}
-
-.study-card-unframed:not(.is-answered) > * {
-  animation: study-card-reveal-up 480ms cubic-bezier(0.22, 0.7, 0.25, 1) both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .review-card-progress,
-  .study-card-unframed > * {
-    animation: none;
-  }
+/* Смена карточек без сдвига, обрезания и повторной анимации содержимого. */
+.review-card-progress,
+.study-card-unframed,
+.study-card-unframed > * {
+  animation: none !important;
+  clip-path: none;
+  transform: none;
 }
 
 .review-progress-meta {
