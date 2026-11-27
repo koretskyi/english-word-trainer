@@ -795,7 +795,7 @@ function StudyPage({
   const resultState = markedKnown ? "is-known" : correct ? "is-correct" : "is-incorrect";
 
   return (
-    <section className={`panel study-panel${checked ? ` answer-result-panel ${resultState}` : ""}${voiceModeActive ? " is-voice-listening" : ""}`}>
+    <section className={`panel study-panel${voiceModeActive ? " is-voice-listening" : ""}`}>
       {voiceModeActive && (
         <div className="word-listening-mode">
           <button className={"word-listening-mic-button" + (voiceStatus === "listening" ? " is-listening" : "")} type="button"
