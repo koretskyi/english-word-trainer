@@ -407,13 +407,13 @@ def safe_image_word(value: str) -> str:
     return re.sub(r"[^a-z0-9-]", "", value.lower().strip().replace(" ", "-"))[:60]
 
 
-def pixabay_search(search_query: str, api_key: str) -> dict:
+def pixabay_search(search_query: str, api_key: str, force_refresh: bool = False) -> dict:
     PIXABAY_QUERY_CACHE.mkdir(parents=True, exist_ok=True)
     query = re.sub(r"[^a-zA-Z0-9 ]", " ", search_query)
     query = re.sub(r"\s+", " ", query).strip()[:100]
     cache_key = re.sub(r"[^a-z0-9]+", "-", query.lower()).strip("-") or "empty-query"
     cache_file = PIXABAY_QUERY_CACHE / f"{cache_key}.json"
-    if cache_file.exists() and time.time() - cache_file.stat().st_mtime < PIXABAY_CACHE_TTL:
+    if not force_refresh and cache_file.exists() and time.time() - cache_file.stat().st_mtime < PIXABAY_CACHE_TTL:
         try:
             return json.loads(cache_file.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
@@ -500,6 +500,7 @@ def score_pixabay_hit(hit: dict, context: str) -> int:
 class WordImageRequest(BaseModel):
     word: str = ""
     context: str
+    force: bool = False
 
 
 @app.post("/api/word-image")
@@ -518,7 +519,7 @@ def get_or_download_word_image(payload: WordImageRequest):
     PIXABAY_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
     manifest = read_image_manifest()
     existing = manifest.get(manifest_key)
-    if existing and existing.get("searchVersion") == 13 and existing.get("searchQuery") == search_query and existing.get("src") and existing.get("provider") == "Pixabay":
+    if not payload.force and existing and existing.get("searchVersion") == 13 and existing.get("searchQuery") == search_query and existing.get("src") and existing.get("provider") == "Pixabay":
         existing_file = PIXABAY_ROOT / "public" / existing["src"].lstrip("/")
         if existing_file.is_file():
             return existing
@@ -530,7 +531,7 @@ def get_or_download_word_image(payload: WordImageRequest):
             detail="Не найден PIXABAY_API_KEY. Добавь ключ в .env.local в корне проекта и перезапусти приложение.",
         )
 
-    data = pixabay_search(search_query, api_key)
+    data = pixabay_search(search_query, api_key, force_refresh=payload.force)
     hits = data.get("hits") or []
     if not hits:
         raise HTTPException(status_code=404, detail=f"Pixabay не нашёл фотографий по контексту «{search_query}».")
