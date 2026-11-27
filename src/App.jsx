@@ -880,13 +880,6 @@ function StudyPage({
         {levelSelector}
         {statsPanel}
       <div className="study-card-shell">
-        <div className="word-learning-progress" role="progressbar"
-          aria-label="Прогресс изучения слова"
-          aria-valuemin={0} aria-valuemax={6} aria-valuenow={isReview ? reviewStage : 0}>
-          <span className="word-learning-progress-fill"
-            style={{ width: `${isReview ? (Math.min(6, reviewStage) / 6) * 100 : 0}%` }} />
-          <span className="word-learning-progress-label">Прогресс изучения слова</span>
-        </div>
         <div className={`study-card-image-slot${checked ? " is-feedback" : ""}`}>
           {checked
             ? <StudyFeedbackVisual correct={correct} markedKnown={markedKnown} />
@@ -915,25 +908,6 @@ function StudyPage({
         </div>
         {checked ? (
           <div className={`answer-result-card ${resultState}`} role="status" aria-live="polite">
-            {!markedKnown && (
-              <div className={`answer-review-progress ${correct ? "is-correct" : "is-incorrect"}`}>
-                <div className="answer-review-progress-heading">
-                  <strong>{correct ? "Отлично! Прогресс слова" : "Слово отправлено на повторение"}</strong>
-                  <span>{correct ? (isReview ? Math.min(6, reviewStage + 1) : 6) : 1} / 6</span>
-                </div>
-                <div className="answer-review-progress-track" role="progressbar"
-                  aria-label="Прогресс повторения слова" aria-valuemin={0} aria-valuemax={6}
-                  aria-valuenow={correct ? (isReview ? Math.min(6, reviewStage + 1) : 6) : 1}>
-                  {Array.from({ length: 6 }, (_, index) => {
-                    const progressStage = correct ? (isReview ? Math.min(6, reviewStage + 1) : 6) : 1;
-                    return <span key={index} className={index < progressStage ? "is-filled" : ""} />;
-                  })}
-                </div>
-                <p>{correct
-                  ? (isReview && reviewStage < 6 ? "Следующий этап повторения пройден." : "Слово освоено!")
-                  : "Повтори это слово позже, чтобы закрепить его."}</p>
-              </div>
-            )}
             {markedKnown ? (
               <strong className="known-result-message">✓ Слово перенесено в выученные</strong>
             ) : correct ? (
@@ -942,13 +916,13 @@ function StudyPage({
               <div className="incorrect-result-content">
                 <strong className="incorrect-result-message">Слово добавлено на повторение</strong>
                 <div className="incorrect-word-pair">
-                  <div className="correct-answer-word">
-                    <span>Правильное слово</span>
-                    <strong>{sentence.word}</strong>
+                  <div className="answer-value-group is-correct-answer">
+                    <span className="answer-value-label">Правильный ответ</span>
+                    <strong className="answer-value">{sentence.word}</strong>
                   </div>
-                  <div className="wrong-answer-word">
-                    <span>Ваш ответ</span>
-                    <strong>{answer.join("").trim() || "—"}</strong>
+                  <div className="answer-value-group is-wrong-answer">
+                    <span className="answer-value-label">Ваш ответ</span>
+                    <strong className="answer-value">{answer.join("").trim() || "—"}</strong>
                   </div>
                 </div>
               </div>
