@@ -3,7 +3,7 @@ import WordGap from "./components/LetterGap.jsx";
 import CorrectFeedback from "./components/CorrectFeedback.jsx";
 import AuditionPage from "./pages/AuditionPage.jsx";
 import VideoPage from "./pages/VideoPage.jsx";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { startAutoVoiceCapture } from "./utils/autoVoice.js";
 
 
@@ -67,6 +67,7 @@ function loadSentences() {
 
 const LEARNING_STORAGE_KEY = "english-word-trainer-learning-v1";
 const REVIEW_INTERVALS = [5, 10, 20, 40, 80, 160];
+const LEVELS = ["A1", "A2", "B1", "B2", "C1"];
 
 function normalizeWord(word) {
   return String(word || "").trim().toLowerCase();
@@ -1523,7 +1524,7 @@ export default function App() {
       return true;
     }
   });
-  const levels = ["A1", "A2", "B1", "B2", "C1"];
+  const levels = LEVELS;
 
   function toggleAudio() {
     setAudioEnabled((enabled) => {
@@ -1540,28 +1541,46 @@ export default function App() {
     });
   }
 
-  const filteredSentences = sentences.filter((sentence) => sentence && sentence.level === selectedLevel);
-  const candidate = selectNextSentence(filteredSentences, learningData);
-  const sentence = activeWordKey
-    ? filteredSentences.find((item) => normalizeWord(item.word) === activeWordKey) || candidate
-    : candidate;
+  // Build the level index once per sentence-data change. All five levels stay
+  // resident in memory, so switching levels does not filter the full dataset again.
+  const sentencesByLevel = useMemo(() => {
+    const grouped = Object.fromEntries(LEVELS.map((level) => [level, []]));
+    sentences.forEach((item) => {
+      if (item && grouped[item.level]) grouped[item.level].push(item);
+    });
+    return grouped;
+  }, [sentences]);
 
-  const levelWords = new Set(filteredSentences.map((item) => normalizeWord(item.word)).filter(Boolean));
+  const filteredSentences = sentencesByLevel[selectedLevel] || [];
+  const candidate = useMemo(
+    () => selectNextSentence(filteredSentences, learningData),
+    [filteredSentences, learningData]
+  );
+  const sentence = useMemo(() => activeWordKey
+    ? filteredSentences.find((item) => normalizeWord(item.word) === activeWordKey) || candidate
+    : candidate, [filteredSentences, activeWordKey, candidate]);
+
+  const levelWords = useMemo(
+    () => new Set(filteredSentences.map((item) => normalizeWord(item.word)).filter(Boolean)),
+    [filteredSentences]
+  );
   const totalWords = levelWords.size;
-  const masteredCount = Array.from(levelWords).filter((word) =>
-    learningData.words[word] && learningData.words[word].status === "MASTERED"
-  ).length;
-  const sentenceByWord = new Map();
-  sentences.forEach((item) => {
-    if (!item || typeof item !== "object") return;
-    const key = normalizeWord(item.word);
-    if (key && !sentenceByWord.has(key)) sentenceByWord.set(key, item);
-  });
-  const levelProgress = levels.map((level) => {
-    const words = new Set(sentences
-      .filter((item) => item && item.level === level)
-      .map((item) => normalizeWord(item.word))
-      .filter(Boolean));
+  const masteredCount = useMemo(
+    () => Array.from(levelWords).filter((word) => learningData.words[word]?.status === "MASTERED").length,
+    [levelWords, learningData.words]
+  );
+  const sentenceByWord = useMemo(() => {
+    const index = new Map();
+    sentences.forEach((item) => {
+      if (!item || typeof item !== "object") return;
+      const key = normalizeWord(item.word);
+      if (key && !index.has(key)) index.set(key, item);
+    });
+    return index;
+  }, [sentences]);
+  const levelProgress = useMemo(() => LEVELS.map((level) => {
+    const words = new Set((sentencesByLevel[level] || [])
+      .map((item) => normalizeWord(item.word)).filter(Boolean));
     const mastered = Array.from(words).filter((word) =>
       learningData.words[word]?.status === "MASTERED"
     ).length;
@@ -1571,8 +1590,8 @@ export default function App() {
       mastered,
       percent: words.size ? Math.round((mastered / words.size) * 100) : 0,
     };
-  });
-  const reviewQueue = Object.entries(learningData.words)
+  }), [sentencesByLevel, learningData.words]);
+  const reviewQueue = useMemo(() => Object.entries(learningData.words)
     .filter(([key, state]) => state.status === "REVIEW" && sentenceByWord.has(key))
     .map(([key, state]) => ({
       key,
@@ -1582,11 +1601,13 @@ export default function App() {
       dueAt: state.dueAt,
       order: state.order || 0,
     }))
-    .sort((a, b) => (a.dueAt - b.dueAt) || (a.order - b.order));
-  const readyReviewCount = reviewQueue.filter(
-    (item) => item.dueAt <= learningData.completedCount
-  ).length;
-  const reviewWords = reviewQueue.map((item, index, items) => {
+    .sort((a, b) => (a.dueAt - b.dueAt) || (a.order - b.order)),
+  [learningData.words, sentenceByWord]);
+  const readyReviewCount = useMemo(
+    () => reviewQueue.filter((item) => item.dueAt <= learningData.completedCount).length,
+    [reviewQueue, learningData.completedCount]
+  );
+  const reviewWords = useMemo(() => reviewQueue.map((item, index, items) => {
     const readyBefore = items.slice(0, index).filter(
       (previous) => previous.dueAt <= learningData.completedCount
     ).length;
@@ -1598,7 +1619,7 @@ export default function App() {
       ? readyBefore + 1
       : item.dueAt - learningData.completedCount + readyReviewCount + sameFutureDueBefore;
     return { ...item, remaining };
-  });
+  }), [reviewQueue, learningData.completedCount, readyReviewCount]);
 
   useEffect(() => {
     try {
