@@ -5094,3 +5094,32 @@ button:disabled {
   font-size: 0.78rem;
   line-height: 1.15;
 }
+
+/* Keep the three study actions visible while scrolling a long vocabulary card. */
+.study-card-shell > .study-card-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
+  flex: 0 0 auto;
+  width: 100%;
+  margin-top: auto;
+  padding: 12px 0 max(12px, env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    var(--card-background, #ffffff) 18%,
+    var(--card-background, #ffffff) 100%
+  );
+  box-sizing: border-box;
+}
+
+.study-card-shell .study-card-footer .word-answer-actions {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 520px) {
+  .study-card-shell > .study-card-footer {
+    padding-top: 10px;
+  }
+}
