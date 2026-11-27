@@ -515,7 +515,6 @@ function StudyPage({
   const [voiceStatus, setVoiceStatus] = useState("idle");
   const [voiceError, setVoiceError] = useState("");
   const [voiceRecognizedText, setVoiceRecognizedText] = useState("");
-  const [micLevel, setMicLevel] = useState(0);
   const [voiceSuccessConfetti, setVoiceSuccessConfetti] = useState(false);
   const [continuousVoiceMode, setContinuousVoiceMode] = useState(false);
   const [voicePreparing, setVoicePreparing] = useState(false);
@@ -544,7 +543,6 @@ function StudyPage({
       audioContextRef.current.close().catch(() => {});
     }
     audioContextRef.current = null;
-    setMicLevel(0);
   }
 
   useEffect(() => () => {
@@ -650,9 +648,7 @@ function StudyPage({
         if (status === "transcribing") setVoiceSuccessConfetti(false);
         const active = status === "listening";
         setVoiceListening(active);
-        if (!active) setMicLevel(0);
       },
-      onLevel: (level) => setMicLevel(level),
       onText: (recognizedText, recognitionData) => {
         const transcript = String(recognizedText || "").trim();
         if (recognitionData?.is_correct === true) {
@@ -1010,7 +1006,10 @@ function StudyPage({
           <div className="study-card-footer">
             {continuousVoiceMode && (
               <p className="word-voice-status" role="status">
-                <span key={voiceStatus === "transcribing" ? "transcribing" : voiceStatus === "listening" ? "listening" : voicePreparing ? `count-${voiceCountdown}` : "ready"} className="voice-status-label">
+                <span className={`voice-speaking-indicator${voiceListening ? " is-visible" : ""}`} aria-hidden="true">
+                  <svg viewBox="0 0 28 28"><circle cx="10" cy="8" r="4" /><path d="M3.5 23c.4-5 2.7-7.5 6.5-7.5s6.1 2.5 6.5 7.5" /><path d="M18 10.5c1.4 1 2.2 2.2 2.2 3.8s-.8 2.8-2.2 3.8M21 7.5c2.3 1.7 3.5 4 3.5 6.8s-1.2 5.1-3.5 6.8" /></svg>
+                </span>
+                <span className="voice-status-label">
                   {voiceStatus === "transcribing" ? "Распознавание…" :
                     voiceStatus === "listening" ? "Идёт запись голоса…" :
                     voicePreparing ? (voiceCountdown > 0 ? `Начало записи через ${voiceCountdown}…` : "Подготовка записи…") :
@@ -1024,7 +1023,7 @@ function StudyPage({
                 disabled={voiceStatus === "transcribing"}
                 aria-label={voiceStatus === "transcribing" ? "Распознавание ответа" : continuousVoiceMode ? "Остановить голосовой режим" : "Запустить голосовой режим без рук"}>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4m-4 0h8"/></svg>
-                <span key={voiceStatus === "transcribing" ? "transcribing" : voiceStatus === "listening" ? "recording" : voicePreparing ? `count-${voiceCountdown}` : "idle"} className="voice-button-label">
+                <span className="voice-button-label">
                   {voiceStatus === "transcribing" ? "Распознавание…" :
                     voiceListening ? "Запись голоса" :
                     voicePreparing ? (voiceCountdown > 0 ? String(voiceCountdown) : "Подготовка…") :
