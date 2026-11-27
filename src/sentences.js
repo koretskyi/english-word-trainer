@@ -1911,7 +1911,7 @@ export const SENTENCES = [
     russian: "Хотя было холодно, мы пошли гулять.",
     englishTemplate: "{word} it was cold, we went for a walk.",
     word: "although",
-    pixabayQuery: "contrasting two situations",
+    pixabayQuery: "people walking outside in cold winter weather",
     russianWord: "хотя",
     revealIndices: [2, 4, 6]
   },
