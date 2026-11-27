@@ -880,6 +880,23 @@ function StudyPage({
         {levelSelector}
         {statsPanel}
       <div className="study-card-shell">
+        {(isReview || checked) && (
+          <div className="study-card-review-progress"
+            role="progressbar"
+            aria-label={`Прогресс изучения слова: этап ${Math.min(6, Math.max(1, reviewStage))} из 6`}
+            aria-valuemin={1} aria-valuemax={6}
+            aria-valuenow={Math.min(6, Math.max(1, reviewStage))}>
+            <div className="study-card-review-progress-heading">
+              <span>ПРОГРЕСС ПОВТОРЕНИЯ</span>
+              <strong>{Math.min(6, Math.max(1, reviewStage))}/6</strong>
+            </div>
+            <div className="study-card-review-progress-track">
+              {Array.from({ length: 6 }, (_, index) => (
+                <span key={index} className={index < Math.min(6, Math.max(1, reviewStage)) ? "is-filled" : ""} />
+              ))}
+            </div>
+          </div>
+        )}
         <div className={`study-card-image-slot${checked ? " is-feedback" : ""}`}>
           {checked
             ? <StudyFeedbackVisual correct={correct} markedKnown={markedKnown} />
@@ -944,23 +961,6 @@ function StudyPage({
             </div>
             {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
           </>
-        )}
-        {(isReview || checked) && (
-          <div className="study-card-review-progress"
-            role="progressbar"
-            aria-label={`Прогресс изучения слова: этап ${Math.min(6, Math.max(1, reviewStage))} из 6`}
-            aria-valuemin={1} aria-valuemax={6}
-            aria-valuenow={Math.min(6, Math.max(1, reviewStage))}>
-            <div className="study-card-review-progress-heading">
-              <span>Прогресс повторения</span>
-              <strong>{Math.min(6, Math.max(1, reviewStage))}/6</strong>
-            </div>
-            <div className="study-card-review-progress-track">
-              {Array.from({ length: 6 }, (_, index) => (
-                <span key={index} className={index < Math.min(6, Math.max(1, reviewStage)) ? "is-filled" : ""} />
-              ))}
-            </div>
-          </div>
         )}
       </div>
       </div>
