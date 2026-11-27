@@ -887,7 +887,7 @@ function StudyPage({
                 <div className="english-sentence">
                   <span>{parts[0]}</span>
                   <WordGap key={`${sentence.id}-${sentence.word}`} sentence={sentence} value={answer}
-                    onChange={handleAnswerChange} disabled={false} autoFocus={false}
+                    onChange={handleAnswerChange} disabled={false} autoFocus
                     showMistakes={false} />
                   <span>{parts.slice(1).join("{word}")}</span>
                 </div>
