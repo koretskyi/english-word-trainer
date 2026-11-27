@@ -4133,3 +4133,109 @@ button:disabled {
 .study-panel {
   animation: app-screen-fade-in 280ms cubic-bezier(.2, .7, .2, 1) both;
 }
+
+
+/* Stable study layout: the outer level header and card frame remain mounted.
+   Only the inner answer content changes between prompt/result states. */
+.study-level-transition,
+.study-level-transition.is-out,
+.study-level-transition.is-in {
+  min-height: 0 !important;
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  will-change: auto;
+}
+.level-switch-content,
+.study-panel {
+  animation: none !important;
+}
+.study-card-shell {
+  animation: none !important;
+  border: 2px solid #8BCF35 !important;
+  background: #f7fbea;
+  box-shadow: none;
+  transform: none !important;
+  transition: none !important;
+}
+.study-card-image-slot {
+  flex: 0 0 210px;
+  width: 100%;
+  height: 210px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.study-card-image-slot .word-image-card,
+.study-card-image-slot .word-image-placeholder {
+  width: min(100%, 360px);
+  height: 190px;
+  min-height: 190px;
+  max-height: 190px;
+  margin: 0 auto;
+  flex: 0 0 190px;
+  box-sizing: border-box;
+}
+.study-card-image-slot .word-image-card img {
+  width: 100%;
+  height: 190px;
+  max-height: 190px;
+  object-fit: contain;
+}
+.study-card-english {
+  flex: 0 0 auto;
+  min-width: 0;
+  width: 100%;
+  text-align: center;
+}
+.study-card-english .english-section {
+  width: 100%;
+}
+.study-result-english {
+  margin: 0;
+  font-size: clamp(18px, 2.2vw, 24px);
+  line-height: 1.35;
+  color: #263247;
+  overflow-wrap: anywhere;
+}
+.study-result-english strong {
+  color: #3157d5;
+  font-weight: 800;
+}
+.study-card-shell > .answer-result-card {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  animation: none !important;
+}
+.study-card-shell .answer-review-progress {
+  margin: 0 auto;
+}
+.study-card-shell .incorrect-word-pair {
+  margin-top: 8px;
+}
+.study-card-shell .known-result-message,
+.study-card-shell .correct-inline-message {
+  display: block;
+  text-align: center;
+}
+@media (max-width: 700px) {
+  .study-card-image-slot {
+    flex-basis: 180px;
+    height: 180px;
+  }
+  .study-card-image-slot .word-image-card,
+  .study-card-image-slot .word-image-placeholder,
+  .study-card-image-slot .word-image-card img {
+    height: 160px;
+    min-height: 160px;
+    max-height: 160px;
+    flex-basis: 160px;
+  }
+}
