@@ -522,6 +522,7 @@ function StudyPage({
   const [voiceImageReady, setVoiceImageReady] = useState(false);
   const markVoiceImageReady = useCallback(() => setVoiceImageReady(true), []);
   const continuousVoiceModeRef = useRef(false);
+  const voiceHasStartedRef = useRef(false);
   const voiceRetryTimerRef = useRef(null);
   const voicePrepareTimerRef = useRef(null);
   const studyCardRef = useRef(null);
@@ -578,6 +579,7 @@ function StudyPage({
   }
 
   function startContinuousVoiceMode() {
+    voiceHasStartedRef.current = false;
     continuousVoiceModeRef.current = true;
     setContinuousVoiceMode(true);
     setVoiceError("");
@@ -666,11 +668,13 @@ function StudyPage({
   useEffect(() => {
     if (!continuousVoiceMode || !voiceImageReady || !sentence || checked) return undefined;
     setVoicePreparing(true);
+    const preparationDelay = voiceHasStartedRef.current ? 3000 : 500;
     voicePrepareTimerRef.current = window.setTimeout(() => {
       voicePrepareTimerRef.current = null;
+      voiceHasStartedRef.current = true;
       setVoicePreparing(false);
       startVoiceInput();
-    }, 500);
+    }, preparationDelay);
     return () => {
       if (voicePrepareTimerRef.current) window.clearTimeout(voicePrepareTimerRef.current);
       voicePrepareTimerRef.current = null;
