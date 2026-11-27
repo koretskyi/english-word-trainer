@@ -938,14 +938,10 @@ function StudyPage({
             ) : (
               <div className="incorrect-result-content">
                 <div className="incorrect-word-pair">
-                  <div className="answer-value-group is-correct-answer">
-                    <span className="answer-value-label">Правильный ответ</span>
-                    <strong className="answer-value">{sentence.word}</strong>
-                  </div>
-                  <div className="answer-value-group is-wrong-answer">
-                    <span className="answer-value-label">Ваш ответ</span>
-                    <strong className="answer-value">{answer.join("").trim() || "—"}</strong>
-                  </div>
+                  <div className="answer-value-label is-wrong-label">Ваш ответ</div>
+                  <div className="answer-value-label is-correct-label">Правильный ответ</div>
+                  <strong className="answer-value is-wrong-answer">{answer.join("").trim() || "—"}</strong>
+                  <strong className="answer-value is-correct-answer">{sentence.word}</strong>
                 </div>
               </div>
             )}
