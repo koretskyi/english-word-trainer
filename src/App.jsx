@@ -614,7 +614,10 @@ function StudyPage({
     ? sentence.englishTemplate.replace("{word}", sentence.word)
     : "";
 
-  const parts = sentence ? sentence.englishTemplate.split("{word}") : [];
+  const displayTemplate = sentence
+    ? sentence.englishTemplate.replace(/\\.\\s*$/, "")
+    : "";
+  const parts = sentence ? displayTemplate.split("{word}") : [];
   const selectedLevelReviewCount = reviewWords.filter(
     (item) => item.level === selectedLevel
   ).length;
