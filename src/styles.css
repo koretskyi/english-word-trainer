@@ -4063,3 +4063,27 @@ button:disabled {
 @media (prefers-reduced-motion: reduce) {
   .study-level-transition { transition: none; animation: none; }
 }
+
+/* Make the Words header and study card use the full width of the white panel. */
+.study-panel {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+}
+
+.study-panel > .level-switch-content {
+  width: 100%;
+  max-width: none;
+}
+
+.study-panel .level-switch-content > .study-card-shell {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+@media (max-width: 700px) {
+  .study-panel {
+    padding: 18px 14px;
+  }
+}
