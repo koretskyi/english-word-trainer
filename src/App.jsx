@@ -842,7 +842,7 @@ function StudyPage({
           )}
         </div>
       )}
-      <div key={selectedLevel} className="level-switch-content">
+      <div className="level-switch-content">
         {levelSelector}
         {statsPanel}
       <div key={`${sentence.id}-${sentence.word}`} className={`study-card-shell${isReview ? " is-review" : ""}${checked ? " is-answered" : ""}`}>
@@ -1657,9 +1657,25 @@ export default function App() {
     setActiveWordKey(null);
   }, []);
 
+  const [levelTransition, setLevelTransition] = useState("idle");
+  const levelTransitionTimer = useRef(null);
+
+  useEffect(() => () => {
+    if (levelTransitionTimer.current) window.clearTimeout(levelTransitionTimer.current);
+  }, []);
+
   function changeLevel(level) {
-    setActiveWordKey(null);
-    setSelectedLevel(level);
+    if (level === selectedLevel || levelTransition !== "idle") return;
+    setLevelTransition("out");
+    levelTransitionTimer.current = window.setTimeout(() => {
+      setActiveWordKey(null);
+      setSelectedLevel(level);
+      setLevelTransition("in");
+      levelTransitionTimer.current = window.setTimeout(() => {
+        setLevelTransition("idle");
+        levelTransitionTimer.current = null;
+      }, 320);
+    }, 180);
   }
 
   function saveSentence(sentence) {
@@ -1773,6 +1789,7 @@ export default function App() {
       </header>
       <main className="main-content">
         {page === "study" ? (
+          <div className={`study-level-transition is-${levelTransition}`}>
           <StudyPage
             key={selectedLevel + ":" + (sentence ? normalizeWord(sentence.word) : "empty")}
             sentence={sentence}
@@ -1796,6 +1813,7 @@ export default function App() {
             statsLevel={statsLevel}
             setStatsLevel={setStatsLevel}
           />
+          </div>
         ) : page === "audition" ? (
           <AuditionPage
             sentences={sentences}
