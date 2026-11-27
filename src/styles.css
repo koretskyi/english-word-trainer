@@ -5284,3 +5284,49 @@ button:disabled {
     animation: none;
   }
 }
+
+
+/* A quiet, reserved speaking cue: it fades in without moving the card. */
+.study-card-shell .word-voice-status {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.voice-speaking-indicator {
+  display: inline-flex;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  color: #e0524e;
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity .55s ease, transform .55s ease;
+  pointer-events: none;
+}
+
+.voice-speaking-indicator.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.voice-speaking-indicator svg {
+  display: block;
+  width: 25px;
+  height: 25px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .voice-speaking-indicator {
+    transition: none;
+  }
+}
