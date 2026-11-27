@@ -4868,12 +4868,12 @@ button:disabled {
 }
 .study-card-shell .incorrect-word-pair > .answer-value-label.is-wrong-label {
   color: #a6535d;
-  background: #fce4e6;
+  background: #fce4e6 !important;
   border-color: #f0c6cc;
 }
 .study-card-shell .incorrect-word-pair > .answer-value-label.is-correct-label {
   color: #34783b;
-  background: #dff2d8;
+  background: #dff2d8 !important;
   border-color: #c5e4b9;
 }
 .study-card-shell .incorrect-word-pair > .answer-value {
@@ -4887,12 +4887,12 @@ button:disabled {
 }
 .study-card-shell .incorrect-word-pair > .answer-value.is-wrong-answer {
   color: #a94350;
-  background: #fce4e6;
+  background: #fce4e6 !important;
   border-color: #efc4ca;
 }
 .study-card-shell .incorrect-word-pair > .answer-value.is-correct-answer {
   color: #34783b;
-  background: #dff2d8;
+  background: #dff2d8 !important;
   border-color: #c5e4b9;
 }
 @media (max-width: 520px) {
