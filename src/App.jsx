@@ -708,7 +708,7 @@ function StudyPage({
 
   useEffect(() => {
     if (!checked || voiceWrongAttempt || (correct && !audioFinished)) return undefined;
-    const timer = setTimeout(onAdvance, correct ? 1400 : 4000);
+    const timer = setTimeout(onAdvance, correct ? 3000 : 4000);
     return () => clearTimeout(timer);
   }, [checked, correct, audioFinished, onAdvance, voiceWrongAttempt]);
 
@@ -1008,7 +1008,7 @@ function StudyPage({
           <div className="study-card-footer">
             {continuousVoiceMode && (
               <p className="word-voice-status" role="status">
-                <span key={voiceStatus === "transcribing" ? "transcribing" : voiceStatus === "listening" ? "listening" : voicePreparing ? "countdown" : "ready"} className="voice-status-label">
+                <span key={voiceStatus === "transcribing" ? "transcribing" : voiceStatus === "listening" ? "listening" : voicePreparing ? `count-${voiceCountdown}` : "ready"} className="voice-status-label">
                   {voiceStatus === "transcribing" ? "Распознавание…" :
                     voiceStatus === "listening" ? "Идёт запись голоса…" :
                     voicePreparing ? (voiceCountdown > 0 ? `Начало записи через ${voiceCountdown}…` : "Подготовка записи…") :
