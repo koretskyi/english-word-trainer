@@ -941,10 +941,10 @@ function StudyPage({
             ) : (
               <div className="incorrect-result-content">
                 <div className="incorrect-word-pair">
-                  <div className="answer-value-label is-wrong-label">Ваш ответ</div>
                   <div className="answer-value-label is-correct-label">Правильный ответ</div>
-                  <strong className="answer-value is-wrong-answer">{answer.join("").trim() || "—"}</strong>
+                  <div className="answer-value-label is-wrong-label">Ваш ответ</div>
                   <strong className="answer-value is-correct-answer">{sentence.word}</strong>
+                  <strong className="answer-value is-wrong-answer">{answer.join("").trim() || "—"}</strong>
                 </div>
               </div>
             )}
