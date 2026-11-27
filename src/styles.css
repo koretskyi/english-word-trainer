@@ -3812,3 +3812,66 @@ button:disabled {
 .correct-answer-word.is-correct-result strong {
   color: inherit;
 }
+
+
+/* Единая рамка и фиксированная геометрия карточки «Слова»
+   во время задания, после правильного и после неправильного ответа. */
+.study-card-shell {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  width: 100%;
+  height: 430px;
+  min-height: 430px;
+  min-width: 0;
+  margin: 22px 0 0;
+  padding: 20px 24px;
+  gap: 14px;
+  overflow: hidden;
+  border: 2px solid #8BCF35;
+  border-radius: 18px;
+  background: #f7fbea;
+}
+
+.study-card-shell > .russian-sentence {
+  margin-bottom: -12px;
+}
+
+.study-card-shell > .answer-result-card {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.study-card-shell.is-answered {
+  justify-content: stretch;
+}
+
+.study-card-shell .answer-review-progress {
+  flex: 0 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 700px) {
+  .study-card-shell {
+    height: 470px;
+    min-height: 470px;
+    padding: 16px 12px;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .study-card-shell {
+    height: 500px;
+    min-height: 500px;
+    padding: 14px 10px;
+  }
+}
