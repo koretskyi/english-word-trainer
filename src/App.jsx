@@ -409,11 +409,14 @@ const WordImage = ({ sentence }) => {
     async function loadWordImage() {
       const key = String(word).toLowerCase().trim();
       try {
-        // Backend caches and searches the illustration using only the prepared visual context.
+        // Send the target vocabulary word and its prepared visual context to the backend.
         const response = await fetch("/api/word-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ context: sentence?.pixabayQuery || String(sentence?.englishTemplate || "").replace("{word}", word) }),
+          body: JSON.stringify({
+            word,
+            context: sentence?.pixabayQuery || String(sentence?.englishTemplate || "").replace("{word}", word),
+          }),
           signal: controller.signal,
         });
         const responseType = response.headers.get("content-type") || "";
