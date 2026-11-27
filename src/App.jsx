@@ -1854,7 +1854,7 @@ export default function App() {
             selectedLevel={selectedLevel}
             setSelectedLevel={changeLevel}
             levels={levels}
-            levelWordCount={filteredSentences.length}
+            levelWordCount={totalWords}
             onComplete={completeWord}
             onKnow={() => markWordKnown(sentence?.word)}
             isReview={Boolean(sentence && learningData.words[normalizeWord(sentence.word)]?.status === "REVIEW")}
