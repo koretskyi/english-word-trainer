@@ -383,7 +383,7 @@ const WordImage = ({ sentence }) => {
   const [status, setStatus] = useState("loading");
 
   useEffect(() => {
-    if (!word || sentence?.level !== "A2") {
+    if (!word) {
       setImage(null);
       setStatus("empty");
       return undefined;
@@ -397,10 +397,10 @@ const WordImage = ({ sentence }) => {
       const key = String(word).toLowerCase().trim();
       try {
         // Backend validates the versioned local cache and searches using the prepared English subject + predicate phrase.
-        const response = await fetch("/api/a2-image", {
+        const response = await fetch("/api/word-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ word: key, context: sentence?.pixabayQuery || word }),
+          body: JSON.stringify({ word: key, context: sentence?.pixabayQuery || `${sentence?.englishTemplate || ""} ${word}` }),
           signal: controller.signal,
         });
         const responseType = response.headers.get("content-type") || "";
@@ -587,7 +587,7 @@ function StudyPage({
   const selectedLevelProgressPercent = totalWords
     ? Math.round((masteredCount / totalWords) * 100)
     : 0;
-  const levelSelector = isReview ? (
+  const levelSelector = (
     <div className="review-progress-meta">
       <div className="level-selector">
         <label htmlFor="study-level">Уровень:</label>
@@ -604,52 +604,14 @@ function StudyPage({
             <div className="learning-progress-fill" style={{ width: `${selectedLevelProgressPercent}%` }} />
           </div>
         </div>
-        <button
-          type="button"
-          className={`level-review-shortcut${isReview ? " is-review-active" : ""}`}
-          onClick={() => {
-            setStatsLevel(selectedLevel);
-            setShowStats(true);
-          }}
+        <button type="button" className={`level-review-shortcut${isReview ? " is-review-active" : ""}`}
+          onClick={() => { setStatsLevel(selectedLevel); setShowStats(true); }}
           aria-label={`Открыть статистику: ${selectedLevelReviewCount} слов на повторении уровня ${selectedLevel}`}
-          title={`Слова на повторении уровня ${selectedLevel}`}
-        >
+          title={`Слова на повторении уровня ${selectedLevel}`}>
           <strong>{selectedLevelReviewCount}</strong>
           <span>на повторении</span>
         </button>
       </div>
-    </div>
-  ) : (
-    <div className="level-selector">
-
-      <label htmlFor="study-level">Уровень:</label>
-      <select id="study-level" value={selectedLevel}
-        onChange={(event) => setSelectedLevel(event.target.value)}>
-        {levels.map((level) => <option key={level} value={level}>{level}</option>)}
-      </select>
-      <div className="learning-progress-card learning-progress-card-compact" aria-label={`Прогресс уровня: ${selectedLevelProgressPercent}%`}>
-        <div className="learning-progress-heading">
-          <span>Прогресс</span>
-          <strong>{selectedLevelProgressPercent}%</strong>
-        </div>
-        <div className="learning-progress-track">
-          <div className="learning-progress-fill" style={{ width: `${selectedLevelProgressPercent}%` }} />
-        </div>
-      </div>
-      <button
-        type="button"
-        className={`level-review-shortcut${isReview ? " is-review-active" : ""}`}
-        onClick={() => {
-          setStatsLevel(selectedLevel);
-          setShowStats(true);
-        }}
-        aria-label={`Открыть статистику: ${selectedLevelReviewCount} слов на повторении уровня ${selectedLevel}`}
-        title={`Слова на повторении уровня ${selectedLevel}`}
-      >
-        <span aria-hidden="true">↻</span>
-        <strong>{selectedLevelReviewCount}</strong>
-        <span>на повторении</span>
-      </button>
     </div>
   );
 
@@ -978,16 +940,12 @@ function StudyPage({
 // Начальные значения формы админки.
 
 const EMPTY_FORM = {
-
-  russian: "",
+  russian: "",
   russianWord: "",
-
-  englishTemplate: "",
-
-  word: "",
-
-  level: "B1",
-
+  englishTemplate: "",
+  word: "",
+  pixabayQuery: "",
+  level: "A1",
 };
 
 
@@ -1073,8 +1031,8 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
       englishTemplate: sentence.englishTemplate,
 
       word: sentence.word,
-
-      level: sentence.level || "B1",
+      pixabayQuery: sentence.pixabayQuery || "",
+      level: sentence.level || "A1",
 
     });
 
@@ -1156,8 +1114,8 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
       englishTemplate,
 
       word,
-
-      level: form.level,
+      pixabayQuery: form.pixabayQuery.trim(),
+      level: form.level,
 
     });
 
@@ -1378,6 +1336,16 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
           
 
             <label>
+            Поисковый запрос для картинки (Pixabay)
+            <input
+              value={form.pixabayQuery}
+              onChange={(event) => update("pixabayQuery", event.target.value)}
+              placeholder="friendly neighbours talking"
+            />
+            <small className="muted">Опиши сцену на английском. Если оставить пустым, запрос будет составлен из предложения и слова.</small>
+          </label>
+
+          <label>
 
             Уровень английского
 
