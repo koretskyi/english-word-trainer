@@ -182,6 +182,7 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
               handleKeyDown(index, event)
             }
             disabled={disabled}
+            autoFocus={autoFocus && index === 0}
             autoComplete="off"
             autoCapitalize="none"
             spellCheck={false}
