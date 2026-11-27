@@ -632,7 +632,6 @@ function StudyPage({
           handleAnswerChange(targetLetters.map((letter) => letter));
           window.setTimeout(() => {
             setVoiceSuccessConfetti(false);
-            if (!continuousVoiceModeRef.current) setVoiceModeActive(false);
           }, 1300);
           return;
         }
