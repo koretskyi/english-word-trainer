@@ -2466,6 +2466,51 @@ export const SENTENCES = [
       "level": "A1"
     },
     {
+      "id": "a1_081",
+      "russian": "Я еду на работу на автобусе.",
+      "englishTemplate": "I go to work by {word}.",
+      "word": "bus",
+      "russianWord": "автобус",
+      "revealIndices": [5],
+      "level": "A1"
+    },
+    {
+      "id": "a1_082",
+      "russian": "Эта улица очень длинная.",
+      "englishTemplate": "This {word} is very long.",
+      "word": "street",
+      "russianWord": "улица",
+      "revealIndices": [1],
+      "level": "A1"
+    },
+    {
+      "id": "a1_083",
+      "russian": "У меня нет наличных денег.",
+      "englishTemplate": "I don't have any {word}.",
+      "word": "money",
+      "russianWord": "деньги",
+      "revealIndices": [4],
+      "level": "A1"
+    },
+    {
+      "id": "a1_084",
+      "russian": "Сегодня идёт сильный дождь.",
+      "englishTemplate": "There is a lot of {word} today.",
+      "word": "rain",
+      "russianWord": "дождь",
+      "revealIndices": [4],
+      "level": "A1"
+    },
+    {
+      "id": "a1_085",
+      "russian": "Солнце светит ярко.",
+      "englishTemplate": "The {word} is shining brightly.",
+      "word": "sun",
+      "russianWord": "солнце",
+      "revealIndices": [1],
+      "level": "A1"
+    },
+    {
       "id": "a2_051",
       "russian": "Мне нужно записаться к стоматологу.",
       "englishTemplate": "I need to make an appointment with the {word}.",
