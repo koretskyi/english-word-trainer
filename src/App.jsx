@@ -82,7 +82,7 @@ function normalizeWord(word) {
 }
 
 function renderRussianSentence(sentence, targetWord) {
-  sentence = String(sentence || "").replace(/\\.+\\s*$/, "");
+  sentence = String(sentence || "").replace(/\.+\s*$/, "");
   const normalize = (value) => String(value || "").toLocaleLowerCase("ru").replace(/[^а-яё]/gi, "");
   const target = normalize(targetWord);
   if (!target) return sentence;
@@ -1516,7 +1516,7 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
               {levelSentences.map((sentence) => (
                 <article className="sentence-item" key={sentence.id}>
                   <div>
-                    <strong>{String(sentence.russian || "").replace(/\\.+\\s*$/, "")}</strong>
+                    <strong>{String(sentence.russian || "").replace(/\.+\s*$/, "")}</strong>
                     <p className="sentence-item-english">
                       {(sentence.englishTemplate || "").replace(/\.+\s*$/, "").replace("{word}", `[${sentence.word || ""}]`)}
                     </p>
