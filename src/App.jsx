@@ -612,8 +612,8 @@ function StudyPage({
       // TEST MODE: use the smaller model on vocabulary cards; VideoPage stays on Medium.
       whisperModel: "small",
       // Short, responsive capture for a single vocabulary word.
-      silenceMs: 800,
-      maxRecordingMs: 3000,
+      silenceMs: 2000,
+      maxRecordingMs: 8000,
       speechConfirmMs: 0,
       calibrationMs: 0,
       noSpeechTimeoutMs: 2000,
@@ -670,7 +670,7 @@ function StudyPage({
       voicePrepareTimerRef.current = null;
       setVoicePreparing(false);
       startVoiceInput();
-    }, 3000);
+    }, 500);
     return () => {
       if (voicePrepareTimerRef.current) window.clearTimeout(voicePrepareTimerRef.current);
       voicePrepareTimerRef.current = null;
