@@ -864,7 +864,38 @@ function StudyPage({
       <div className="level-switch-content">
         {levelSelector}
         {statsPanel}
-      <div key={`${sentence.id}-${sentence.word}`} className={`study-card-shell${isReview ? " is-review" : ""}${checked ? " is-answered" : ""}`}>
+      <div className="study-card-shell">
+        <div className="word-learning-progress" role="progressbar"
+          aria-label="Прогресс изучения слова"
+          aria-valuemin={0} aria-valuemax={6} aria-valuenow={isReview ? reviewStage : 0}>
+          <span className="word-learning-progress-fill"
+            style={{ width: `${isReview ? (Math.min(6, reviewStage) / 6) * 100 : 0}%` }} />
+          <span className="word-learning-progress-label">Прогресс изучения слова</span>
+        </div>
+        <div className="study-card-image-slot">
+          <WordImage sentence={sentence} />
+        </div>
+        <h2 className="russian-sentence">{renderRussianSentence(sentence.russian, sentence.russianWord)}</h2>
+        <div className={`study-card-english${checked ? " is-result" : ""}`}>
+          {checked ? (
+            <p className="study-result-english">
+              {parts[0]}<strong>{sentence.word}</strong>{parts.slice(1).join("{word}")}
+            </p>
+          ) : (
+            <div className="english-section">
+              <div className="answer-area">
+                <div className="english-sentence">
+                  <span>{parts[0]}</span>
+                  <WordGap key={`${sentence.id}-${sentence.word}`} sentence={sentence} value={answer}
+                    onChange={handleAnswerChange} disabled={false} autoFocus={false}
+                    showMistakes={false} />
+                  <span>{parts.slice(1).join("{word}")}</span>
+                </div>
+                <p className="study-instruction">ВПИШИТЕ СЛОВО <strong className="target-translation">{sentence.russianWord || "—"}</strong> НА АНГЛИЙСКОМ:</p>
+              </div>
+            </div>
+          )}
+        </div>
         {checked ? (
           <div className={`answer-result-card ${resultState}`} role="status" aria-live="polite">
             {!markedKnown && (
@@ -889,13 +920,7 @@ function StudyPage({
             {markedKnown ? (
               <strong className="known-result-message">✓ Слово перенесено в выученные</strong>
             ) : correct ? (
-              <>
-                <CorrectFeedback />
-                <WordImage sentence={sentence} />
-                <div className="correct-answer-word is-correct-result">
-                  <strong>{sentence.word}</strong>
-                </div>
-              </>
+              <CorrectFeedback />
             ) : (
               <div className="incorrect-result-content">
                 <strong className="incorrect-result-message">Слово добавлено на повторение</strong>
@@ -906,7 +931,7 @@ function StudyPage({
                   </div>
                   <div className="wrong-answer-word">
                     <span>Ваш ответ</span>
-                    <strong>{answer.join("").trim()}</strong>
+                    <strong>{answer.join("").trim() || "—"}</strong>
                   </div>
                 </div>
               </div>
@@ -914,42 +939,22 @@ function StudyPage({
           </div>
         ) : (
           <>
-        <div className="word-learning-progress" role="progressbar"
-          aria-label="Прогресс изучения слова"
-          aria-valuemin={0} aria-valuemax={6} aria-valuenow={isReview ? reviewStage : 0}>
-          <span className="word-learning-progress-fill"
-            style={{ width: `${isReview ? (Math.min(6, reviewStage) / 6) * 100 : 0}%` }} />
-          <span className="word-learning-progress-label">Прогресс изучения слова</span>
-        </div>
-        <WordImage sentence={sentence} />
-        <h2 className="russian-sentence">{renderRussianSentence(sentence.russian, sentence.russianWord)}</h2>
-        <div className="english-section">
-          <div className="answer-area">
-            <div className="english-sentence">
-              <span>{parts[0]}</span>
-              <WordGap key={`${sentence.id}-${sentence.word}`} sentence={sentence} value={answer}
-                onChange={handleAnswerChange} disabled={checked} autoFocus={false}
-                showMistakes={checked && !correct} />
-              <span>{parts.slice(1).join("{word}")}</span>
+            <div className="form-actions word-answer-actions">
+              <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}`}
+                type="button" onClick={startVoiceInput} disabled={voiceListening}
+                aria-label="Ввести слово голосом">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4m-4 0h8"/></svg>
+                {voiceListening ? "Слушаю…" : "Ответить голосом"}
+              </button>
+              <button className="button button-secondary button-dont-know" type="button"
+                onClick={dontKnow}>Не знаю</button>
+              <button className="button button-primary" type="button"
+                onClick={knowWord}>Я знаю</button>
             </div>
-            <p className="study-instruction">ВПИШИТЕ СЛОВО <strong className="target-translation">{sentence.russianWord || "—"}</strong> НА АНГЛИЙСКОМ:</p>
-          </div>
-        </div>
-        <div className="form-actions word-answer-actions">
-            <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}`}
-              type="button" onClick={startVoiceInput} disabled={voiceListening}
-              aria-label="Ввести слово голосом">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4m-4 0h8"/></svg>
-              {voiceListening ? "Слушаю…" : "Ответить голосом"}
-            </button>
-            <button className="button button-secondary button-dont-know" type="button"
-              onClick={dontKnow}>Не знаю</button>
-            <button className="button button-primary" type="button"
-              onClick={knowWord}>Я знаю</button>
-        </div>
-        {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
-</>
+            {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
+          </>
         )}
+      </div>
       </div>
       </div>
     </section>
@@ -1696,25 +1701,11 @@ export default function App() {
     setActiveWordKey(null);
   }, []);
 
-  const [levelTransition, setLevelTransition] = useState("idle");
-  const levelTransitionTimer = useRef(null);
-
-  useEffect(() => () => {
-    if (levelTransitionTimer.current) window.clearTimeout(levelTransitionTimer.current);
-  }, []);
-
+  // Keep the study layout mounted; only replace the selected level's data.
   function changeLevel(level) {
-    if (level === selectedLevel || levelTransition !== "idle") return;
-    setLevelTransition("out");
-    levelTransitionTimer.current = window.setTimeout(() => {
-      setActiveWordKey(null);
-      setSelectedLevel(level);
-      setLevelTransition("in");
-      levelTransitionTimer.current = window.setTimeout(() => {
-        setLevelTransition("idle");
-        levelTransitionTimer.current = null;
-      }, 320);
-    }, 180);
+    if (level === selectedLevel) return;
+    setActiveWordKey(null);
+    setSelectedLevel(level);
   }
 
   function saveSentence(sentence) {
@@ -1829,7 +1820,7 @@ export default function App() {
       <main className="main-content">
         <div key={`${page}-${page === "study" ? (showStats ? "stats" : "words") : "screen"}`} className="app-screen-transition">
         {page === "study" ? (
-          <div className={`study-level-transition is-${levelTransition}`}>
+          <div className="study-level-transition">
           <StudyPage
             sentence={sentence}
             audioEnabled={audioEnabled}
