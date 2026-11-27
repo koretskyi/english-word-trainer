@@ -45,7 +45,15 @@ function loadSentences() {
         const mergedBuiltIn = SENTENCES.map((sentence) => {
           const savedSentence = savedById.get(sentence.id);
           return savedSentence
-            ? { ...sentence, ...savedSentence, russianWord: savedSentence.russianWord || sentence.russianWord }
+            ? {
+                ...sentence,
+                ...savedSentence,
+                pixabayQuery: savedSentence.pixabayQueryVersion === 2
+                  ? savedSentence.pixabayQuery
+                  : sentence.pixabayQuery,
+                pixabayQueryVersion: 2,
+                russianWord: savedSentence.russianWord || sentence.russianWord,
+              }
             : sentence;
         });
 
@@ -475,6 +483,7 @@ function StudyPage({
   selectedLevel,
   setSelectedLevel,
   levels,
+  levelWordCount,
   onComplete,
   onAdvance,
   masteredCount,
@@ -627,11 +636,12 @@ function StudyPage({
   const levelSelector = (
     <div className="review-progress-meta">
       <div className="level-selector">
-        <label htmlFor="study-level">Уровень:</label>
+        <label htmlFor="study-level">уровень:</label>
         <select id="study-level" value={selectedLevel}
           onChange={(event) => setSelectedLevel(event.target.value)}>
           {levels.map((level) => <option key={level} value={level}>{level}</option>)}
         </select>
+        <span className="level-word-count">({levelWordCount} слов)</span>
         <div className="learning-progress-card learning-progress-card-compact" aria-label={`Прогресс уровня: ${selectedLevelProgressPercent}%`}>
           <div className="learning-progress-heading">
             <span>Прогресс</span>
@@ -982,6 +992,7 @@ const EMPTY_FORM = {
   englishTemplate: "",
   word: "",
   pixabayQuery: "",
+  pixabayQueryVersion: 2,
   level: "A1",
 };
 
@@ -1069,6 +1080,7 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
 
       word: sentence.word,
       pixabayQuery: sentence.pixabayQuery || "",
+      pixabayQueryVersion: 2,
       level: sentence.level || "A1",
 
     });
@@ -1152,6 +1164,7 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
 
       word,
       pixabayQuery: form.pixabayQuery.trim(),
+      pixabayQueryVersion: 2,
       level: form.level,
 
     });
@@ -1838,6 +1851,7 @@ export default function App() {
             selectedLevel={selectedLevel}
             setSelectedLevel={changeLevel}
             levels={levels}
+            levelWordCount={filteredSentences.length}
             onComplete={completeWord}
             onKnow={() => markWordKnown(sentence?.word)}
             isReview={Boolean(sentence && learningData.words[normalizeWord(sentence.word)]?.status === "REVIEW")}
