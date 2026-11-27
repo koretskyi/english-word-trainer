@@ -946,7 +946,7 @@ function StudyPage({
             )}
           </div>
         ) : (
-          <>
+          <div className="study-card-footer">
             <div className="form-actions word-answer-actions">
               <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}`}
                 type="button" onClick={startVoiceInput} disabled={voiceListening}
@@ -960,7 +960,7 @@ function StudyPage({
                 onClick={knowWord}>Я знаю</button>
             </div>
             {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
-          </>
+          </div>
         )}
       </div>
       </div>
