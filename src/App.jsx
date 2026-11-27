@@ -519,6 +519,7 @@ function StudyPage({
   const [voiceSuccessConfetti, setVoiceSuccessConfetti] = useState(false);
   const [continuousVoiceMode, setContinuousVoiceMode] = useState(false);
   const [voicePreparing, setVoicePreparing] = useState(false);
+  const [voiceCountdown, setVoiceCountdown] = useState(0);
   const [voiceWrongAttempt, setVoiceWrongAttempt] = useState(false);
   const [voiceImageReady, setVoiceImageReady] = useState(false);
   const markVoiceImageReady = useCallback(() => setVoiceImageReady(true), []);
@@ -568,16 +569,38 @@ function StudyPage({
     setVoiceRecognizedText("");
     setVoiceSuccessConfetti(false);
     setVoicePreparing(false);
+    setVoiceCountdown(0);
     setVoiceWrongAttempt(false);
     setVoiceImageReady(false);
   }, [selectedLevel, sentence?.id]);
 
-  function scheduleContinuousVoiceRetry(delay = 800) {
+  function beginVoiceCountdown(timerRef, onComplete) {
+    if (timerRef.current) window.clearTimeout(timerRef.current);
+    setVoicePreparing(true);
+    setVoiceCountdown(3);
+    let remaining = 3;
+    const tick = () => {
+      timerRef.current = window.setTimeout(() => {
+        remaining -= 1;
+        if (remaining > 0) {
+          setVoiceCountdown(remaining);
+          tick();
+          return;
+        }
+        timerRef.current = null;
+        setVoiceCountdown(0);
+        setVoicePreparing(false);
+        onComplete();
+      }, 1000);
+    };
+    tick();
+  }
+
+  function scheduleContinuousVoiceRetry() {
     if (!continuousVoiceModeRef.current) return;
-    if (voiceRetryTimerRef.current) window.clearTimeout(voiceRetryTimerRef.current);
-    voiceRetryTimerRef.current = window.setTimeout(() => {
+    beginVoiceCountdown(voiceRetryTimerRef, () => {
       if (continuousVoiceModeRef.current) startVoiceInput();
-    }, delay);
+    });
   }
 
   function startContinuousVoiceMode() {
@@ -596,6 +619,7 @@ function StudyPage({
     voiceRetryTimerRef.current = null;
     voicePrepareTimerRef.current = null;
     setVoicePreparing(false);
+    setVoiceCountdown(0);
     voiceCaptureRef.current?.stop();
     voiceCaptureRef.current = null;
     setVoiceListening(false);
@@ -652,15 +676,13 @@ function StudyPage({
       },
       onError: (message) => {
         setVoiceRecognizedText("");
-        setVoiceError(message || "Ошибка локального распознавания Whisper.");
-        scheduleContinuousVoiceRetry(1200);
+        setVoiceError("Запись не получилась. Повторите ещё раз.");
+        scheduleContinuousVoiceRetry();
       },
       onNoSpeech: () => {
-        // Keep the expanded voice card open when no speech was detected.
-        // The user can retry or choose "Не знаю" explicitly.
         setVoiceRecognizedText("");
-        setVoiceError("Не расслышал. Повторите, пожалуйста.");
-        scheduleContinuousVoiceRetry(850);
+        setVoiceError("Не удалось услышать ответ. Повторим запись через:");
+        scheduleContinuousVoiceRetry();
       },
     });
     voiceCaptureRef.current = capture;
@@ -674,14 +696,10 @@ function StudyPage({
 
   useEffect(() => {
     if (!continuousVoiceMode || !voiceImageReady || !sentence || checked) return undefined;
-    setVoicePreparing(true);
-    const preparationDelay = voiceHasStartedRef.current ? 3000 : 500;
-    voicePrepareTimerRef.current = window.setTimeout(() => {
-      voicePrepareTimerRef.current = null;
+    beginVoiceCountdown(voicePrepareTimerRef, () => {
       voiceHasStartedRef.current = true;
-      setVoicePreparing(false);
       startVoiceInput();
-    }, preparationDelay);
+    });
     return () => {
       if (voicePrepareTimerRef.current) window.clearTimeout(voicePrepareTimerRef.current);
       voicePrepareTimerRef.current = null;
@@ -990,10 +1008,12 @@ function StudyPage({
           <div className="study-card-footer">
             {continuousVoiceMode && (
               <p className="word-voice-status" role="status">
-                {voicePreparing ? "Прочитайте предложение — микрофон скоро включится." :
-                  voiceStatus === "listening" ? "Запись голоса…" :
-                  voiceStatus === "transcribing" ? "Распознавание…" :
-                  "Голосовой режим включён."}
+                <span key={voiceStatus === "transcribing" ? "transcribing" : voiceStatus === "listening" ? "listening" : voicePreparing ? "countdown" : "ready"} className="voice-status-label">
+                  {voiceStatus === "transcribing" ? "Распознавание…" :
+                    voiceStatus === "listening" ? "Идёт запись голоса…" :
+                    voicePreparing ? (voiceCountdown > 0 ? `Начало записи через ${voiceCountdown}…` : "Подготовка записи…") :
+                    voiceError || "Голосовой режим включён."}
+                </span>
               </p>
             )}
             <div className="form-actions word-answer-actions">
@@ -1002,7 +1022,12 @@ function StudyPage({
                 disabled={voiceStatus === "transcribing"}
                 aria-label={voiceStatus === "transcribing" ? "Распознавание ответа" : continuousVoiceMode ? "Остановить голосовой режим" : "Запустить голосовой режим без рук"}>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4m-4 0h8"/></svg>
-                {voiceStatus === "transcribing" ? "Распознавание…" : voiceListening ? "Запись голоса" : voicePreparing ? "Подготовка…" : continuousVoiceMode ? "Остановить" : "Ответить голосом"}
+                <span key={voiceStatus === "transcribing" ? "transcribing" : voiceStatus === "listening" ? "recording" : voicePreparing ? `count-${voiceCountdown}` : "idle"} className="voice-button-label">
+                  {voiceStatus === "transcribing" ? "Распознавание…" :
+                    voiceListening ? "Запись голоса" :
+                    voicePreparing ? (voiceCountdown > 0 ? String(voiceCountdown) : "Подготовка…") :
+                    continuousVoiceMode ? "Остановить" : "Ответить голосом"}
+                </span>
               </button>
               <button className="button button-secondary button-dont-know" type="button"
                 onClick={dontKnow}>Не знаю</button>
