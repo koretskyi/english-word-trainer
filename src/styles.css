@@ -4064,3 +4064,67 @@ button:disabled {
   .study-level-transition { transition: none; animation: none; }
 }
 
+
+
+/* Smooth transitions for every top-level screen and study-card state. */
+.app-screen-transition {
+  width: 100%;
+  min-width: 0;
+  transform-origin: top center;
+  animation: app-screen-fade-in 280ms cubic-bezier(.2, .7, .2, 1) both;
+}
+
+@keyframes app-screen-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* A new word enters inside the same study layout instead of flashing like a reload. */
+.study-card-shell {
+  animation: study-card-fade-in 300ms cubic-bezier(.2, .7, .2, 1) both;
+  transition:
+    background-color 280ms ease,
+    border-color 280ms ease,
+    box-shadow 280ms ease;
+}
+
+@keyframes study-card-fade-in {
+  from { opacity: 0; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Correct, incorrect and known states appear softly within the existing card. */
+.study-panel {
+  transition:
+    background-color 300ms ease,
+    border-color 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.answer-result-card {
+  animation: answer-result-fade-in 300ms cubic-bezier(.2, .7, .2, 1) both;
+}
+
+@keyframes answer-result-fade-in {
+  from { opacity: 0; transform: translateY(6px) scale(.995); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.word-listening-mode,
+.stats-only-view {
+  animation: app-screen-fade-in 260ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-screen-transition,
+  .study-card-shell,
+  .answer-result-card,
+  .word-listening-mode,
+  .stats-only-view {
+    animation: none !important;
+  }
+  .study-card-shell,
+  .study-panel {
+    transition: none !important;
+  }
+}
