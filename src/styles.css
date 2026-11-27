@@ -4641,3 +4641,35 @@ button:disabled {
     font-size: 14px;
   }
 }
+
+
+/* Restore the original full-width bottom actions. */
+.study-card-shell > .study-card-footer {
+  padding-bottom: 4px;
+}
+.study-card-shell .study-card-footer .word-answer-actions {
+  width: 100%;
+  max-width: none;
+  gap: 12px;
+}
+.study-card-shell .study-card-footer .word-answer-actions > button {
+  min-height: 50px;
+  padding: 10px 8px;
+}
+
+/* A reset state is a small text label, not a bordered progress panel. */
+.study-card-shell > .study-card-review-progress:has(.study-card-review-reset) {
+  width: 100%;
+  margin: 0 0 6px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.study-card-shell .study-card-review-reset {
+  min-height: 0;
+  padding: 0;
+  font-size: 11px;
+  line-height: 1.2;
+  letter-spacing: .055em;
+}
