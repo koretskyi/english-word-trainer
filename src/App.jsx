@@ -400,7 +400,7 @@ const WordImage = ({ sentence }) => {
         const response = await fetch("/api/word-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ word: key, context: sentence?.pixabayQuery || `${sentence?.englishTemplate || ""} ${word}` }),
+          body: JSON.stringify({ word: key, context: sentence?.pixabayQuery || String(sentence?.englishTemplate || "").replace("{word}", word) }),
           signal: controller.signal,
         });
         const responseType = response.headers.get("content-type") || "";
@@ -435,7 +435,7 @@ const WordImage = ({ sentence }) => {
 
     loadWordImage();
     return () => controller.abort();
-  }, [word, sentence?.pixabayQuery]);
+  }, [word, sentence?.pixabayQuery, sentence?.englishTemplate]);
 
   if (status === "loading") {
     return <div className="word-image-placeholder" aria-live="polite">Подбираю изображение…</div>;
