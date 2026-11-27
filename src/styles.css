@@ -5408,3 +5408,9 @@ button:disabled {
     animation: none;
   }
 }
+
+
+/* Add breathing room between the sentence text and its answer fields. */
+.study-card-shell .english-sentence .word-gap-container {
+  margin-left: 10px;
+}
