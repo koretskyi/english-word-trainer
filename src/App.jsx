@@ -386,7 +386,7 @@ function ReviewLadder({ stage = 1, compact = false }) {
 }
 
 // Загружает локальную иллюстрацию, а при её отсутствии ищет подходящую в Openverse.
-// Загружает локальное изображение A2 или один раз получает его с Pixabay и сохраняет на диск.
+// Загружает локальное изображение слова или получает его с Pixabay и сохраняет на диск.
 const WordImage = ({ sentence }) => {
   const word = sentence?.word;
   const [image, setImage] = useState(null);
