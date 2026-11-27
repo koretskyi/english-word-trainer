@@ -1801,7 +1801,7 @@ export const SENTENCES = [
     russian: "Он взял на себя ответственность за ошибку.",
     englishTemplate: "He took {word} for the mistake.",
     word: "responsibility",
-    pixabayQuery: "accountable worker",
+    pixabayQuery: "",
     russianWord: "ответственность",
     revealIndices: [2, 7]
   },
