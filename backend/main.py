@@ -407,13 +407,11 @@ def safe_image_word(value: str) -> str:
     return re.sub(r"[^a-z0-9-]", "", value.lower().strip().replace(" ", "-"))[:60]
 
 
-def pixabay_search(context: str, api_key: str) -> dict:
+def pixabay_search(search_query: str, api_key: str) -> dict:
     PIXABAY_QUERY_CACHE.mkdir(parents=True, exist_ok=True)
-    # Search using only the prepared visual context; no vocabulary word is sent.
-    raw_query = context.strip()
-    query = re.sub(r"[^a-zA-Z0-9 ]", " ", raw_query)
+    query = re.sub(r"[^a-zA-Z0-9 ]", " ", search_query)
     query = re.sub(r"\s+", " ", query).strip()[:100]
-    cache_key = re.sub(r"[^a-z0-9]+", "-", query.lower()).strip("-") or "empty-context"
+    cache_key = re.sub(r"[^a-z0-9]+", "-", query.lower()).strip("-") or "empty-query"
     cache_file = PIXABAY_QUERY_CACHE / f"{cache_key}.json"
     if cache_file.exists() and time.time() - cache_file.stat().st_mtime < PIXABAY_CACHE_TTL:
         try:
@@ -421,14 +419,16 @@ def pixabay_search(context: str, api_key: str) -> dict:
         except json.JSONDecodeError:
             pass
 
+    # Parameters and values follow Pixabay's documented API.
     params = urllib.parse.urlencode({
         "key": api_key,
         "q": query,
+        "lang": "en",
         "image_type": "photo",
         "orientation": "all",
         "safesearch": "true",
-        "order": "relevance",
-        "per_page": "5",
+        "order": "popular",
+        "per_page": 5,
     })
     request = urllib.request.Request(
         f"https://pixabay.com/api/?{params}",
@@ -498,26 +498,28 @@ def score_pixabay_hit(hit: dict, context: str) -> int:
 
 
 class A2ImageRequest(BaseModel):
+    word: str = ""
     context: str
 
 
 @app.post("/api/word-image")
 @app.post("/api/a2-image")
 def get_or_download_a2_image(payload: A2ImageRequest):
-    search_query = re.sub(r"\s+", " ", payload.context.strip())[:100]
+    word = re.sub(r"\s+", " ", payload.word.strip())
+    context = re.sub(r"\s+", " ", payload.context.strip())
+    # Pixabay exposes one q parameter, so combine the target word and context.
+    search_query = re.sub(r"\s+", " ", f"{word} {context}".strip())[:100]
     if not search_query:
-        raise HTTPException(status_code=400, detail="Не передан контекст для поиска изображения.")
+        raise HTTPException(status_code=400, detail="Не переданы слово и контекст для поиска изображения.")
 
-    # Context itself identifies the cached image; the vocabulary word is not
-    # part of the request or Pixabay search/ranking logic.
-    context_hash = hashlib.sha256(search_query.casefold().encode("utf-8")).hexdigest()[:24]
-    manifest_key = f"context:{context_hash}"
-    filename = f"context-{context_hash}.jpg"
+    query_hash = hashlib.sha256(search_query.casefold().encode("utf-8")).hexdigest()[:24]
+    manifest_key = f"query:{query_hash}"
+    filename = f"query-{query_hash}.jpg"
 
     PIXABAY_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
     manifest = read_image_manifest()
     existing = manifest.get(manifest_key)
-    if existing and existing.get("searchVersion") == 12 and existing.get("searchQuery") == search_query and existing.get("src") and existing.get("provider") == "Pixabay":
+    if existing and existing.get("searchVersion") == 13 and existing.get("searchQuery") == search_query and existing.get("src") and existing.get("provider") == "Pixabay":
         existing_file = PIXABAY_ROOT / "public" / existing["src"].lstrip("/")
         if existing_file.is_file():
             return existing
@@ -534,49 +536,21 @@ def get_or_download_a2_image(payload: A2ImageRequest):
     if not hits:
         raise HTTPException(status_code=404, detail=f"Pixabay не нашёл фотографий по контексту «{search_query}».")
 
-    def rank_hits(items: list[dict], context: str) -> list[tuple[int, int, dict]]:
-        ranked = [
-            (score_pixabay_hit(hit, context), index, hit)
-            for index, hit in enumerate(items[:5])
-        ]
-        ranked.sort(key=lambda item: (-item[0], item[1]))
-        return ranked
-
-    MIN_RELEVANCE_SCORE = 4
-    scored_hits = rank_hits(hits, search_query)
+    scored_hits = [
+        (score_pixabay_hit(hit, search_query), index, hit)
+        for index, hit in enumerate(hits[:5])
+    ]
+    scored_hits.sort(key=lambda item: (-item[0], item[1]))
     best_score, _, selected = scored_hits[0]
 
-    if best_score < MIN_RELEVANCE_SCORE:
-        fallback_tokens = [
-            token for token in re.findall(r"[a-z]+", search_query.lower())
-            if token not in PIXABAY_TAG_STOPWORDS and len(token) >= 3
-        ]
-        fallback_query = " ".join(dict.fromkeys(fallback_tokens))
-        if fallback_query and fallback_query.lower() != search_query.lower():
-            logger.info(
-                "Pixabay relevance too low for context %r (score %s); retrying with %r",
-                search_query, best_score, fallback_query,
-            )
-            fallback_data = pixabay_search(fallback_query, api_key)
-            fallback_hits = fallback_data.get("hits") or []
-            if fallback_hits:
-                fallback_ranked = rank_hits(fallback_hits, fallback_query)
-                fallback_score, _, fallback_selected = fallback_ranked[0]
-                if fallback_score > best_score:
-                    best_score, selected = fallback_score, fallback_selected
-                    scored_hits = fallback_ranked
-
+    # Pixabay has already matched q; avoid rejecting all returned photos
+    # because of an arbitrary local relevance threshold.
     logger.info(
-        "Pixabay context-only tag ranking (best score %s) for %r: %s",
+        "Pixabay tag ranking (best score %s) for %r: %s",
         best_score,
         search_query,
         [(score, str(hit.get("tags") or "")) for score, _, hit in scored_hits],
     )
-    if best_score < MIN_RELEVANCE_SCORE:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Pixabay не нашёл достаточно подходящую фотографию по контексту «{search_query}».",
-        )
     image_url = selected.get("webformatURL")
     if not image_url:
         raise HTTPException(status_code=404, detail="Pixabay не вернул ссылку на изображение.")
@@ -602,7 +576,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         "license": "Pixabay Content License",
         "tags": str(selected.get("tags") or ""),
         "imageId": selected.get("id"),
-        "searchVersion": 12,
+        "searchVersion": 13,
         "searchQuery": search_query,
     }
     manifest[manifest_key] = entry
@@ -617,5 +591,5 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         except OSError:
             pass
         PIXABAY_MANIFEST.write_text(manifest_text, encoding="utf-8")
-    logger.info("Saved Pixabay image for context %r to %s", search_query, image_path)
+    logger.info("Saved Pixabay image for query %r to %s", search_query, image_path)
     return entry
