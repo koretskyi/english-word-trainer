@@ -4723,3 +4723,97 @@ button:disabled {
     font-size: 22px;
   }
 }
+
+
+/* Spread the two answer tiles vertically through the available result area. */
+.study-card-shell .answer-result-card.is-incorrect {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 300px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 8px;
+  padding: 14px 18px 18px;
+}
+.study-card-shell .incorrect-result-content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  width: 100%;
+}
+.study-card-shell .incorrect-word-pair {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+.study-card-shell .answer-value-group {
+  display: flex;
+  flex: 0 0 auto;
+  width: min(68%, 460px);
+  min-height: 104px;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 18px;
+  border: 1px solid rgba(120, 145, 160, .18);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(35, 55, 75, .07);
+}
+.study-card-shell .answer-value-group.is-correct-answer { align-self: flex-start; }
+.study-card-shell .answer-value-group.is-wrong-answer { align-self: flex-end; }
+.study-card-shell .answer-value-label {
+  padding: 0;
+  background: transparent !important;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+.study-card-shell .answer-value {
+  display: block;
+  min-height: 0;
+  padding: 0;
+  background: transparent !important;
+  font-size: clamp(26px, 3.2vw, 36px);
+  font-weight: 800;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.study-card-shell .is-correct-answer .answer-value-label,
+.study-card-shell .is-correct-answer .answer-value { color: #438b43; }
+.study-card-shell .is-wrong-answer .answer-value-label,
+.study-card-shell .is-wrong-answer .answer-value { color: #b45d68; }
+
+/* Lift the action row slightly and give it a little more breathing room at the sides. */
+.study-card-shell > .study-card-footer { padding-bottom: 14px; }
+.study-card-shell .study-card-footer .word-answer-actions {
+  width: 94%;
+  max-width: 820px;
+  margin-left: auto;
+  margin-right: auto;
+  gap: 12px;
+}
+@media (max-width: 520px) {
+  .study-card-shell .answer-result-card.is-incorrect {
+    min-height: 270px;
+    padding: 12px 8px 14px;
+  }
+  .study-card-shell .answer-value-group {
+    width: 82%;
+    min-height: 88px;
+    padding: 12px;
+  }
+  .study-card-shell .answer-value { font-size: 25px; }
+  .study-card-shell > .study-card-footer { padding-bottom: 12px; }
+  .study-card-shell .study-card-footer .word-answer-actions {
+    width: 94%;
+    gap: 8px;
+  }
+}
