@@ -892,7 +892,7 @@ function StudyPage({
       <div className="level-switch-content">
         {levelSelector}
         {statsPanel}
-      <div className="study-card-shell">
+      <div className={`study-card-shell${checked ? " is-answered" : ""}${checked && (correct || markedKnown) ? " is-success" : ""}`}>
         {(isReview || checked) && (
           <div className="study-card-review-progress"
             role="progressbar"
@@ -916,8 +916,8 @@ function StudyPage({
             )}
           </div>
         )}
-        <div className={`study-card-image-slot${checked ? " is-feedback" : ""}`}>
-          {checked
+        <div className={`study-card-image-slot${checked && !correct && !markedKnown ? " is-feedback" : ""}`}>
+          {checked && !correct && !markedKnown
             ? <StudyFeedbackVisual correct={correct} markedKnown={markedKnown} />
             : <WordImage sentence={sentence} />}
         </div>
