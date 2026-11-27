@@ -624,7 +624,7 @@ function StudyPage({
     : "";
 
   const displayTemplate = sentence
-    ? sentence.englishTemplate.replace(/\\.\\s*$/, "")
+    ? sentence.englishTemplate.replace(/\.+\s*$/, "")
     : "";
   const parts = sentence ? displayTemplate.split("{word}") : [];
   const selectedLevelReviewCount = reviewWords.filter(
@@ -1517,7 +1517,7 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
                   <div>
                     <strong>{sentence.russian}</strong>
                     <p className="sentence-item-english">
-                      {(sentence.englishTemplate || "").replace("{word}", `[${sentence.word || ""}]`)}
+                      {(sentence.englishTemplate || "").replace(/\.+\s*$/, "").replace("{word}", `[${sentence.word || ""}]`)}
                     </p>
                   </div>
                   <div className="sentence-item-actions">
