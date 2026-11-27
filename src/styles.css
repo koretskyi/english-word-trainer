@@ -5194,30 +5194,54 @@ button:disabled {
   outline-offset: 2px;
 }
 
+/* Keep the control physically still; only its red fill breathes while recording. */
+.study-card-shell .word-answer-actions .word-microphone-button,
+.study-card-shell .word-answer-actions .word-microphone-button:hover:not(:disabled) {
+  transform: none !important;
+  transition: none !important;
+  box-shadow: none !important;
+}
+
 .study-card-shell .word-answer-actions .word-microphone-button.is-preparing {
   background: #8bcf35;
   border-color: #8bcf35;
   color: #243414;
-  animation: card-mic-ready-pulse .24s ease-in-out infinite alternate;
-  box-shadow: none !important;
+  animation: none !important;
+  opacity: 1;
 }
 
 .study-card-shell .word-answer-actions .word-microphone-button.is-listening {
   background: #e53935;
   border-color: #c62828;
   color: #ffffff;
-  animation: card-mic-recording-blink 1.25s ease-in-out infinite alternate;
-  box-shadow: none !important;
+  animation: card-mic-recording-blink 1.8s ease-in-out infinite alternate;
+  opacity: 1;
 }
 
-@keyframes card-mic-ready-pulse {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: .58; transform: scale(1.025); }
+.study-card-shell .word-answer-actions .word-microphone-button.is-transcribing,
+.study-card-shell .word-answer-actions .word-microphone-button:disabled {
+  background: #e8e8e8;
+  border-color: #c9c9c9;
+  color: #666666;
+  animation: none !important;
+  opacity: 1;
+  cursor: wait;
 }
 
 @keyframes card-mic-recording-blink {
-  from { opacity: 1; }
-  to { opacity: .78; }
+  from { background-color: #e53935; }
+  to { background-color: #ef7773; }
+}
+
+.voice-retry-actions {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 14px;
+}
+
+.voice-retry-button {
+  min-width: 210px;
 }
 
 @media (prefers-reduced-motion: reduce) {
