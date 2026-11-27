@@ -8,7 +8,6 @@ export const SENTENCES = [
     englishTemplate: "I eat an {word} every day.",
     word: "apple",
     pixabayQuery: "apple red fruit closeup",
-    pixabayQueryVersion: 2,
     russianWord: "яблоко",
     revealIndices: [2]
   },
@@ -19,7 +18,6 @@ export const SENTENCES = [
     englishTemplate: "There is a {word} on the table.",
     word: "banana",
     pixabayQuery: "banana yellow fruit bunch",
-    pixabayQueryVersion: 2,
     russianWord: "банан",
     revealIndices: [2]
   },
@@ -30,7 +28,6 @@ export const SENTENCES = [
     englishTemplate: "I need some fresh {word}.",
     word: "bread",
     pixabayQuery: "bread fresh loaf bakery",
-    pixabayQueryVersion: 2,
     russianWord: "хлеб",
     revealIndices: [2]
   },
@@ -41,7 +38,6 @@ export const SENTENCES = [
     englishTemplate: "Can I have a glass of {word}?",
     word: "water",
     pixabayQuery: "water glass clear drinking",
-    pixabayQueryVersion: 2,
     russianWord: "вода",
     revealIndices: [2]
   },
@@ -52,7 +48,6 @@ export const SENTENCES = [
     englishTemplate: "I drink {word} in the morning.",
     word: "coffee",
     pixabayQuery: "coffee beans cup espresso",
-    pixabayQueryVersion: 2,
     russianWord: "кофе",
     revealIndices: [2]
   },
@@ -63,7 +58,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} is ready.",
     word: "tea",
     pixabayQuery: "tea cup teapot leaves",
-    pixabayQueryVersion: 2,
     russianWord: "чай",
     revealIndices: [1]
   },
@@ -74,7 +68,6 @@ export const SENTENCES = [
     englishTemplate: "There is some {word} in the fridge.",
     word: "milk",
     pixabayQuery: "milk bottle glass dairy",
-    pixabayQueryVersion: 2,
     russianWord: "молоко",
     revealIndices: [2]
   },
@@ -85,7 +78,6 @@ export const SENTENCES = [
     englishTemplate: "I like {word}.",
     word: "cheese",
     pixabayQuery: "cheese block slices dairy",
-    pixabayQueryVersion: 2,
     russianWord: "сыр",
     revealIndices: [3]
   },
@@ -96,7 +88,6 @@ export const SENTENCES = [
     englishTemplate: "I had an {word} for breakfast.",
     word: "egg",
     pixabayQuery: "egg chicken eggshell",
-    pixabayQueryVersion: 2,
     russianWord: "яйцо",
     revealIndices: [1]
   },
@@ -107,7 +98,6 @@ export const SENTENCES = [
     englishTemplate: "We eat {word} for dinner.",
     word: "rice",
     pixabayQuery: "rice grains bowl cooked",
-    pixabayQueryVersion: 2,
     russianWord: "рис",
     revealIndices: [2]
   },
@@ -118,7 +108,6 @@ export const SENTENCES = [
     englishTemplate: "My {word} is near the park.",
     word: "house",
     pixabayQuery: "house family home exterior",
-    pixabayQueryVersion: 2,
     russianWord: "дом",
     revealIndices: [2]
   },
@@ -129,7 +118,6 @@ export const SENTENCES = [
     englishTemplate: "My {word} is very small.",
     word: "room",
     pixabayQuery: "bedroom room interior",
-    pixabayQueryVersion: 2,
     russianWord: "комната",
     revealIndices: [2]
   },
@@ -140,7 +128,6 @@ export const SENTENCES = [
     englishTemplate: "Mum is cooking in the {word}.",
     word: "kitchen",
     pixabayQuery: "kitchen cabinets cooking",
-    pixabayQueryVersion: 2,
     russianWord: "кухня",
     revealIndices: [3]
   },
@@ -151,7 +138,6 @@ export const SENTENCES = [
     englishTemplate: "Please close the {word}.",
     word: "door",
     pixabayQuery: "door wooden entrance",
-    pixabayQueryVersion: 2,
     russianWord: "дверь",
     revealIndices: [2]
   },
@@ -162,7 +148,6 @@ export const SENTENCES = [
     englishTemplate: "I opened the {word}.",
     word: "window",
     pixabayQuery: "window glass frame",
-    pixabayQueryVersion: 2,
     russianWord: "окно",
     revealIndices: [3]
   },
@@ -173,7 +158,6 @@ export const SENTENCES = [
     englishTemplate: "The key is on the {word}.",
     word: "table",
     pixabayQuery: "table wooden furniture",
-    pixabayQueryVersion: 2,
     russianWord: "стол",
     revealIndices: [2]
   },
@@ -184,7 +168,6 @@ export const SENTENCES = [
     englishTemplate: "Please sit on the {word}.",
     word: "chair",
     pixabayQuery: "chair seat furniture",
-    pixabayQueryVersion: 2,
     russianWord: "стул",
     revealIndices: [2]
   },
@@ -195,7 +178,6 @@ export const SENTENCES = [
     englishTemplate: "I am reading an interesting {word}.",
     word: "book",
     pixabayQuery: "book open pages",
-    pixabayQueryVersion: 2,
     russianWord: "книга",
     revealIndices: [2]
   },
@@ -206,7 +188,6 @@ export const SENTENCES = [
     englishTemplate: "My {word} has run out of battery.",
     word: "phone",
     pixabayQuery: "smartphone mobile phone",
-    pixabayQueryVersion: 2,
     russianWord: "телефон",
     revealIndices: [2]
   },
@@ -217,7 +198,6 @@ export const SENTENCES = [
     englishTemplate: "My {word} lives in Dublin.",
     word: "friend",
     pixabayQuery: "friends two people together",
-    pixabayQueryVersion: 2,
     russianWord: "друг",
     revealIndices: [2]
   },
@@ -228,7 +208,6 @@ export const SENTENCES = [
     englishTemplate: "I have a {word} at home.",
     word: "cat",
     pixabayQuery: "pet feline",
-    pixabayQueryVersion: 2,
     russianWord: "кошка",
     revealIndices: [1]
   },
@@ -239,7 +218,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} is waiting by the door.",
     word: "dog",
     pixabayQuery: "confidential documents in a locked drawer",
-    pixabayQueryVersion: 3,
     russianWord: "собака",
     revealIndices: [1]
   },
@@ -250,7 +228,6 @@ export const SENTENCES = [
     englishTemplate: "I go to work by {word}.",
     word: "bicycle",
     pixabayQuery: "bicycle bike cycling",
-    pixabayQueryVersion: 2,
     russianWord: "велосипед",
     revealIndices: [2, 4]
   },
@@ -261,7 +238,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} arrives at six o'clock.",
     word: "train",
     pixabayQuery: "train locomotive railway",
-    pixabayQueryVersion: 2,
     russianWord: "поезд",
     revealIndices: [1, 3]
   },
@@ -272,7 +248,6 @@ export const SENTENCES = [
     englishTemplate: "The children go to {word} in the morning.",
     word: "school",
     pixabayQuery: "school building entrance",
-    pixabayQueryVersion: 2,
     russianWord: "школа",
     revealIndices: [2, 4]
   },
@@ -283,7 +258,6 @@ export const SENTENCES = [
     englishTemplate: "Our {word} is very kind.",
     word: "teacher",
     pixabayQuery: "teacher classroom educator",
-    pixabayQueryVersion: 2,
     russianWord: "учитель",
     revealIndices: [2, 4]
   },
@@ -294,7 +268,6 @@ export const SENTENCES = [
     englishTemplate: "He is a good {word}.",
     word: "student",
     pixabayQuery: "student studying desk",
-    pixabayQueryVersion: 2,
     russianWord: "студент",
     revealIndices: [2, 4]
   },
@@ -305,7 +278,6 @@ export const SENTENCES = [
     englishTemplate: "My {word} lives in Kyiv.",
     word: "family",
     pixabayQuery: "family parents children portrait",
-    pixabayQueryVersion: 2,
     russianWord: "семья",
     revealIndices: [2, 4]
   },
@@ -316,7 +288,6 @@ export const SENTENCES = [
     englishTemplate: "My {word} loves flowers.",
     word: "mother",
     pixabayQuery: "mother child family portrait",
-    pixabayQueryVersion: 2,
     russianWord: "мама",
     revealIndices: [2, 4]
   },
@@ -327,7 +298,6 @@ export const SENTENCES = [
     englishTemplate: "My {word} works in an office.",
     word: "father",
     pixabayQuery: "father child family portrait",
-    pixabayQueryVersion: 2,
     russianWord: "отец",
     revealIndices: [2, 4]
   },
@@ -338,7 +308,6 @@ export const SENTENCES = [
     englishTemplate: "My {word} is younger than me.",
     word: "sister",
     pixabayQuery: "sisters siblings family portrait",
-    pixabayQueryVersion: 2,
     russianWord: "сестра",
     revealIndices: [2, 4]
   },
@@ -349,7 +318,6 @@ export const SENTENCES = [
     englishTemplate: "My {word} plays football.",
     word: "brother",
     pixabayQuery: "brothers siblings family portrait",
-    pixabayQueryVersion: 2,
     russianWord: "брат",
     revealIndices: [2, 4]
   },
@@ -360,7 +328,6 @@ export const SENTENCES = [
     englishTemplate: "I usually walk in the {word}.",
     word: "morning",
     pixabayQuery: "morning sunrise alarm clock",
-    pixabayQueryVersion: 2,
     russianWord: "утро",
     revealIndices: [2, 4]
   },
@@ -371,7 +338,6 @@ export const SENTENCES = [
     englishTemplate: "We watch a film in the {word}.",
     word: "evening",
     pixabayQuery: "evening sunset dusk clock",
-    pixabayQueryVersion: 2,
     russianWord: "вечер",
     revealIndices: [2, 4]
   },
@@ -382,7 +348,6 @@ export const SENTENCES = [
     englishTemplate: "The weather is nice {word}.",
     word: "today",
     pixabayQuery: "calendar today date marked",
-    pixabayQueryVersion: 2,
     russianWord: "сегодня",
     revealIndices: [1, 3]
   },
@@ -393,7 +358,6 @@ export const SENTENCES = [
     englishTemplate: "I will be at home {word}.",
     word: "tomorrow",
     pixabayQuery: "calendar tomorrow next day",
-    pixabayQueryVersion: 2,
     russianWord: "завтра",
     revealIndices: [2, 4, 6]
   },
@@ -404,7 +368,6 @@ export const SENTENCES = [
     englishTemplate: "I was very busy {word}.",
     word: "yesterday",
     pixabayQuery: "calendar yesterday previous date",
-    pixabayQueryVersion: 2,
     russianWord: "вчера",
     revealIndices: [2, 4, 6]
   },
@@ -415,7 +378,6 @@ export const SENTENCES = [
     englishTemplate: "She looks {word}.",
     word: "happy",
     pixabayQuery: "happy smiling face portrait",
-    pixabayQueryVersion: 2,
     russianWord: "счастливый",
     revealIndices: [1, 3]
   },
@@ -426,7 +388,6 @@ export const SENTENCES = [
     englishTemplate: "I feel {word} after work.",
     word: "tired",
     pixabayQuery: "tired exhausted person yawning",
-    pixabayQueryVersion: 2,
     russianWord: "уставший",
     revealIndices: [1, 3]
   },
@@ -437,7 +398,6 @@ export const SENTENCES = [
     englishTemplate: "I am {word}.",
     word: "hungry",
     pixabayQuery: "hungry person empty plate",
-    pixabayQueryVersion: 2,
     russianWord: "голодный",
     revealIndices: [2, 4]
   },
@@ -448,7 +408,6 @@ export const SENTENCES = [
     englishTemplate: "I am {word} after running.",
     word: "thirsty",
     pixabayQuery: "thirsty person drinking water",
-    pixabayQueryVersion: 2,
     russianWord: "испытывающий жажду",
     revealIndices: [2, 4]
   },
@@ -459,7 +418,6 @@ export const SENTENCES = [
     englishTemplate: "This is a {word} city.",
     word: "beautiful",
     pixabayQuery: "beautiful flower closeup",
-    pixabayQueryVersion: 2,
     russianWord: "красивый",
     revealIndices: [2, 4, 6]
   },
@@ -470,7 +428,6 @@ export const SENTENCES = [
     englishTemplate: "We have a {word} apartment.",
     word: "small",
     pixabayQuery: "small tiny object comparison",
-    pixabayQueryVersion: 2,
     russianWord: "маленький",
     revealIndices: [1, 3]
   },
@@ -481,7 +438,6 @@ export const SENTENCES = [
     englishTemplate: "They live in a {word} house.",
     word: "large",
     pixabayQuery: "large oversized object scale",
-    pixabayQueryVersion: 2,
     russianWord: "большой",
     revealIndices: [1, 3]
   },
@@ -492,7 +448,6 @@ export const SENTENCES = [
     englishTemplate: "My room is {word}.",
     word: "clean",
     pixabayQuery: "clean spotless surface",
-    pixabayQueryVersion: 2,
     russianWord: "чистый",
     revealIndices: [1, 3]
   },
@@ -503,7 +458,6 @@ export const SENTENCES = [
     englishTemplate: "Your shoes are {word}.",
     word: "dirty",
     pixabayQuery: "dirty muddy object",
-    pixabayQueryVersion: 2,
     russianWord: "грязный",
     revealIndices: [1, 3]
   },
@@ -514,7 +468,6 @@ export const SENTENCES = [
     englishTemplate: "Please {word} the window.",
     word: "open",
     pixabayQuery: "open door hand opening",
-    pixabayQueryVersion: 2,
     russianWord: "открыть",
     revealIndices: [2]
   },
@@ -525,7 +478,6 @@ export const SENTENCES = [
     englishTemplate: "Don't forget to {word} the door.",
     word: "close",
     pixabayQuery: "closed door hand closing",
-    pixabayQueryVersion: 2,
     russianWord: "закрыть",
     revealIndices: [1, 3]
   },
@@ -536,7 +488,6 @@ export const SENTENCES = [
     englishTemplate: "I like to {word} books.",
     word: "read",
     pixabayQuery: "person reading book",
-    pixabayQueryVersion: 2,
     russianWord: "читать",
     revealIndices: [2]
   },
@@ -547,7 +498,6 @@ export const SENTENCES = [
     englishTemplate: "She can {word} in English.",
     word: "write",
     pixabayQuery: "hand writing pen paper",
-    pixabayQueryVersion: 2,
     russianWord: "писать",
     revealIndices: [1, 3]
   },
@@ -558,7 +508,6 @@ export const SENTENCES = [
     englishTemplate: "I ate an {word} for breakfast.",
     word: "orange",
     pixabayQuery: "citrus breakfast",
-    pixabayQueryVersion: 2,
     russianWord: "апельсин",
     revealIndices: [0, 1, 4]
   },
@@ -569,7 +518,6 @@ export const SENTENCES = [
     englishTemplate: "We need some {word} for dinner.",
     word: "potato",
     pixabayQuery: "potato dinner",
-    pixabayQueryVersion: 2,
     russianWord: "картофель",
     revealIndices: [0, 3]
   },
@@ -580,7 +528,6 @@ export const SENTENCES = [
     englishTemplate: "Add a {word} to the salad.",
     word: "tomato",
     pixabayQuery: "tomato salad",
-    pixabayQueryVersion: 2,
     russianWord: "помидор",
     revealIndices: [3, 5]
   },
@@ -591,7 +538,6 @@ export const SENTENCES = [
     englishTemplate: "We are having {word} for dinner.",
     word: "chicken",
     pixabayQuery: "chicken dinner",
-    pixabayQueryVersion: 2,
     russianWord: "курица",
     revealIndices: [1, 6]
   },
@@ -602,7 +548,6 @@ export const SENTENCES = [
     englishTemplate: "She often buys fresh {word}.",
     word: "fish",
     pixabayQuery: "fish seafood",
-    pixabayQueryVersion: 2,
     russianWord: "рыба",
     revealIndices: [1]
   },
@@ -613,7 +558,6 @@ export const SENTENCES = [
     englishTemplate: "I usually make {word} at seven.",
     word: "breakfast",
     pixabayQuery: "morning meal",
-    pixabayQueryVersion: 2,
     russianWord: "завтрак",
     revealIndices: [2]
   },
@@ -624,7 +568,6 @@ export const SENTENCES = [
     englishTemplate: "We are meeting after {word}.",
     word: "lunch",
     pixabayQuery: "lunch table",
-    pixabayQueryVersion: 2,
     russianWord: "обед",
     revealIndices: [2, 3]
   },
@@ -635,7 +578,6 @@ export const SENTENCES = [
     englishTemplate: "{word} will be ready in ten minutes.",
     word: "dinner",
     pixabayQuery: "evening meal",
-    pixabayQueryVersion: 2,
     russianWord: "ужин",
     revealIndices: [0]
   },
@@ -646,7 +588,6 @@ export const SENTENCES = [
     englishTemplate: "There are flowers in our {word}.",
     word: "garden",
     pixabayQuery: "garden flowers",
-    pixabayQueryVersion: 2,
     russianWord: "сад",
     revealIndices: [1]
   },
@@ -657,7 +598,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} is next to the bedroom.",
     word: "bathroom",
     pixabayQuery: "bathroom shower",
-    pixabayQueryVersion: 2,
     russianWord: "ванная",
     revealIndices: [4, 6]
   },
@@ -668,7 +608,6 @@ export const SENTENCES = [
     englishTemplate: "The cat is sleeping on my {word}.",
     word: "bed",
     pixabayQuery: "bedroom sleeping",
-    pixabayQueryVersion: 2,
     russianWord: "кровать",
     revealIndices: [0, 2]
   },
@@ -679,7 +618,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} is very comfortable.",
     word: "sofa",
     pixabayQuery: "livingroom furniture",
-    pixabayQueryVersion: 2,
     russianWord: "диван",
     revealIndices: [2, 3]
   },
@@ -690,7 +628,6 @@ export const SENTENCES = [
     englishTemplate: "Please turn on the {word}.",
     word: "lamp",
     pixabayQuery: "table lamp",
-    pixabayQueryVersion: 2,
     russianWord: "лампа",
     revealIndices: [0, 2]
   },
@@ -701,7 +638,6 @@ export const SENTENCES = [
     englishTemplate: "I cannot find the house {word}.",
     word: "key",
     pixabayQuery: "house keys",
-    pixabayQueryVersion: 2,
     russianWord: "ключ",
     revealIndices: [1]
   },
@@ -712,7 +648,6 @@ export const SENTENCES = [
     englishTemplate: "My {word} is too heavy.",
     word: "bag",
     pixabayQuery: "handbag luggage",
-    pixabayQueryVersion: 2,
     russianWord: "сумка",
     revealIndices: [0, 2]
   },
@@ -723,7 +658,6 @@ export const SENTENCES = [
     englishTemplate: "Take off your {word} by the door.",
     word: "shoes",
     pixabayQuery: "shoes sneakers",
-    pixabayQueryVersion: 2,
     russianWord: "обувь",
     revealIndices: [2, 3]
   },
@@ -734,7 +668,6 @@ export const SENTENCES = [
     englishTemplate: "This {word} is too big for me.",
     word: "shirt",
     pixabayQuery: "shirt clothing",
-    pixabayQueryVersion: 2,
     russianWord: "рубашка",
     revealIndices: [0]
   },
@@ -745,7 +678,6 @@ export const SENTENCES = [
     englishTemplate: "Take your {word}; it is cold outside.",
     word: "jacket",
     pixabayQuery: "winter jacket",
-    pixabayQueryVersion: 2,
     russianWord: "куртка",
     revealIndices: [1]
   },
@@ -756,7 +688,6 @@ export const SENTENCES = [
     englishTemplate: "My brother has a new {word}.",
     word: "car",
     pixabayQuery: "car vehicle",
-    pixabayQueryVersion: 2,
     russianWord: "машина",
     revealIndices: [2]
   },
@@ -767,7 +698,6 @@ export const SENTENCES = [
     englishTemplate: "We called a {word} to the airport.",
     word: "taxi",
     pixabayQuery: "taxi airport",
-    pixabayQueryVersion: 2,
     russianWord: "такси",
     revealIndices: [2]
   },
@@ -778,7 +708,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} is far from here.",
     word: "airport",
     pixabayQuery: "airport terminal",
-    pixabayQueryVersion: 2,
     russianWord: "аэропорт",
     revealIndices: [6]
   },
@@ -789,7 +718,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} closes at nine.",
     word: "shop",
     pixabayQuery: "shop storefront",
-    pixabayQueryVersion: 2,
     russianWord: "магазин",
     revealIndices: [0, 2]
   },
@@ -800,7 +728,6 @@ export const SENTENCES = [
     englishTemplate: "We go to the {word} on Saturdays.",
     word: "market",
     pixabayQuery: "market stalls",
-    pixabayQueryVersion: 2,
     russianWord: "рынок",
     revealIndices: [3]
   },
@@ -811,7 +738,6 @@ export const SENTENCES = [
     englishTemplate: "The children are playing in the {word}.",
     word: "park",
     pixabayQuery: "park playground",
-    pixabayQueryVersion: 2,
     russianWord: "парк",
     revealIndices: [0, 2, 3]
   },
@@ -822,7 +748,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} is in the city centre.",
     word: "hospital",
     pixabayQuery: "hospital building",
-    pixabayQueryVersion: 2,
     russianWord: "больница",
     revealIndices: [2, 6]
   },
@@ -833,7 +758,6 @@ export const SENTENCES = [
     englishTemplate: "I need to speak to a {word}.",
     word: "doctor",
     pixabayQuery: "doctor clinic",
-    pixabayQueryVersion: 2,
     russianWord: "врач",
     revealIndices: [0]
   },
@@ -844,7 +768,6 @@ export const SENTENCES = [
     englishTemplate: "My father starts {word} early.",
     word: "work",
     pixabayQuery: "office workplace",
-    pixabayQueryVersion: 2,
     russianWord: "работа",
     revealIndices: [0, 1]
   },
@@ -855,7 +778,6 @@ export const SENTENCES = [
     englishTemplate: "Children love to {word} outside.",
     word: "play",
     pixabayQuery: "children playing",
-    pixabayQueryVersion: 2,
     russianWord: "играть",
     revealIndices: [0]
   },
@@ -866,7 +788,6 @@ export const SENTENCES = [
     englishTemplate: "I need to {word} earlier.",
     word: "sleep",
     pixabayQuery: "bed sleeping",
-    pixabayQueryVersion: 2,
     russianWord: "спать",
     revealIndices: [2]
   },
@@ -877,7 +798,6 @@ export const SENTENCES = [
     englishTemplate: "I like to {word} to music in the evening.",
     word: "listen",
     pixabayQuery: "headphones music",
-    pixabayQueryVersion: 2,
     russianWord: "слушать",
     revealIndices: [1, 5]
   },
@@ -888,7 +808,6 @@ export const SENTENCES = [
     englishTemplate: "I go to work by {word}.",
     word: "bus",
     pixabayQuery: "city bus",
-    pixabayQueryVersion: 2,
     russianWord: "автобус",
     revealIndices: [5]
   },
@@ -899,7 +818,6 @@ export const SENTENCES = [
     englishTemplate: "This {word} is very long.",
     word: "street",
     pixabayQuery: "city road",
-    pixabayQueryVersion: 2,
     russianWord: "улица",
     revealIndices: [1]
   },
@@ -910,7 +828,6 @@ export const SENTENCES = [
     englishTemplate: "I don't have any {word}.",
     word: "money",
     pixabayQuery: "cash banknotes",
-    pixabayQueryVersion: 2,
     russianWord: "деньги",
     revealIndices: [4]
   },
@@ -921,7 +838,6 @@ export const SENTENCES = [
     englishTemplate: "There is a lot of {word} today.",
     word: "rain",
     pixabayQuery: "rain clouds",
-    pixabayQueryVersion: 2,
     russianWord: "дождь",
     revealIndices: [4]
   },
@@ -932,7 +848,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} is shining brightly.",
     word: "sun",
     pixabayQuery: "sun sunshine",
-    pixabayQueryVersion: 2,
     russianWord: "солнце",
     revealIndices: [1]
   },
@@ -944,7 +859,6 @@ export const SENTENCES = [
     englishTemplate: "I need to make an {word} with the doctor.",
     word: "appointment",
     pixabayQuery: "calendar appointment date planner",
-    pixabayQueryVersion: 2,
     russianWord: "запись на приём",
     revealIndices: [2, 5]
   },
@@ -955,7 +869,6 @@ export const SENTENCES = [
     englishTemplate: "I left my {word} at home.",
     word: "wallet",
     pixabayQuery: "wallet on table",
-    pixabayQueryVersion: 2,
     russianWord: "кошелёк",
     revealIndices: [2, 4]
   },
@@ -966,7 +879,6 @@ export const SENTENCES = [
     englishTemplate: "We met near the train {word}.",
     word: "station",
     pixabayQuery: "train station railway platform",
-    pixabayQueryVersion: 2,
     russianWord: "вокзал",
     revealIndices: [2, 5]
   },
@@ -977,7 +889,6 @@ export const SENTENCES = [
     englishTemplate: "Could you speak a little more {word}?",
     word: "slowly",
     pixabayQuery: "person speaking slowly",
-    pixabayQueryVersion: 2,
     russianWord: "медленнее",
     revealIndices: [2, 4]
   },
@@ -988,7 +899,6 @@ export const SENTENCES = [
     englishTemplate: "I received a {word} from my friend.",
     word: "message",
     pixabayQuery: "reading text message smartphone",
-    pixabayQueryVersion: 2,
     russianWord: "сообщение",
     revealIndices: [2, 5]
   },
@@ -999,7 +909,6 @@ export const SENTENCES = [
     englishTemplate: "We {word} dinner together yesterday.",
     word: "cooked",
     pixabayQuery: "cooking dinner together",
-    pixabayQueryVersion: 2,
     russianWord: "приготовили",
     revealIndices: [2, 4]
   },
@@ -1010,7 +919,6 @@ export const SENTENCES = [
     englishTemplate: "I need to buy a {word}.",
     word: "ticket",
     pixabayQuery: "buying train ticket",
-    pixabayQueryVersion: 2,
     russianWord: "билет",
     revealIndices: [2, 4]
   },
@@ -1021,7 +929,6 @@ export const SENTENCES = [
     englishTemplate: "She gets on well with her {word}.",
     word: "colleagues",
     pixabayQuery: "colleagues talking at work",
-    pixabayQueryVersion: 2,
     russianWord: "коллеги",
     revealIndices: [2, 6]
   },
@@ -1032,7 +939,6 @@ export const SENTENCES = [
     englishTemplate: "Please fill in this {word}.",
     word: "form",
     pixabayQuery: "filling in paper form",
-    pixabayQueryVersion: 2,
     imageQuery: "person filling in a form",
     russianWord: "форма",
     revealIndices: [1]
@@ -1044,7 +950,6 @@ export const SENTENCES = [
     englishTemplate: "It's quite {word} outside today.",
     word: "windy",
     pixabayQuery: "strong wind blowing trees",
-    pixabayQueryVersion: 2,
     russianWord: "ветрено",
     revealIndices: [2]
   },
@@ -1055,7 +960,6 @@ export const SENTENCES = [
     englishTemplate: "I prefer to pay by {word}.",
     word: "card",
     pixabayQuery: "paying with credit card",
-    pixabayQueryVersion: 2,
     imageQuery: "person paying by card",
     russianWord: "карта",
     revealIndices: [1]
@@ -1067,7 +971,6 @@ export const SENTENCES = [
     englishTemplate: "We were late because of the {word}.",
     word: "traffic",
     pixabayQuery: "cars stuck in traffic jam",
-    pixabayQueryVersion: 2,
     russianWord: "пробки",
     revealIndices: [2, 5]
   },
@@ -1078,7 +981,6 @@ export const SENTENCES = [
     englishTemplate: "Can you lend me your phone {word}?",
     word: "charger",
     pixabayQuery: "phone charger cable smartphone",
-    pixabayQueryVersion: 2,
     russianWord: "зарядка",
     revealIndices: [2, 5]
   },
@@ -1089,7 +991,6 @@ export const SENTENCES = [
     englishTemplate: "I enjoy walking along the {word}.",
     word: "river",
     pixabayQuery: "river flowing between banks",
-    pixabayQueryVersion: 2,
     russianWord: "река",
     revealIndices: [2]
   },
@@ -1100,7 +1001,6 @@ export const SENTENCES = [
     englishTemplate: "The shop {word} at six.",
     word: "closes",
     pixabayQuery: "shop closing sign",
-    pixabayQueryVersion: 2,
     russianWord: "закрывается",
     revealIndices: [2]
   },
@@ -1111,7 +1011,6 @@ export const SENTENCES = [
     englishTemplate: "I need to do the {word}.",
     word: "laundry",
     pixabayQuery: "washing clothes in washing machine",
-    pixabayQueryVersion: 2,
     russianWord: "стирка",
     revealIndices: [2, 4]
   },
@@ -1122,7 +1021,6 @@ export const SENTENCES = [
     englishTemplate: "How long does the {word} take?",
     word: "journey",
     pixabayQuery: "long journey by car",
-    pixabayQueryVersion: 2,
     russianWord: "поездка",
     revealIndices: [2, 4]
   },
@@ -1133,7 +1031,6 @@ export const SENTENCES = [
     englishTemplate: "I'm looking for an {word} apartment.",
     word: "affordable",
     pixabayQuery: "affordable apartment for rent",
-    pixabayQueryVersion: 2,
     russianWord: "доступный",
     revealIndices: [2, 6]
   },
@@ -1144,7 +1041,6 @@ export const SENTENCES = [
     englishTemplate: "Don't forget to take your {word}.",
     word: "umbrella",
     pixabayQuery: "holding umbrella in rain",
-    pixabayQueryVersion: 2,
     russianWord: "зонт",
     revealIndices: [2, 5]
   },
@@ -1155,7 +1051,6 @@ export const SENTENCES = [
     englishTemplate: "I usually travel to work by {word}.",
     word: "bus",
     pixabayQuery: "city bus on road",
-    pixabayQueryVersion: 2,
     russianWord: "автобус",
     revealIndices: [1]
   },
@@ -1166,7 +1061,6 @@ export const SENTENCES = [
     englishTemplate: "Can I {word} your pen?",
     word: "borrow",
     pixabayQuery: "person borrowing pen",
-    pixabayQueryVersion: 2,
     russianWord: "одолжить",
     revealIndices: [2, 4]
   },
@@ -1177,7 +1071,6 @@ export const SENTENCES = [
     englishTemplate: "You need to {word} one option.",
     word: "choose",
     pixabayQuery: "choosing one item options",
-    pixabayQueryVersion: 2,
     russianWord: "выбрать",
     revealIndices: [2, 4]
   },
@@ -1188,7 +1081,6 @@ export const SENTENCES = [
     englishTemplate: "We have to {word} today.",
     word: "decide",
     pixabayQuery: "person decision crossroads",
-    pixabayQueryVersion: 2,
     russianWord: "решить",
     revealIndices: [2, 4]
   },
@@ -1199,7 +1091,6 @@ export const SENTENCES = [
     englishTemplate: "I want to {word} you to dinner.",
     word: "invite",
     pixabayQuery: "inviting friend social gathering",
-    pixabayQueryVersion: 2,
     russianWord: "пригласить",
     revealIndices: [2, 4]
   },
@@ -1210,7 +1101,6 @@ export const SENTENCES = [
     englishTemplate: "We {word} late in the evening.",
     word: "arrive",
     pixabayQuery: "person arriving station luggage",
-    pixabayQueryVersion: 2,
     russianWord: "приехать",
     revealIndices: [2, 4]
   },
@@ -1221,7 +1111,6 @@ export const SENTENCES = [
     englishTemplate: "I need to {word} at seven.",
     word: "leave",
     pixabayQuery: "person leaving doorway suitcase",
-    pixabayQueryVersion: 2,
     russianWord: "уйти",
     revealIndices: [1, 3]
   },
@@ -1232,7 +1121,6 @@ export const SENTENCES = [
     englishTemplate: "When will you {word} home?",
     word: "return",
     pixabayQuery: "person returning home door",
-    pixabayQueryVersion: 2,
     russianWord: "вернуться",
     revealIndices: [2, 4]
   },
@@ -1243,7 +1131,6 @@ export const SENTENCES = [
     englishTemplate: "I need to {word} my bicycle.",
     word: "repair",
     pixabayQuery: "repairing bicycle tools",
-    pixabayQueryVersion: 2,
     russianWord: "починить",
     revealIndices: [2, 4]
   },
@@ -1254,7 +1141,6 @@ export const SENTENCES = [
     englishTemplate: "My phone is {word}.",
     word: "broken",
     pixabayQuery: "broken cracked object",
-    pixabayQueryVersion: 2,
     russianWord: "сломанный",
     revealIndices: [2, 4]
   },
@@ -1265,7 +1151,6 @@ export const SENTENCES = [
     englishTemplate: "This restaurant is too {word}.",
     word: "expensive",
     pixabayQuery: "expensive price tag luxury",
-    pixabayQueryVersion: 2,
     russianWord: "дорогой",
     revealIndices: [2, 4, 6]
   },
@@ -1276,7 +1161,6 @@ export const SENTENCES = [
     englishTemplate: "We found a {word} hotel.",
     word: "cheap",
     pixabayQuery: "cheap price tag sale",
-    pixabayQueryVersion: 2,
     russianWord: "дешёвый",
     revealIndices: [1, 3]
   },
@@ -1287,7 +1171,6 @@ export const SENTENCES = [
     englishTemplate: "The bus was {word}.",
     word: "crowded",
     pixabayQuery: "crowded people packed room",
-    pixabayQueryVersion: 2,
     russianWord: "переполненный",
     revealIndices: [2, 4]
   },
@@ -1298,7 +1181,6 @@ export const SENTENCES = [
     englishTemplate: "I like a {word} place.",
     word: "quiet",
     pixabayQuery: "quiet peaceful empty room",
-    pixabayQueryVersion: 2,
     russianWord: "тихий",
     revealIndices: [1, 3]
   },
@@ -1309,7 +1191,6 @@ export const SENTENCES = [
     englishTemplate: "The neighbours are very {word}.",
     word: "noisy",
     pixabayQuery: "noisy loud sound person",
-    pixabayQueryVersion: 2,
     russianWord: "шумный",
     revealIndices: [1, 3]
   },
@@ -1320,7 +1201,6 @@ export const SENTENCES = [
     englishTemplate: "Vegetables are {word}.",
     word: "healthy",
     pixabayQuery: "healthy vegetables fresh food",
-    pixabayQueryVersion: 2,
     russianWord: "полезный",
     revealIndices: [2, 4]
   },
@@ -1331,7 +1211,6 @@ export const SENTENCES = [
     englishTemplate: "Be {word} on the road.",
     word: "careful",
     pixabayQuery: "careful person crossing street",
-    pixabayQueryVersion: 2,
     russianWord: "осторожный",
     revealIndices: [2, 4]
   },
@@ -1342,7 +1221,6 @@ export const SENTENCES = [
     englishTemplate: "It is {word} to cross here.",
     word: "dangerous",
     pixabayQuery: "danger warning road sign",
-    pixabayQueryVersion: 2,
     russianWord: "опасный",
     revealIndices: [2, 4, 6]
   },
@@ -1353,7 +1231,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} changes quickly today.",
     word: "weather",
     pixabayQuery: "weather forecast cloudy sunny",
-    pixabayQueryVersion: 2,
     russianWord: "погода",
     revealIndices: [2, 4]
   },
@@ -1364,7 +1241,6 @@ export const SENTENCES = [
     englishTemplate: "I usually relax at the {word}.",
     word: "weekend",
     pixabayQuery: "weekend calendar saturday sunday",
-    pixabayQueryVersion: 2,
     russianWord: "выходные",
     revealIndices: [2, 4]
   },
@@ -1375,7 +1251,6 @@ export const SENTENCES = [
     englishTemplate: "We are planning a summer {word}.",
     word: "holiday",
     pixabayQuery: "holiday vacation suitcase beach",
-    pixabayQueryVersion: 2,
     russianWord: "отпуск",
     revealIndices: [2, 4]
   },
@@ -1386,7 +1261,6 @@ export const SENTENCES = [
     englishTemplate: "Our {word} is very friendly.",
     word: "neighbour",
     pixabayQuery: "neighbors next door people",
-    pixabayQueryVersion: 2,
     russianWord: "сосед",
     revealIndices: [2, 4, 6]
   },
@@ -1397,7 +1271,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} is in the kitchen.",
     word: "kettle",
     pixabayQuery: "electric kettle kitchen appliance",
-    pixabayQueryVersion: 2,
     russianWord: "чайник",
     revealIndices: [2, 4]
   },
@@ -1408,7 +1281,6 @@ export const SENTENCES = [
     englishTemplate: "Look in the {word}.",
     word: "mirror",
     pixabayQuery: "mirror reflection bathroom",
-    pixabayQueryVersion: 2,
     russianWord: "зеркало",
     revealIndices: [2, 4]
   },
@@ -1419,7 +1291,6 @@ export const SENTENCES = [
     englishTemplate: "The books are on the {word}.",
     word: "shelf",
     pixabayQuery: "wall shelf furniture",
-    pixabayQueryVersion: 2,
     russianWord: "полка",
     revealIndices: [1, 3]
   },
@@ -1430,7 +1301,6 @@ export const SENTENCES = [
     englishTemplate: "Don't forget to take your {word}.",
     word: "medicine",
     pixabayQuery: "medicine pills bottle",
-    pixabayQueryVersion: 2,
     russianWord: "лекарство",
     revealIndices: [2, 4, 6]
   },
@@ -1441,7 +1311,6 @@ export const SENTENCES = [
     englishTemplate: "Keep the shop {word}.",
     word: "receipt",
     pixabayQuery: "shopping receipt paper",
-    pixabayQueryVersion: 2,
     russianWord: "чек",
     revealIndices: [2, 4]
   },
@@ -1452,7 +1321,6 @@ export const SENTENCES = [
     englishTemplate: "This {word} is very simple.",
     word: "recipe",
     pixabayQuery: "recipe cookbook ingredients",
-    pixabayQueryVersion: 2,
     russianWord: "рецепт",
     revealIndices: [2, 4]
   },
@@ -1463,7 +1331,6 @@ export const SENTENCES = [
     englishTemplate: "The train leaves from {word} number three.",
     word: "platform",
     pixabayQuery: "railway platform train",
-    pixabayQueryVersion: 2,
     russianWord: "платформа",
     revealIndices: [2, 4, 6]
   },
@@ -1474,7 +1341,6 @@ export const SENTENCES = [
     englishTemplate: "I want to {word} my English.",
     word: "improve",
     pixabayQuery: "person improving skill practice",
-    pixabayQueryVersion: 2,
     russianWord: "улучшить",
     revealIndices: [2, 4]
   },
@@ -1485,7 +1351,6 @@ export const SENTENCES = [
     englishTemplate: "Please {word} your new home.",
     word: "describe",
     pixabayQuery: "person describing object conversation",
-    pixabayQueryVersion: 2,
     russianWord: "описать",
     revealIndices: [2, 4, 6]
   },
@@ -1496,7 +1361,6 @@ export const SENTENCES = [
     englishTemplate: "I need to make an appointment with the {word}.",
     word: "dentist",
     pixabayQuery: "dental clinic",
-    pixabayQueryVersion: 2,
     imageQuery: "dentist",
     russianWord: "стоматолог",
     revealIndices: [0]
@@ -1508,7 +1372,6 @@ export const SENTENCES = [
     englishTemplate: "Go up the {word} to the second floor.",
     word: "stairs",
     pixabayQuery: "staircase steps",
-    pixabayQueryVersion: 2,
     imageQuery: "you go up stairs",
     russianWord: "лестница",
     revealIndices: [0, 1]
@@ -1520,7 +1383,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} is not working today.",
     word: "elevator",
     pixabayQuery: "building elevator",
-    pixabayQueryVersion: 2,
     imageQuery: "elevator is not working",
     russianWord: "лифт",
     revealIndices: [6]
@@ -1532,7 +1394,6 @@ export const SENTENCES = [
     englishTemplate: "We have a {word} for two people.",
     word: "reservation",
     pixabayQuery: "restaurant booking",
-    pixabayQueryVersion: 2,
     imageQuery: "we have a reservation",
     russianWord: "бронь",
     revealIndices: [2]
@@ -1544,7 +1405,6 @@ export const SENTENCES = [
     englishTemplate: "My {word} is too heavy.",
     word: "suitcase",
     pixabayQuery: "travel luggage",
-    pixabayQueryVersion: 2,
     imageQuery: "my suitcase is heavy",
     russianWord: "чемодан",
     revealIndices: [3, 6]
@@ -1556,7 +1416,6 @@ export const SENTENCES = [
     englishTemplate: "Do not forget to take your {word}.",
     word: "passport",
     pixabayQuery: "travel document",
-    pixabayQueryVersion: 2,
     imageQuery: "you take a passport",
     russianWord: "паспорт",
     revealIndices: [1]
@@ -1568,7 +1427,6 @@ export const SENTENCES = [
     englishTemplate: "The main {word} is on the other side.",
     word: "entrance",
     pixabayQuery: "building doorway",
-    pixabayQueryVersion: 2,
     imageQuery: "main entrance is on the other side",
     russianWord: "вход",
     revealIndices: [0, 1]
@@ -1580,7 +1438,6 @@ export const SENTENCES = [
     englishTemplate: "Where is the nearest {word}?",
     word: "exit",
     pixabayQuery: "emergency doorway",
-    pixabayQueryVersion: 2,
     imageQuery: "nearest exit is here",
     russianWord: "выход",
     revealIndices: [1, 2]
@@ -1592,7 +1449,6 @@ export const SENTENCES = [
     englishTemplate: "Can you show me the right {word}?",
     word: "direction",
     pixabayQuery: "road sign",
-    pixabayQueryVersion: 2,
     imageQuery: "you show the right direction",
     russianWord: "направление",
     revealIndices: [0, 2]
@@ -1604,7 +1460,6 @@ export const SENTENCES = [
     englishTemplate: "We looked at a {word} of the city.",
     word: "map",
     pixabayQuery: "city navigation",
-    pixabayQueryVersion: 2,
     imageQuery: "we look at a map",
     russianWord: "карта",
     revealIndices: [1, 2]
@@ -1616,7 +1471,6 @@ export const SENTENCES = [
     englishTemplate: "She wants to study {word}.",
     word: "abroad",
     pixabayQuery: "international study",
-    pixabayQueryVersion: 2,
     imageQuery: "abroad",
     russianWord: "за границей",
     revealIndices: [3, 4]
@@ -1628,7 +1482,6 @@ export const SENTENCES = [
     englishTemplate: "Our flight had a one-hour {word}.",
     word: "delay",
     pixabayQuery: "airport clock",
-    pixabayQueryVersion: 2,
     imageQuery: "our flight had a delay",
     russianWord: "задержка",
     revealIndices: [1, 2]
@@ -1640,7 +1493,6 @@ export const SENTENCES = [
     englishTemplate: "Our {word} leaves at six in the morning.",
     word: "flight",
     pixabayQuery: "airplane passengers",
-    pixabayQueryVersion: 2,
     imageQuery: "airplane flying",
     russianWord: "рейс",
     revealIndices: [1, 3]
@@ -1652,7 +1504,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} time is printed on the ticket.",
     word: "departure",
     pixabayQuery: "airport timetable",
-    pixabayQueryVersion: 2,
     imageQuery: "departure time is printed",
     russianWord: "отправление",
     revealIndices: [0, 6]
@@ -1664,7 +1515,6 @@ export const SENTENCES = [
     englishTemplate: "I asked for a {word} for the ticket.",
     word: "refund",
     pixabayQuery: "money receipt",
-    pixabayQueryVersion: 2,
     imageQuery: "I asked for a refund",
     russianWord: "возврат денег",
     revealIndices: [1, 3, 5]
@@ -1676,7 +1526,6 @@ export const SENTENCES = [
     englishTemplate: "You can make an {word} in this shop.",
     word: "exchange",
     pixabayQuery: "currency shop",
-    pixabayQueryVersion: 2,
     imageQuery: "you make an exchange",
     russianWord: "обмен",
     revealIndices: [0, 4]
@@ -1688,7 +1537,6 @@ export const SENTENCES = [
     englishTemplate: "We had to stand in a long {word}.",
     word: "queue",
     pixabayQuery: "waiting people",
-    pixabayQueryVersion: 2,
     imageQuery: "we stand in a queue",
     russianWord: "очередь",
     revealIndices: [3, 4]
@@ -1700,7 +1548,6 @@ export const SENTENCES = [
     englishTemplate: "Could we have the {word}, please?",
     word: "bill",
     pixabayQuery: "restaurant receipt",
-    pixabayQueryVersion: 2,
     imageQuery: "we ask for the bill",
     russianWord: "счёт",
     revealIndices: [0, 3]
@@ -1712,7 +1559,6 @@ export const SENTENCES = [
     englishTemplate: "Our {word} will be ready soon.",
     word: "order",
     pixabayQuery: "waiter food",
-    pixabayQueryVersion: 2,
     imageQuery: "our order will be ready",
     russianWord: "заказ",
     revealIndices: [1, 3]
@@ -1724,7 +1570,6 @@ export const SENTENCES = [
     englishTemplate: "Can we see the {word}?",
     word: "menu",
     pixabayQuery: "restaurant dishes",
-    pixabayQueryVersion: 2,
     imageQuery: "we see the menu",
     russianWord: "меню",
     revealIndices: [0, 1]
@@ -1736,7 +1581,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} asked the shop assistant a question.",
     word: "customer",
     pixabayQuery: "shopper store",
-    pixabayQueryVersion: 2,
     imageQuery: "customer asks a question",
     russianWord: "покупатель",
     revealIndices: [0, 6]
@@ -1748,7 +1592,6 @@ export const SENTENCES = [
     englishTemplate: "I do not have any {word} with me.",
     word: "cash",
     pixabayQuery: "cash wallet",
-    pixabayQueryVersion: 2,
     imageQuery: "I do not have cash",
     russianWord: "наличные",
     revealIndices: [1, 2, 3]
@@ -1760,7 +1603,6 @@ export const SENTENCES = [
     englishTemplate: "I found a {word} on the floor.",
     word: "coin",
     pixabayQuery: "metal money",
-    pixabayQueryVersion: 2,
     imageQuery: "I found a coin",
     russianWord: "монета",
     revealIndices: [2, 3]
@@ -1772,7 +1614,6 @@ export const SENTENCES = [
     englishTemplate: "I will collect the {word} after work.",
     word: "parcel",
     pixabayQuery: "delivery package",
-    pixabayQueryVersion: 2,
     imageQuery: "I collect a parcel",
     russianWord: "посылка",
     revealIndices: [0, 1]
@@ -1784,7 +1625,6 @@ export const SENTENCES = [
     englishTemplate: "We have {word} finished the work.",
     word: "nearly",
     pixabayQuery: "almost finished",
-    pixabayQueryVersion: 2,
     imageQuery: "we have nearly finished",
     russianWord: "почти",
     revealIndices: [0, 2]
@@ -1796,7 +1636,6 @@ export const SENTENCES = [
     englishTemplate: "He will {word} come later.",
     word: "probably",
     pixabayQuery: "weather forecast",
-    pixabayQueryVersion: 2,
     imageQuery: "he will probably come",
     russianWord: "вероятно",
     revealIndices: [1, 6]
@@ -1808,7 +1647,6 @@ export const SENTENCES = [
     englishTemplate: "Can you {word} me your pen?",
     word: "lend",
     pixabayQuery: "lending pen",
-    pixabayQueryVersion: 2,
     imageQuery: "you lend a pen",
     russianWord: "одалживать",
     revealIndices: [0, 2]
@@ -1820,7 +1658,6 @@ export const SENTENCES = [
     englishTemplate: "I need to {word} my things today.",
     word: "pack",
     pixabayQuery: "packing suitcase",
-    pixabayQueryVersion: 2,
     imageQuery: "to pack things",
     russianWord: "упаковывать",
     revealIndices: [1, 3]
@@ -1832,7 +1669,6 @@ export const SENTENCES = [
     englishTemplate: "Do not {word} the bus.",
     word: "miss",
     pixabayQuery: "running bus",
-    pixabayQueryVersion: 2,
     imageQuery: "you miss the bus",
     russianWord: "опоздать на",
     revealIndices: [0, 1, 2]
@@ -1844,7 +1680,6 @@ export const SENTENCES = [
     englishTemplate: "I will {word} the documents tomorrow.",
     word: "collect",
     pixabayQuery: "collecting documents",
-    pixabayQueryVersion: 2,
     imageQuery: "I will collect documents",
     russianWord: "забирать",
     revealIndices: [0, 5]
@@ -1857,7 +1692,6 @@ export const SENTENCES = [
     englishTemplate: "I need to get used to the new {word}.",
     word: "schedule",
     pixabayQuery: "calendar weekly planner",
-    pixabayQueryVersion: 2,
     russianWord: "расписание",
     revealIndices: [2, 5]
   },
@@ -1868,7 +1702,6 @@ export const SENTENCES = [
     englishTemplate: "She applied for the {word}.",
     word: "position",
     pixabayQuery: "job interview office",
-    pixabayQueryVersion: 2,
     russianWord: "должность",
     revealIndices: [2, 5]
   },
@@ -1879,7 +1712,6 @@ export const SENTENCES = [
     englishTemplate: "We need to find a {word} to this problem.",
     word: "solution",
     pixabayQuery: "puzzle problem solving",
-    pixabayQueryVersion: 2,
     russianWord: "решение",
     revealIndices: [2, 5]
   },
@@ -1890,7 +1722,6 @@ export const SENTENCES = [
     englishTemplate: "I didn't expect this {word}.",
     word: "outcome",
     pixabayQuery: "sports scoreboard result",
-    pixabayQueryVersion: 2,
     russianWord: "результат",
     revealIndices: [2, 5]
   },
@@ -1901,7 +1732,6 @@ export const SENTENCES = [
     englishTemplate: "He apologised for the {word}.",
     word: "misunderstanding",
     pixabayQuery: "confused conversation misunderstanding",
-    pixabayQueryVersion: 2,
     russianWord: "недоразумение",
     revealIndices: [2, 8]
   },
@@ -1912,7 +1742,6 @@ export const SENTENCES = [
     englishTemplate: "It's hard for me to {word} in a noisy place.",
     word: "concentrate",
     pixabayQuery: "focused student studying",
-    pixabayQueryVersion: 2,
     russianWord: "сосредоточиться",
     revealIndices: [2, 6]
   },
@@ -1923,7 +1752,6 @@ export const SENTENCES = [
     englishTemplate: "The company offers flexible working {word}.",
     word: "hours",
     pixabayQuery: "work clock schedule",
-    pixabayQueryVersion: 2,
     russianWord: "часы работы",
     revealIndices: [2]
   },
@@ -1934,7 +1762,6 @@ export const SENTENCES = [
     englishTemplate: "We discussed all the possible {word}.",
     word: "options",
     pixabayQuery: "multiple choice options",
-    pixabayQueryVersion: 2,
     russianWord: "варианты",
     revealIndices: [2, 5]
   },
@@ -1945,7 +1772,6 @@ export const SENTENCES = [
     englishTemplate: "She managed to {word} the team.",
     word: "persuade",
     pixabayQuery: "persuasive business presentation",
-    pixabayQueryVersion: 2,
     russianWord: "убедить",
     revealIndices: [2, 5]
   },
@@ -1956,7 +1782,6 @@ export const SENTENCES = [
     englishTemplate: "I'm gradually getting {word} to life here.",
     word: "accustomed",
     pixabayQuery: "daily routine habits",
-    pixabayQueryVersion: 2,
     russianWord: "привыкший",
     revealIndices: [2, 6]
   },
@@ -1967,7 +1792,6 @@ export const SENTENCES = [
     englishTemplate: "Please keep me {word} of any changes.",
     word: "informed",
     pixabayQuery: "news information update",
-    pixabayQueryVersion: 2,
     russianWord: "проинформировать",
     revealIndices: [2, 5]
   },
@@ -1978,7 +1802,6 @@ export const SENTENCES = [
     englishTemplate: "He took {word} for the mistake.",
     word: "responsibility",
     pixabayQuery: "accountable worker duty",
-    pixabayQueryVersion: 2,
     russianWord: "ответственность",
     revealIndices: [2, 7]
   },
@@ -1989,7 +1812,6 @@ export const SENTENCES = [
     englishTemplate: "We need to meet the {word}.",
     word: "deadline",
     pixabayQuery: "calendar due date",
-    pixabayQueryVersion: 2,
     russianWord: "срок",
     revealIndices: [2, 5]
   },
@@ -2000,7 +1822,6 @@ export const SENTENCES = [
     englishTemplate: "This experience changed my {word} on things.",
     word: "perspective",
     pixabayQuery: "different viewpoint perspective",
-    pixabayQueryVersion: 2,
     russianWord: "взгляд",
     revealIndices: [2, 6]
   },
@@ -2011,7 +1832,6 @@ export const SENTENCES = [
     englishTemplate: "I appreciate your {word}.",
     word: "honesty",
     pixabayQuery: "truthful person handshake",
-    pixabayQueryVersion: 2,
     russianWord: "честность",
     revealIndices: [2, 5]
   },
@@ -2022,7 +1842,6 @@ export const SENTENCES = [
     englishTemplate: "We {word} to meet next week.",
     word: "agreed",
     pixabayQuery: "business handshake agreement",
-    pixabayQueryVersion: 2,
     russianWord: "договорились",
     revealIndices: [2, 4]
   },
@@ -2033,7 +1852,6 @@ export const SENTENCES = [
     englishTemplate: "He had to {word} the trip.",
     word: "cancel",
     pixabayQuery: "cancelled calendar appointment",
-    pixabayQueryVersion: 2,
     russianWord: "отменить",
     revealIndices: [2, 4]
   },
@@ -2044,7 +1862,6 @@ export const SENTENCES = [
     englishTemplate: "It depends on the {word}.",
     word: "circumstances",
     pixabayQuery: "unexpected life situation",
-    pixabayQueryVersion: 2,
     russianWord: "обстоятельства",
     revealIndices: [2, 7]
   },
@@ -2055,7 +1872,6 @@ export const SENTENCES = [
     englishTemplate: "I try to avoid unnecessary {word}.",
     word: "expenses",
     pixabayQuery: "household bills receipts",
-    pixabayQueryVersion: 2,
     russianWord: "расходы",
     revealIndices: [2, 6]
   },
@@ -2066,7 +1882,6 @@ export const SENTENCES = [
     englishTemplate: "She managed to cope with the {word}.",
     word: "pressure",
     pixabayQuery: "stressed worker workload",
-    pixabayQueryVersion: 2,
     russianWord: "давление",
     revealIndices: [2, 5]
   },
@@ -2077,7 +1892,6 @@ export const SENTENCES = [
     englishTemplate: "She managed to {word} her main goal.",
     word: "achieve",
     pixabayQuery: "person achieving goal finish",
-    pixabayQueryVersion: 2,
     russianWord: "достичь",
     revealIndices: [2, 4]
   },
@@ -2088,7 +1902,6 @@ export const SENTENCES = [
     englishTemplate: "I need your {word}.",
     word: "advice",
     pixabayQuery: "two friends giving advice",
-    pixabayQueryVersion: 2,
     russianWord: "совет",
     revealIndices: [2, 4]
   },
@@ -2099,7 +1912,6 @@ export const SENTENCES = [
     englishTemplate: "{word} it was cold, we went for a walk.",
     word: "although",
     pixabayQuery: "contrast two different situations",
-    pixabayQueryVersion: 2,
     russianWord: "хотя",
     revealIndices: [2, 4, 6]
   },
@@ -2110,7 +1922,6 @@ export const SENTENCES = [
     englishTemplate: "Try to {word} these mistakes.",
     word: "avoid",
     pixabayQuery: "person avoiding obstacle",
-    pixabayQueryVersion: 2,
     russianWord: "избегать",
     revealIndices: [1, 3]
   },
@@ -2121,7 +1932,6 @@ export const SENTENCES = [
     englishTemplate: "His {word} surprised everyone.",
     word: "behaviour",
     pixabayQuery: "child behavior classroom",
-    pixabayQueryVersion: 2,
     russianWord: "поведение",
     revealIndices: [2, 4, 6]
   },
@@ -2132,7 +1942,6 @@ export const SENTENCES = [
     englishTemplate: "Regular exercise has a clear {word}.",
     word: "benefit",
     pixabayQuery: "benefit healthy exercise person",
-    pixabayQueryVersion: 2,
     russianWord: "польза",
     revealIndices: [2, 4]
   },
@@ -2143,7 +1952,6 @@ export const SENTENCES = [
     englishTemplate: "Customers often {word} about delays.",
     word: "complain",
     pixabayQuery: "customer complaining service desk",
-    pixabayQueryVersion: 2,
     russianWord: "жаловаться",
     revealIndices: [2, 4, 6]
   },
@@ -2154,7 +1962,6 @@ export const SENTENCES = [
     englishTemplate: "I feel more {word} now.",
     word: "confident",
     pixabayQuery: "confident person speaking",
-    pixabayQueryVersion: 2,
     russianWord: "уверенный",
     revealIndices: [2, 4, 6]
   },
@@ -2165,7 +1972,6 @@ export const SENTENCES = [
     englishTemplate: "We need to {word} the computer to the network.",
     word: "connect",
     pixabayQuery: "connecting network cable plug",
-    pixabayQueryVersion: 2,
     russianWord: "подключить",
     revealIndices: [2, 4]
   },
@@ -2176,7 +1982,6 @@ export const SENTENCES = [
     englishTemplate: "This is a {word} time for a meeting.",
     word: "convenient",
     pixabayQuery: "convenient calendar meeting time",
-    pixabayQueryVersion: 2,
     russianWord: "удобный",
     revealIndices: [2, 5, 7]
   },
@@ -2187,7 +1992,6 @@ export const SENTENCES = [
     englishTemplate: "The courier will {word} the parcel tomorrow.",
     word: "deliver",
     pixabayQuery: "courier delivering package",
-    pixabayQueryVersion: 2,
     russianWord: "доставить",
     revealIndices: [2, 4]
   },
@@ -2198,7 +2002,6 @@ export const SENTENCES = [
     englishTemplate: "The company wants to {word} a new product.",
     word: "develop",
     pixabayQuery: "team developing new product",
-    pixabayQueryVersion: 2,
     russianWord: "развивать",
     revealIndices: [2, 4]
   },
@@ -2209,7 +2012,6 @@ export const SENTENCES = [
     englishTemplate: "Her parents always {word} her efforts.",
     word: "encourage",
     pixabayQuery: "parent encouraging child",
-    pixabayQueryVersion: 2,
     russianWord: "поощрять",
     revealIndices: [2, 4, 6]
   },
@@ -2220,7 +2022,6 @@ export const SENTENCES = [
     englishTemplate: "We should protect the {word}.",
     word: "environment",
     pixabayQuery: "natural environment green forest",
-    pixabayQueryVersion: 2,
     russianWord: "окружающая среда",
     revealIndices: [2, 4, 6, 8]
   },
@@ -2231,7 +2032,6 @@ export const SENTENCES = [
     englishTemplate: "She has a lot of work {word}.",
     word: "experience",
     pixabayQuery: "worker professional experience",
-    pixabayQueryVersion: 2,
     russianWord: "опыт",
     revealIndices: [2, 5, 7]
   },
@@ -2242,7 +2042,6 @@ export const SENTENCES = [
     englishTemplate: "That name sounds {word} to me.",
     word: "familiar",
     pixabayQuery: "familiar recognizable place",
-    pixabayQueryVersion: 2,
     russianWord: "знакомый",
     revealIndices: [2, 4, 6]
   },
@@ -2253,7 +2052,6 @@ export const SENTENCES = [
     englishTemplate: "My main {word} is to find a job.",
     word: "goal",
     pixabayQuery: "target goal achievement",
-    pixabayQueryVersion: 2,
     russianWord: "цель",
     revealIndices: [2]
   },
@@ -2264,7 +2062,6 @@ export const SENTENCES = [
     englishTemplate: "He knows how to {word} stress.",
     word: "handle",
     pixabayQuery: "person handling difficult task",
-    pixabayQueryVersion: 2,
     russianWord: "справляться",
     revealIndices: [2, 4]
   },
@@ -2275,7 +2072,6 @@ export const SENTENCES = [
     englishTemplate: "Prices continue to {word}.",
     word: "increase",
     pixabayQuery: "increasing rising bar chart",
-    pixabayQueryVersion: 2,
     russianWord: "увеличиваться",
     revealIndices: [2, 4, 6]
   },
@@ -2286,7 +2082,6 @@ export const SENTENCES = [
     englishTemplate: "Let's walk {word} of taking the bus.",
     word: "instead",
     pixabayQuery: "choosing alternative option",
-    pixabayQueryVersion: 2,
     russianWord: "вместо",
     revealIndices: [2, 4]
   },
@@ -2297,7 +2092,6 @@ export const SENTENCES = [
     englishTemplate: "I managed to {word} the project on time.",
     word: "manage",
     pixabayQuery: "manager organizing team",
-    pixabayQueryVersion: 2,
     russianWord: "справиться",
     revealIndices: [2, 4]
   },
@@ -2308,7 +2102,6 @@ export const SENTENCES = [
     englishTemplate: "She forgot to {word} an important detail.",
     word: "mention",
     pixabayQuery: "person talking pointing detail",
-    pixabayQueryVersion: 2,
     russianWord: "упомянуть",
     revealIndices: [2, 4]
   },
@@ -2319,7 +2112,6 @@ export const SENTENCES = [
     englishTemplate: "This is a great {word} to learn.",
     word: "opportunity",
     pixabayQuery: "open door opportunity career",
-    pixabayQueryVersion: 2,
     russianWord: "возможность",
     revealIndices: [2, 4, 6, 8]
   },
@@ -2330,7 +2122,6 @@ export const SENTENCES = [
     englishTemplate: "The team managed to {word} very well.",
     word: "perform",
     pixabayQuery: "person performing on stage",
-    pixabayQueryVersion: 2,
     russianWord: "выступить",
     revealIndices: [2, 4]
   },
@@ -2341,7 +2132,6 @@ export const SENTENCES = [
     englishTemplate: "These steps can {word} problems.",
     word: "prevent",
     pixabayQuery: "preventing accident safety",
-    pixabayQueryVersion: 2,
     russianWord: "предотвратить",
     revealIndices: [2, 4]
   },
@@ -2352,7 +2142,6 @@ export const SENTENCES = [
     englishTemplate: "The company will {word} free training.",
     word: "provide",
     pixabayQuery: "teacher providing help",
-    pixabayQueryVersion: 2,
     russianWord: "предоставлять",
     revealIndices: [2, 4]
   },
@@ -2363,7 +2152,6 @@ export const SENTENCES = [
     englishTemplate: "Can you {word} a good film?",
     word: "recommend",
     pixabayQuery: "friend recommending book",
-    pixabayQueryVersion: 2,
     russianWord: "рекомендовать",
     revealIndices: [2, 4, 6]
   },
@@ -2374,7 +2162,6 @@ export const SENTENCES = [
     englishTemplate: "This job will {word} attention.",
     word: "require",
     pixabayQuery: "worker focused task",
-    pixabayQueryVersion: 2,
     russianWord: "требовать",
     revealIndices: [2, 4]
   },
@@ -2385,7 +2172,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} was better than expected.",
     word: "result",
     pixabayQuery: "result outcome chart",
-    pixabayQueryVersion: 2,
     russianWord: "результат",
     revealIndices: [2, 4]
   },
@@ -2396,7 +2182,6 @@ export const SENTENCES = [
     englishTemplate: "If you keep trying, you will {word}.",
     word: "succeed",
     pixabayQuery: "person celebrating achievement",
-    pixabayQueryVersion: 2,
     russianWord: "добиться успеха",
     revealIndices: [2, 4]
   },
@@ -2407,7 +2192,6 @@ export const SENTENCES = [
     englishTemplate: "They will {word} a new price.",
     word: "negotiate",
     pixabayQuery: "business meeting",
-    pixabayQueryVersion: 2,
     russianWord: "вести переговоры",
     revealIndices: [0, 1]
   },
@@ -2418,7 +2202,6 @@ export const SENTENCES = [
     englishTemplate: "The company plans to {word} production.",
     word: "expand",
     pixabayQuery: "factory production",
-    pixabayQueryVersion: 2,
     russianWord: "расширять",
     revealIndices: [1, 3, 4]
   },
@@ -2429,7 +2212,6 @@ export const SENTENCES = [
     englishTemplate: "We had to {word} the meeting.",
     word: "postpone",
     pixabayQuery: "calendar meeting",
-    pixabayQueryVersion: 2,
     russianWord: "откладывать",
     revealIndices: [2, 5]
   },
@@ -2440,7 +2222,6 @@ export const SENTENCES = [
     englishTemplate: "We need to {word} this problem today.",
     word: "resolve",
     pixabayQuery: "problem solution",
-    pixabayQueryVersion: 2,
     russianWord: "решать",
     revealIndices: [3, 4, 6]
   },
@@ -2451,7 +2232,6 @@ export const SENTENCES = [
     englishTemplate: "All employees can {word} in the project.",
     word: "participate",
     pixabayQuery: "team discussion",
-    pixabayQueryVersion: 2,
     russianWord: "участвовать",
     revealIndices: [0, 1]
   },
@@ -2462,7 +2242,6 @@ export const SENTENCES = [
     englishTemplate: "It is difficult to {word} the cost of the repair.",
     word: "estimate",
     pixabayQuery: "repair calculator",
-    pixabayQueryVersion: 2,
     russianWord: "оценивать",
     revealIndices: [1, 4, 5, 6]
   },
@@ -2473,7 +2252,6 @@ export const SENTENCES = [
     englishTemplate: "The manager must {word} the results.",
     word: "evaluate",
     pixabayQuery: "performance review",
-    pixabayQueryVersion: 2,
     russianWord: "оценивать",
     revealIndices: [0, 2]
   },
@@ -2484,7 +2262,6 @@ export const SENTENCES = [
     englishTemplate: "We carried out a {word} among customers.",
     word: "survey",
     pixabayQuery: "customer questionnaire",
-    pixabayQueryVersion: 2,
     russianWord: "опрос",
     revealIndices: [1, 3]
   },
@@ -2495,7 +2272,6 @@ export const SENTENCES = [
     englishTemplate: "I sent an {word} for this position.",
     word: "application",
     pixabayQuery: "job application",
-    pixabayQueryVersion: 2,
     russianWord: "заявка",
     revealIndices: [0, 5]
   },
@@ -2506,7 +2282,6 @@ export const SENTENCES = [
     englishTemplate: "Each {word} will be invited to an interview.",
     word: "candidate",
     pixabayQuery: "job interview",
-    pixabayQueryVersion: 2,
     russianWord: "кандидат",
     revealIndices: [4, 5]
   },
@@ -2517,7 +2292,6 @@ export const SENTENCES = [
     englishTemplate: "A new {word} appeared on the website.",
     word: "vacancy",
     pixabayQuery: "job advertisement",
-    pixabayQueryVersion: 2,
     russianWord: "вакансия",
     revealIndices: [3, 5]
   },
@@ -2528,7 +2302,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} is paid once a month.",
     word: "salary",
     pixabayQuery: "monthly payslip",
-    pixabayQueryVersion: 2,
     russianWord: "зарплата",
     revealIndices: [0, 2, 4]
   },
@@ -2539,7 +2312,6 @@ export const SENTENCES = [
     englishTemplate: "His {word} depends on the number of orders.",
     word: "income",
     pixabayQuery: "personal earnings",
-    pixabayQueryVersion: 2,
     russianWord: "доход",
     revealIndices: [1, 5]
   },
@@ -2550,7 +2322,6 @@ export const SENTENCES = [
     englishTemplate: "We need to reduce the advertising {word}.",
     word: "budget",
     pixabayQuery: "advertising costs",
-    pixabayQueryVersion: 2,
     russianWord: "бюджет",
     revealIndices: [0, 4]
   },
@@ -2561,7 +2332,6 @@ export const SENTENCES = [
     englishTemplate: "Our {word} needs to change.",
     word: "strategy",
     pixabayQuery: "business planning",
-    pixabayQueryVersion: 2,
     russianWord: "стратегия",
     revealIndices: [1, 4, 5]
   },
@@ -2572,7 +2342,6 @@ export const SENTENCES = [
     englishTemplate: "Thank you for your honest {word}.",
     word: "feedback",
     pixabayQuery: "customer comments",
-    pixabayQueryVersion: 2,
     russianWord: "обратная связь",
     revealIndices: [2, 6]
   },
@@ -2583,7 +2352,6 @@ export const SENTENCES = [
     englishTemplate: "We have noticed significant {word}.",
     word: "progress",
     pixabayQuery: "rising chart",
-    pixabayQueryVersion: 2,
     russianWord: "прогресс",
     revealIndices: [2, 5]
   },
@@ -2594,7 +2362,6 @@ export const SENTENCES = [
     englishTemplate: "This is a difficult {word} for the whole team.",
     word: "challenge",
     pixabayQuery: "mountain obstacle",
-    pixabayQueryVersion: 2,
     russianWord: "сложная задача",
     revealIndices: [0, 6]
   },
@@ -2605,7 +2372,6 @@ export const SENTENCES = [
     englishTemplate: "It was not an easy {word}.",
     word: "decision",
     pixabayQuery: "difficult choice",
-    pixabayQueryVersion: 2,
     russianWord: "решение",
     revealIndices: [0, 3]
   },
@@ -2616,7 +2382,6 @@ export const SENTENCES = [
     englishTemplate: "The weather had an {word} on the trip.",
     word: "impact",
     pixabayQuery: "weather effect",
-    pixabayQueryVersion: 2,
     russianWord: "влияние",
     revealIndices: [1, 2]
   },
@@ -2627,7 +2392,6 @@ export const SENTENCES = [
     englishTemplate: "Advertising can {word} people's choices.",
     word: "influence",
     pixabayQuery: "advertising choices",
-    pixabayQueryVersion: 2,
     russianWord: "влиять",
     revealIndices: [0, 7]
   },
@@ -2638,7 +2402,6 @@ export const SENTENCES = [
     englishTemplate: "A good manager can {word} a team.",
     word: "motivate",
     pixabayQuery: "team coaching",
-    pixabayQueryVersion: 2,
     russianWord: "мотивировать",
     revealIndices: [0, 1]
   },
@@ -2649,7 +2412,6 @@ export const SENTENCES = [
     englishTemplate: "They managed to resolve the {word} peacefully.",
     word: "conflict",
     pixabayQuery: "heated argument",
-    pixabayQueryVersion: 2,
     russianWord: "конфликт",
     revealIndices: [6]
   },
@@ -2660,7 +2422,6 @@ export const SENTENCES = [
     englishTemplate: "The company received a {word} from a customer.",
     word: "complaint",
     pixabayQuery: "customer service",
-    pixabayQueryVersion: 2,
     russianWord: "жалоба",
     revealIndices: [3, 7]
   },
@@ -2671,7 +2432,6 @@ export const SENTENCES = [
     englishTemplate: "You should {word} for the mistake.",
     word: "apologise",
     pixabayQuery: "saying sorry",
-    pixabayQueryVersion: 2,
     russianWord: "извиняться",
     revealIndices: [3, 8]
   },
@@ -2682,7 +2442,6 @@ export const SENTENCES = [
     englishTemplate: "I really {word} your help.",
     word: "appreciate",
     pixabayQuery: "gratitude helping",
-    pixabayQueryVersion: 2,
     russianWord: "ценить",
     revealIndices: [0, 1, 8]
   },
@@ -2693,7 +2452,6 @@ export const SENTENCES = [
     englishTemplate: "The result will {word} on the weather.",
     word: "depend",
     pixabayQuery: "weather forecast",
-    pixabayQueryVersion: 2,
     russianWord: "зависеть",
     revealIndices: [2, 5]
   },
@@ -2704,7 +2462,6 @@ export const SENTENCES = [
     englishTemplate: "{word} the rain, the match continued.",
     word: "despite",
     pixabayQuery: "rain football",
-    pixabayQueryVersion: 2,
     russianWord: "несмотря на",
     revealIndices: [1, 3]
   },
@@ -2715,7 +2472,6 @@ export const SENTENCES = [
     englishTemplate: "This is a {word} solution.",
     word: "temporary",
     pixabayQuery: "temporary building",
-    pixabayQueryVersion: 2,
     russianWord: "временный",
     revealIndices: [0, 6]
   },
@@ -2726,7 +2482,6 @@ export const SENTENCES = [
     englishTemplate: "Prices are {word} to rise soon.",
     word: "likely",
     pixabayQuery: "weather probability",
-    pixabayQueryVersion: 2,
     russianWord: "вероятный",
     revealIndices: [0, 2, 3]
   },
@@ -2738,7 +2493,6 @@ export const SENTENCES = [
     englishTemplate: "We need to consider the long-term {word}.",
     word: "implications",
     pixabayQuery: "business consequences",
-    pixabayQueryVersion: 2,
     russianWord: "последствия",
     revealIndices: [2, 7]
   },
@@ -2749,7 +2503,6 @@ export const SENTENCES = [
     englishTemplate: "His explanation sounded {word}.",
     word: "convincing",
     pixabayQuery: "persuasive speaker",
-    pixabayQueryVersion: 2,
     russianWord: "убедительный",
     revealIndices: [2, 6]
   },
@@ -2760,7 +2513,6 @@ export const SENTENCES = [
     englishTemplate: "She {word} agreed to change the plans.",
     word: "reluctantly",
     pixabayQuery: "hesitant agreement",
-    pixabayQueryVersion: 2,
     russianWord: "неохотно",
     revealIndices: [2, 6]
   },
@@ -2771,7 +2523,6 @@ export const SENTENCES = [
     englishTemplate: "We need to reach a {word}.",
     word: "compromise",
     pixabayQuery: "negotiation middle ground",
-    pixabayQueryVersion: 2,
     russianWord: "компромисс",
     revealIndices: [2, 6]
   },
@@ -2782,7 +2533,6 @@ export const SENTENCES = [
     englishTemplate: "These findings {word} our hypothesis.",
     word: "support",
     pixabayQuery: "evidence backing claim",
-    pixabayQueryVersion: 2,
     russianWord: "подтверждать",
     revealIndices: [2, 5]
   },
@@ -2793,7 +2543,6 @@ export const SENTENCES = [
     englishTemplate: "His behaviour was completely {word}.",
     word: "unacceptable",
     pixabayQuery: "prohibited behavior",
-    pixabayQueryVersion: 2,
     russianWord: "неприемлемый",
     revealIndices: [2, 7]
   },
@@ -2804,7 +2553,6 @@ export const SENTENCES = [
     englishTemplate: "This decision could have serious {word}.",
     word: "consequences",
     pixabayQuery: "cause effect",
-    pixabayQueryVersion: 2,
     russianWord: "последствия",
     revealIndices: [2, 7]
   },
@@ -2815,7 +2563,6 @@ export const SENTENCES = [
     englishTemplate: "I'm {word} that this will work.",
     word: "doubtful",
     pixabayQuery: "skeptical facial expression",
-    pixabayQueryVersion: 2,
     russianWord: "сомнительный",
     revealIndices: [2, 5]
   },
@@ -2826,7 +2573,6 @@ export const SENTENCES = [
     englishTemplate: "We should {word} our current strategy.",
     word: "reconsider",
     pixabayQuery: "reviewing decision",
-    pixabayQueryVersion: 2,
     russianWord: "пересмотреть",
     revealIndices: [2, 6]
   },
@@ -2837,7 +2583,6 @@ export const SENTENCES = [
     englishTemplate: "He demonstrated exceptional {word} skills.",
     word: "leadership",
     pixabayQuery: "team leader",
-    pixabayQueryVersion: 2,
     russianWord: "лидерство",
     revealIndices: [2, 6]
   },
@@ -2848,7 +2593,6 @@ export const SENTENCES = [
     englishTemplate: "It's important to distinguish facts from {word}.",
     word: "assumptions",
     pixabayQuery: "untested beliefs",
-    pixabayQueryVersion: 2,
     russianWord: "предположения",
     revealIndices: [2, 6]
   },
@@ -2859,7 +2603,6 @@ export const SENTENCES = [
     englishTemplate: "She expressed {word} about the delay.",
     word: "concern",
     pixabayQuery: "worried person",
-    pixabayQueryVersion: 2,
     russianWord: "обеспокоенность",
     revealIndices: [2, 5]
   },
@@ -2870,7 +2613,6 @@ export const SENTENCES = [
     englishTemplate: "This proposal deserves further {word}.",
     word: "consideration",
     pixabayQuery: "careful review",
-    pixabayQueryVersion: 2,
     russianWord: "учёт",
     revealIndices: [2, 7]
   },
@@ -2881,7 +2623,6 @@ export const SENTENCES = [
     englishTemplate: "He managed to {word} to changing conditions.",
     word: "adapt",
     pixabayQuery: "changing environment",
-    pixabayQueryVersion: 2,
     russianWord: "адаптироваться",
     revealIndices: [1, 3]
   },
@@ -2892,7 +2633,6 @@ export const SENTENCES = [
     englishTemplate: "The company aims to {word} costs.",
     word: "minimise",
     pixabayQuery: "cost reduction",
-    pixabayQueryVersion: 2,
     russianWord: "сократить",
     revealIndices: [2, 5]
   },
@@ -2903,7 +2643,6 @@ export const SENTENCES = [
     englishTemplate: "Her arguments were logical and {word}.",
     word: "consistent",
     pixabayQuery: "matching patterns",
-    pixabayQueryVersion: 2,
     russianWord: "последовательный",
     revealIndices: [2, 6]
   },
@@ -2914,7 +2653,6 @@ export const SENTENCES = [
     englishTemplate: "We need to identify the main {word}.",
     word: "priorities",
     pixabayQuery: "ranked tasks",
-    pixabayQueryVersion: 2,
     russianWord: "приоритеты",
     revealIndices: [2, 6]
   },
@@ -2925,7 +2663,6 @@ export const SENTENCES = [
     englishTemplate: "The results were better than {word}.",
     word: "anticipated",
     pixabayQuery: "expected outcome",
-    pixabayQueryVersion: 2,
     russianWord: "ожидаемый",
     revealIndices: [2, 7]
   },
@@ -2936,7 +2673,6 @@ export const SENTENCES = [
     englishTemplate: "The rules apply to all staff without {word}.",
     word: "exception",
     pixabayQuery: "special case",
-    pixabayQueryVersion: 2,
     russianWord: "исключение",
     revealIndices: [2, 6]
   },
@@ -2947,7 +2683,6 @@ export const SENTENCES = [
     englishTemplate: "We need to assess the {word} of the source.",
     word: "reliability",
     pixabayQuery: "trustworthy equipment",
-    pixabayQueryVersion: 2,
     russianWord: "надёжность",
     revealIndices: [2, 6]
   },
@@ -2958,7 +2693,6 @@ export const SENTENCES = [
     englishTemplate: "We need {word} data.",
     word: "accurate",
     pixabayQuery: "accurate measurement ruler scale",
-    pixabayQueryVersion: 2,
     russianWord: "точный",
     revealIndices: [2, 4, 6]
   },
@@ -2969,7 +2703,6 @@ export const SENTENCES = [
     englishTemplate: "She managed to {word} valuable experience.",
     word: "acquire",
     pixabayQuery: "person learning new skill",
-    pixabayQueryVersion: 2,
     russianWord: "приобрести",
     revealIndices: [2, 4]
   },
@@ -2980,7 +2713,6 @@ export const SENTENCES = [
     englishTemplate: "We have {word} time.",
     word: "adequate",
     pixabayQuery: "adequate amount measuring cup",
-    pixabayQueryVersion: 2,
     russianWord: "достаточный",
     revealIndices: [2, 4, 6]
   },
@@ -2991,7 +2723,6 @@ export const SENTENCES = [
     englishTemplate: "We need to consider an {word} option.",
     word: "alternative",
     pixabayQuery: "alternative choice two paths",
-    pixabayQueryVersion: 2,
     russianWord: "альтернативный",
     revealIndices: [2, 4, 6, 8]
   },
@@ -3002,7 +2733,6 @@ export const SENTENCES = [
     englishTemplate: "The reason for the delay became {word}.",
     word: "apparent",
     pixabayQuery: "obvious visible evidence",
-    pixabayQueryVersion: 2,
     russianWord: "очевидный",
     revealIndices: [2, 4, 6]
   },
@@ -3013,7 +2743,6 @@ export const SENTENCES = [
     englishTemplate: "We need a different {word} to the problem.",
     word: "approach",
     pixabayQuery: "person approaching doorway",
-    pixabayQueryVersion: 2,
     russianWord: "подход",
     revealIndices: [2, 4, 6]
   },
@@ -3024,7 +2753,6 @@ export const SENTENCES = [
     englishTemplate: "The panel will {word} the results.",
     word: "assess",
     pixabayQuery: "person assessing document checklist",
-    pixabayQueryVersion: 2,
     russianWord: "оценить",
     revealIndices: [2, 4]
   },
@@ -3035,7 +2763,6 @@ export const SENTENCES = [
     englishTemplate: "That {word} turned out to be wrong.",
     word: "assumption",
     pixabayQuery: "person thinking question mark",
-    pixabayQueryVersion: 2,
     russianWord: "предположение",
     revealIndices: [2, 5, 7]
   },
@@ -3046,7 +2773,6 @@ export const SENTENCES = [
     englishTemplate: "The factory is operating at full {word}.",
     word: "capacity",
     pixabayQuery: "factory production machinery",
-    pixabayQueryVersion: 2,
     russianWord: "мощность",
     revealIndices: [2, 4, 6]
   },
@@ -3057,7 +2783,6 @@ export const SENTENCES = [
     englishTemplate: "Under the {word}, we should leave.",
     word: "circumstance",
     pixabayQuery: "unexpected situation decision",
-    pixabayQueryVersion: 2,
     russianWord: "обстоятельство",
     revealIndices: [2, 4, 7, 9]
   },
@@ -3068,7 +2793,6 @@ export const SENTENCES = [
     englishTemplate: "This project requires full {word}.",
     word: "commitment",
     pixabayQuery: "dedicated person working project",
-    pixabayQueryVersion: 2,
     russianWord: "полная отдача",
     revealIndices: [2, 5, 7]
   },
@@ -3079,7 +2803,6 @@ export const SENTENCES = [
     englishTemplate: "We underestimated the {word} of the task.",
     word: "complexity",
     pixabayQuery: "complex puzzle pieces",
-    pixabayQueryVersion: 2,
     russianWord: "сложность",
     revealIndices: [2, 5, 7]
   },
@@ -3090,7 +2813,6 @@ export const SENTENCES = [
     englishTemplate: "The company will {word} an internal investigation.",
     word: "conduct",
     pixabayQuery: "scientist conducting experiment",
-    pixabayQueryVersion: 2,
     russianWord: "провести",
     revealIndices: [2, 4]
   },
@@ -3101,7 +2823,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} proposal caused a debate.",
     word: "controversial",
     pixabayQuery: "public debate discussion crowd",
-    pixabayQueryVersion: 2,
     russianWord: "спорный",
     revealIndices: [2, 5, 7, 10]
   },
@@ -3112,7 +2833,6 @@ export const SENTENCES = [
     englishTemplate: "Sharing information is {word}.",
     word: "crucial",
     pixabayQuery: "important key essential item",
-    pixabayQueryVersion: 2,
     russianWord: "крайне важный",
     revealIndices: [2, 4]
   },
@@ -3123,7 +2843,6 @@ export const SENTENCES = [
     englishTemplate: "Many words {word} from Latin.",
     word: "derive",
     pixabayQuery: "word origin dictionary book",
-    pixabayQueryVersion: 2,
     russianWord: "происходить",
     revealIndices: [2, 4]
   },
@@ -3134,7 +2853,6 @@ export const SENTENCES = [
     englishTemplate: "New problems began to {word}.",
     word: "emerge",
     pixabayQuery: "plant emerging from soil",
-    pixabayQueryVersion: 2,
     russianWord: "появиться",
     revealIndices: [2, 4]
   },
@@ -3145,7 +2863,6 @@ export const SENTENCES = [
     englishTemplate: "We need to {word} clear rules.",
     word: "establish",
     pixabayQuery: "building foundation construction",
-    pixabayQueryVersion: 2,
     russianWord: "установить",
     revealIndices: [2, 4, 6]
   },
@@ -3156,7 +2873,6 @@ export const SENTENCES = [
     englishTemplate: "This plan is entirely {word}.",
     word: "feasible",
     pixabayQuery: "project plan blueprint",
-    pixabayQueryVersion: 2,
     russianWord: "осуществимый",
     revealIndices: [2, 4, 6]
   },
@@ -3167,7 +2883,6 @@ export const SENTENCES = [
     englishTemplate: "Prices may {word} throughout the year.",
     word: "fluctuate",
     pixabayQuery: "fluctuating line graph",
-    pixabayQueryVersion: 2,
     russianWord: "колебаться",
     revealIndices: [2, 4, 6]
   },
@@ -3178,7 +2893,6 @@ export const SENTENCES = [
     englishTemplate: "The government plans to {word} the reform.",
     word: "implement",
     pixabayQuery: "worker implementing plan",
-    pixabayQueryVersion: 2,
     russianWord: "внедрить",
     revealIndices: [2, 4, 6]
   },
@@ -3189,7 +2903,6 @@ export const SENTENCES = [
     englishTemplate: "The results {word} an improvement.",
     word: "indicate",
     pixabayQuery: "arrow indicating direction",
-    pixabayQueryVersion: 2,
     russianWord: "указывать",
     revealIndices: [2, 4, 6]
   },
@@ -3200,7 +2913,6 @@ export const SENTENCES = [
     englishTemplate: "It is important to {word} high standards.",
     word: "maintain",
     pixabayQuery: "worker maintaining machine",
-    pixabayQueryVersion: 2,
     russianWord: "поддерживать",
     revealIndices: [2, 4, 6]
   },
@@ -3211,7 +2923,6 @@ export const SENTENCES = [
     englishTemplate: "You need to {word} permission to register.",
     word: "obtain",
     pixabayQuery: "official document certificate",
-    pixabayQueryVersion: 2,
     russianWord: "получить",
     revealIndices: [2, 4]
   },
@@ -3222,7 +2933,6 @@ export const SENTENCES = [
     englishTemplate: "Errors may {word} during the update.",
     word: "occur",
     pixabayQuery: "unexpected event warning",
-    pixabayQueryVersion: 2,
     russianWord: "возникать",
     revealIndices: [1, 3]
   },
@@ -3233,7 +2943,6 @@ export const SENTENCES = [
     englishTemplate: "People {word} risk in different ways.",
     word: "perceive",
     pixabayQuery: "person observing optical illusion",
-    pixabayQueryVersion: 2,
     russianWord: "воспринимать",
     revealIndices: [2, 4, 6]
   },
@@ -3244,7 +2953,6 @@ export const SENTENCES = [
     englishTemplate: "He was {word} to accept the offer.",
     word: "reluctant",
     pixabayQuery: "hesitant person decision",
-    pixabayQueryVersion: 2,
     russianWord: "неохотно",
     revealIndices: [2, 4, 6]
   },
@@ -3255,7 +2963,6 @@ export const SENTENCES = [
     englishTemplate: "We noticed a {word} improvement.",
     word: "significant",
     pixabayQuery: "significant increase bar chart",
-    pixabayQueryVersion: 2,
     russianWord: "значительный",
     revealIndices: [2, 4, 6, 8]
   },
@@ -3266,7 +2973,6 @@ export const SENTENCES = [
     englishTemplate: "The company suffered {word} losses.",
     word: "substantial",
     pixabayQuery: "large amount pile",
-    pixabayQueryVersion: 2,
     russianWord: "значительный",
     revealIndices: [2, 4, 6, 8]
   },
@@ -3277,7 +2983,6 @@ export const SENTENCES = [
     englishTemplate: "You have a {word} reason to complain.",
     word: "valid",
     pixabayQuery: "valid passport identification",
-    pixabayQueryVersion: 2,
     russianWord: "действительный",
     revealIndices: [1, 3]
   },
@@ -3288,7 +2993,6 @@ export const SENTENCES = [
     englishTemplate: "We need to {word} resources between the teams.",
     word: "allocate",
     pixabayQuery: "budget resources",
-    pixabayQueryVersion: 2,
     russianWord: "распределять",
     revealIndices: [1, 4]
   },
@@ -3299,7 +3003,6 @@ export const SENTENCES = [
     englishTemplate: "We need to {word} the data.",
     word: "analyse",
     pixabayQuery: "data charts",
-    pixabayQueryVersion: 2,
     russianWord: "анализировать",
     revealIndices: [0, 2, 4]
   },
@@ -3310,7 +3013,6 @@ export const SENTENCES = [
     englishTemplate: "He continues to {word} that he was right.",
     word: "assert",
     pixabayQuery: "confident speaker",
-    pixabayQueryVersion: 2,
     russianWord: "утверждать",
     revealIndices: [0, 5]
   },
@@ -3321,7 +3023,6 @@ export const SENTENCES = [
     englishTemplate: "She worked hard to {word} her goal.",
     word: "attain",
     pixabayQuery: "mountain summit",
-    pixabayQueryVersion: 2,
     russianWord: "достигать",
     revealIndices: [2, 3]
   },
@@ -3332,7 +3033,6 @@ export const SENTENCES = [
     englishTemplate: "We cannot {word} all the success to one person.",
     word: "attribute",
     pixabayQuery: "success achievement",
-    pixabayQueryVersion: 2,
     russianWord: "приписывать",
     revealIndices: [3, 7]
   },
@@ -3343,7 +3043,6 @@ export const SENTENCES = [
     englishTemplate: "The company decided to {word} this activity.",
     word: "cease",
     pixabayQuery: "factory closure",
-    pixabayQueryVersion: 2,
     russianWord: "прекращать",
     revealIndices: [0, 4]
   },
@@ -3354,7 +3053,6 @@ export const SENTENCES = [
     englishTemplate: "The company agreed to {word} the damage.",
     word: "compensate",
     pixabayQuery: "insurance damage",
-    pixabayQueryVersion: 2,
     russianWord: "компенсировать",
     revealIndices: [3, 5, 6]
   },
@@ -3365,7 +3063,6 @@ export const SENTENCES = [
     englishTemplate: "Every {word} of the system is important.",
     word: "component",
     pixabayQuery: "machine parts",
-    pixabayQueryVersion: 2,
     russianWord: "компонент",
     revealIndices: [0, 3, 6]
   },
@@ -3376,7 +3073,6 @@ export const SENTENCES = [
     englishTemplate: "His words {word} his previous statement.",
     word: "contradict",
     pixabayQuery: "opposing statements",
-    pixabayQueryVersion: 2,
     russianWord: "противоречить",
     revealIndices: [2, 3, 6, 8]
   },
@@ -3387,7 +3083,6 @@ export const SENTENCES = [
     englishTemplate: "The selection {word} should be clear.",
     word: "criteria",
     pixabayQuery: "selection checklist",
-    pixabayQueryVersion: 2,
     russianWord: "критерии",
     revealIndices: [1, 4, 5]
   },
@@ -3398,7 +3093,6 @@ export const SENTENCES = [
     englishTemplate: "Sales began to {word} gradually.",
     word: "decline",
     pixabayQuery: "falling sales",
-    pixabayQueryVersion: 2,
     russianWord: "снижаться",
     revealIndices: [3, 6]
   },
@@ -3409,7 +3103,6 @@ export const SENTENCES = [
     englishTemplate: "The report {word} a clear improvement.",
     word: "demonstrate",
     pixabayQuery: "research presentation",
-    pixabayQueryVersion: 2,
     russianWord: "демонстрировать",
     revealIndices: [1, 4, 7, 8]
   },
@@ -3420,7 +3113,6 @@ export const SENTENCES = [
     englishTemplate: "It is important to {word} facts from opinions.",
     word: "distinguish",
     pixabayQuery: "comparing objects",
-    pixabayQueryVersion: 2,
     russianWord: "различать",
     revealIndices: [1, 2]
   },
@@ -3431,7 +3123,6 @@ export const SENTENCES = [
     englishTemplate: "We need a more {word} way of working.",
     word: "efficient",
     pixabayQuery: "efficient workflow",
-    pixabayQueryVersion: 2,
     russianWord: "эффективный",
     revealIndices: [1, 6, 7]
   },
@@ -3442,7 +3133,6 @@ export const SENTENCES = [
     englishTemplate: "The new system should {word} security.",
     word: "enhance",
     pixabayQuery: "security improvement",
-    pixabayQueryVersion: 2,
     russianWord: "улучшать",
     revealIndices: [3, 6]
   },
@@ -3453,7 +3143,6 @@ export const SENTENCES = [
     englishTemplate: "Check the documents to {word} accuracy.",
     word: "ensure",
     pixabayQuery: "document accuracy",
-    pixabayQueryVersion: 2,
     russianWord: "обеспечивать",
     revealIndices: [0, 1]
   },
@@ -3464,7 +3153,6 @@ export const SENTENCES = [
     englishTemplate: "This qualification is {word} to a university degree.",
     word: "equivalent",
     pixabayQuery: "degree comparison",
-    pixabayQueryVersion: 2,
     russianWord: "эквивалентный",
     revealIndices: [4, 6]
   },
@@ -3475,7 +3163,6 @@ export const SENTENCES = [
     englishTemplate: "We need a clear {word} for the project.",
     word: "framework",
     pixabayQuery: "project structure",
-    pixabayQueryVersion: 2,
     russianWord: "структура",
     revealIndices: [1, 4, 5]
   },
@@ -3486,7 +3173,6 @@ export const SENTENCES = [
     englishTemplate: "The researchers tested the original {word}.",
     word: "hypothesis",
     pixabayQuery: "scientific experiment",
-    pixabayQueryVersion: 2,
     russianWord: "гипотеза",
     revealIndices: [0, 2, 3]
   },
@@ -3497,7 +3183,6 @@ export const SENTENCES = [
     englishTemplate: "The bonus provided a strong {word} for employees.",
     word: "incentive",
     pixabayQuery: "employee reward",
-    pixabayQueryVersion: 2,
     russianWord: "стимул",
     revealIndices: [0, 2]
   },
@@ -3508,7 +3193,6 @@ export const SENTENCES = [
     englishTemplate: "Nothing can {word} such behaviour.",
     word: "justify",
     pixabayQuery: "courtroom argument",
-    pixabayQueryVersion: 2,
     russianWord: "оправдывать",
     revealIndices: [5, 6]
   },
@@ -3519,7 +3203,6 @@ export const SENTENCES = [
     englishTemplate: "The plan was risky; {word}, we continued.",
     word: "nevertheless",
     pixabayQuery: "risky decision",
-    pixabayQueryVersion: 2,
     russianWord: "тем не менее",
     revealIndices: [2, 10]
   },
@@ -3530,7 +3213,6 @@ export const SENTENCES = [
     englishTemplate: "Our main {word} is to reduce costs.",
     word: "objective",
     pixabayQuery: "target bullseye",
-    pixabayQueryVersion: 2,
     russianWord: "цель",
     revealIndices: [3, 5, 8]
   },
@@ -3541,7 +3223,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} results look promising.",
     word: "preliminary",
     pixabayQuery: "draft report",
-    pixabayQueryVersion: 2,
     russianWord: "предварительный",
     revealIndices: [2, 4, 5]
   },
@@ -3552,7 +3233,6 @@ export const SENTENCES = [
     englishTemplate: "She decided to {word} a career in science.",
     word: "pursue",
     pixabayQuery: "science career",
-    pixabayQueryVersion: 2,
     russianWord: "стремиться к",
     revealIndices: [1, 3, 5]
   },
@@ -3563,7 +3243,6 @@ export const SENTENCES = [
     englishTemplate: "The company wants to {word} experienced staff.",
     word: "retain",
     pixabayQuery: "employee retention",
-    pixabayQueryVersion: 2,
     russianWord: "сохранять",
     revealIndices: [0, 1, 2, 3]
   },
@@ -3574,7 +3253,6 @@ export const SENTENCES = [
     englishTemplate: "The new rules {word} access to the building.",
     word: "restrict",
     pixabayQuery: "restricted entrance",
-    pixabayQueryVersion: 2,
     russianWord: "ограничивать",
     revealIndices: [1, 2]
   },
@@ -3585,7 +3263,6 @@ export const SENTENCES = [
     englishTemplate: "We are ready to {word} the necessary steps.",
     word: "undertake",
     pixabayQuery: "project planning",
-    pixabayQueryVersion: 2,
     russianWord: "предпринимать",
     revealIndices: [0, 4]
   },
@@ -3596,7 +3273,6 @@ export const SENTENCES = [
     englishTemplate: "The problem became {word}.",
     word: "widespread",
     pixabayQuery: "global spread",
-    pixabayQueryVersion: 2,
     russianWord: "широко распространённый",
     revealIndices: [0, 4]
   },
@@ -3607,7 +3283,6 @@ export const SENTENCES = [
     englishTemplate: "They created a system {word} customers can track orders.",
     word: "whereby",
     pixabayQuery: "order tracking",
-    pixabayQueryVersion: 2,
     russianWord: "посредством которого",
     revealIndices: [4, 6]
   },
@@ -3619,7 +3294,6 @@ export const SENTENCES = [
     englishTemplate: "We need to address the {word} cause of the problem.",
     word: "underlying",
     pixabayQuery: "tree roots underground",
-    pixabayQueryVersion: 3,
     russianWord: "лежащий в основе",
     revealIndices: [2, 6]
   },
@@ -3630,7 +3304,6 @@ export const SENTENCES = [
     englishTemplate: "His conclusions are based on flawed {word}.",
     word: "assumptions",
     pixabayQuery: "person reviewing documents",
-    pixabayQueryVersion: 3,
     russianWord: "предположения",
     revealIndices: [2, 6]
   },
@@ -3641,7 +3314,6 @@ export const SENTENCES = [
     englishTemplate: "This claim does not stand up to {word}.",
     word: "scrutiny",
     pixabayQuery: "magnifying glass examining report",
-    pixabayQueryVersion: 3,
     russianWord: "тщательная проверка",
     revealIndices: [2, 5]
   },
@@ -3652,7 +3324,6 @@ export const SENTENCES = [
     englishTemplate: "She articulated her position with great {word}.",
     word: "clarity",
     pixabayQuery: "speaker explaining an idea",
-    pixabayQueryVersion: 3,
     russianWord: "ясность",
     revealIndices: [2, 5]
   },
@@ -3663,7 +3334,6 @@ export const SENTENCES = [
     englishTemplate: "This decision could {word} public trust.",
     word: "undermine",
     pixabayQuery: "cracked building foundation",
-    pixabayQueryVersion: 3,
     russianWord: "подорвать",
     revealIndices: [2, 6]
   },
@@ -3674,7 +3344,6 @@ export const SENTENCES = [
     englishTemplate: "His response was deliberately {word}.",
     word: "ambiguous",
     pixabayQuery: "unclear road sign",
-    pixabayQueryVersion: 3,
     russianWord: "расплывчатый",
     revealIndices: [2, 6]
   },
@@ -3685,7 +3354,6 @@ export const SENTENCES = [
     englishTemplate: "We need to take the broader context into {word}.",
     word: "consideration",
     pixabayQuery: "person weighing two options",
-    pixabayQueryVersion: 3,
     russianWord: "учёт",
     revealIndices: [2, 7]
   },
@@ -3696,7 +3364,6 @@ export const SENTENCES = [
     englishTemplate: "She showed remarkable {word} in the face of adversity.",
     word: "resilience",
     pixabayQuery: "tree growing through concrete",
-    pixabayQueryVersion: 3,
     russianWord: "стойкость",
     revealIndices: [2, 6]
   },
@@ -3707,7 +3374,6 @@ export const SENTENCES = [
     englishTemplate: "His arguments were compelling but not {word}.",
     word: "conclusive",
     pixabayQuery: "judge delivering final verdict",
-    pixabayQueryVersion: 3,
     russianWord: "окончательный",
     revealIndices: [2, 6]
   },
@@ -3718,7 +3384,6 @@ export const SENTENCES = [
     englishTemplate: "This change became {word}.",
     word: "inevitable",
     pixabayQuery: "dominoes falling in a row",
-    pixabayQueryVersion: 3,
     russianWord: "неизбежный",
     revealIndices: [2, 6]
   },
@@ -3729,7 +3394,6 @@ export const SENTENCES = [
     englishTemplate: "She challenged the {word} wisdom.",
     word: "conventional",
     pixabayQuery: "traditional business meeting",
-    pixabayQueryVersion: 3,
     russianWord: "общепринятый",
     revealIndices: [2, 7]
   },
@@ -3740,7 +3404,6 @@ export const SENTENCES = [
     englishTemplate: "The data points to a significant {word}.",
     word: "discrepancy",
     pixabayQuery: "two documents with different figures",
-    pixabayQueryVersion: 3,
     russianWord: "расхождение",
     revealIndices: [2, 6]
   },
@@ -3751,7 +3414,6 @@ export const SENTENCES = [
     englishTemplate: "We need to {word} potential risks.",
     word: "mitigate",
     pixabayQuery: "flood barrier protecting houses",
-    pixabayQueryVersion: 3,
     russianWord: "смягчить",
     revealIndices: [2, 5]
   },
@@ -3762,7 +3424,6 @@ export const SENTENCES = [
     englishTemplate: "He skilfully {word} a direct answer.",
     word: "evaded",
     pixabayQuery: "politician avoiding a reporter's question",
-    pixabayQueryVersion: 3,
     russianWord: "уклонился",
     revealIndices: [2, 4]
   },
@@ -3773,7 +3434,6 @@ export const SENTENCES = [
     englishTemplate: "This issue requires a {word} analysis.",
     word: "comprehensive",
     pixabayQuery: "complete project checklist",
-    pixabayQueryVersion: 3,
     russianWord: "всесторонний",
     revealIndices: [2, 7]
   },
@@ -3784,7 +3444,6 @@ export const SENTENCES = [
     englishTemplate: "Her contribution proved {word}.",
     word: "instrumental",
     pixabayQuery: "key turning in a lock",
-    pixabayQueryVersion: 3,
     russianWord: "ключевой",
     revealIndices: [2, 7]
   },
@@ -3795,7 +3454,6 @@ export const SENTENCES = [
     englishTemplate: "He cautioned against {word} conclusions.",
     word: "premature",
     pixabayQuery: "unripe fruit on a tree",
-    pixabayQueryVersion: 3,
     russianWord: "поспешный",
     revealIndices: [2, 6]
   },
@@ -3806,7 +3464,6 @@ export const SENTENCES = [
     englishTemplate: "This distinction is of {word} importance.",
     word: "paramount",
     pixabayQuery: "top priority on a checklist",
-    pixabayQueryVersion: 3,
     russianWord: "первостепенный",
     revealIndices: [2, 6]
   },
@@ -3817,7 +3474,6 @@ export const SENTENCES = [
     englishTemplate: "His explanation was inconsistent with the available {word}.",
     word: "evidence",
     pixabayQuery: "forensic evidence on a table",
-    pixabayQueryVersion: 3,
     russianWord: "доказательства",
     revealIndices: [2, 5]
   },
@@ -3828,7 +3484,6 @@ export const SENTENCES = [
     englishTemplate: "We need to exercise {word} in this situation.",
     word: "discretion",
     pixabayQuery: "private careful decision",
-    pixabayQueryVersion: 3,
     russianWord: "осмотрительность",
     revealIndices: [2, 6]
   },
@@ -3839,7 +3494,6 @@ export const SENTENCES = [
     englishTemplate: "The negotiations came to an {word} end.",
     word: "abrupt",
     pixabayQuery: "sudden end of negotiations",
-    pixabayQueryVersion: 3,
     russianWord: "внезапный",
     revealIndices: [2, 4]
   },
@@ -3850,7 +3504,6 @@ export const SENTENCES = [
     englishTemplate: "She continues to {word} reform of the system.",
     word: "advocate",
     pixabayQuery: "public protest speech",
-    pixabayQueryVersion: 3,
     russianWord: "выступать за",
     revealIndices: [2, 4, 6]
   },
@@ -3861,7 +3514,6 @@ export const SENTENCES = [
     englishTemplate: "These measures may {word} the pressure.",
     word: "alleviate",
     pixabayQuery: "relief from pain",
-    pixabayQueryVersion: 3,
     russianWord: "облегчить",
     revealIndices: [2, 4, 6]
   },
@@ -3872,7 +3524,6 @@ export const SENTENCES = [
     englishTemplate: "He felt considerable {word} about the issue.",
     word: "ambivalence",
     pixabayQuery: "person torn between two choices",
-    pixabayQueryVersion: 3,
     russianWord: "противоречивые чувства",
     revealIndices: [2, 4, 6, 8]
   },
@@ -3883,7 +3534,6 @@ export const SENTENCES = [
     englishTemplate: "Analysts detected an unusual {word}.",
     word: "anomaly",
     pixabayQuery: "unusual scientific data",
-    pixabayQueryVersion: 3,
     russianWord: "отклонение",
     revealIndices: [2, 4]
   },
@@ -3894,7 +3544,6 @@ export const SENTENCES = [
     englishTemplate: "The decision appeared entirely {word}.",
     word: "arbitrary",
     pixabayQuery: "random decision dice",
-    pixabayQueryVersion: 3,
     russianWord: "произвольный",
     revealIndices: [2, 4, 6]
   },
@@ -3905,7 +3554,6 @@ export const SENTENCES = [
     englishTemplate: "She can {word} complex ideas clearly.",
     word: "articulate",
     pixabayQuery: "person giving a clear speech",
-    pixabayQueryVersion: 3,
     russianWord: "ясно выражать",
     revealIndices: [2, 5, 7]
   },
@@ -3916,7 +3564,6 @@ export const SENTENCES = [
     englishTemplate: "His argument was clear and {word}.",
     word: "coherent",
     pixabayQuery: "well organized argument notes",
-    pixabayQueryVersion: 3,
     russianWord: "последовательный",
     revealIndices: [2, 4, 6]
   },
@@ -3927,7 +3574,6 @@ export const SENTENCES = [
     englishTemplate: "She presented a {word} case.",
     word: "compelling",
     pixabayQuery: "strong courtroom evidence",
-    pixabayQueryVersion: 3,
     russianWord: "убедительный",
     revealIndices: [2, 5, 7]
   },
@@ -3938,7 +3584,6 @@ export const SENTENCES = [
     englishTemplate: "Eventually, he had to {word} that he was wrong.",
     word: "concede",
     pixabayQuery: "person admitting a mistake",
-    pixabayQueryVersion: 3,
     russianWord: "признать",
     revealIndices: [2, 4]
   },
@@ -3949,7 +3594,6 @@ export const SENTENCES = [
     englishTemplate: "We are beginning to {word} a move.",
     word: "contemplate",
     pixabayQuery: "person deep in thought",
-    pixabayQueryVersion: 3,
     russianWord: "рассматривать",
     revealIndices: [2, 4, 6, 8]
   },
@@ -3960,7 +3604,6 @@ export const SENTENCES = [
     englishTemplate: "Lack of sleep is {word} to your health.",
     word: "detrimental",
     pixabayQuery: "damaged health from lack of sleep",
-    pixabayQueryVersion: 3,
     russianWord: "вредный",
     revealIndices: [2, 4, 6, 8]
   },
@@ -3971,7 +3614,6 @@ export const SENTENCES = [
     englishTemplate: "Could you {word} on your point?",
     word: "elaborate",
     pixabayQuery: "person explaining a diagram",
-    pixabayQueryVersion: 3,
     russianWord: "подробно объяснить",
     revealIndices: [2, 4, 6]
   },
@@ -3982,7 +3624,6 @@ export const SENTENCES = [
     englishTemplate: "It was a serious {word} to change the system.",
     word: "endeavour",
     pixabayQuery: "team working on a major project",
-    pixabayQueryVersion: 3,
     russianWord: "попытка",
     revealIndices: [2, 4, 6]
   },
@@ -3993,7 +3634,6 @@ export const SENTENCES = [
     englishTemplate: "The delay only served to {word} the situation.",
     word: "exacerbate",
     pixabayQuery: "traffic jam getting worse",
-    pixabayQueryVersion: 3,
     russianWord: "усугубить",
     revealIndices: [2, 5, 7]
   },
@@ -4004,7 +3644,6 @@ export const SENTENCES = [
     englishTemplate: "This case helps to {word} the problem.",
     word: "exemplify",
     pixabayQuery: "textbook example illustration",
-    pixabayQueryVersion: 3,
     russianWord: "иллюстрировать",
     revealIndices: [2, 4, 6]
   },
@@ -4015,7 +3654,6 @@ export const SENTENCES = [
     englishTemplate: "The contract contains {word} instructions.",
     word: "explicit",
     pixabayQuery: "clear written instructions",
-    pixabayQueryVersion: 3,
     russianWord: "чёткий",
     revealIndices: [2, 4, 6]
   },
@@ -4026,7 +3664,6 @@ export const SENTENCES = [
     englishTemplate: "Trust is {word} to cooperation.",
     word: "fundamental",
     pixabayQuery: "building foundation",
-    pixabayQueryVersion: 3,
     russianWord: "основополагающий",
     revealIndices: [2, 4, 6, 8]
   },
@@ -4037,7 +3674,6 @@ export const SENTENCES = [
     englishTemplate: "There are {word} limitations in this system.",
     word: "inherent",
     pixabayQuery: "built in mechanical feature",
-    pixabayQueryVersion: 3,
     russianWord: "внутренний",
     revealIndices: [2, 4, 6]
   },
@@ -4048,7 +3684,6 @@ export const SENTENCES = [
     englishTemplate: "Feedback is an {word} part of the process.",
     word: "integral",
     pixabayQuery: "essential puzzle piece",
-    pixabayQueryVersion: 3,
     russianWord: "неотъемлемый",
     revealIndices: [2, 4, 6]
   },
@@ -4059,7 +3694,6 @@ export const SENTENCES = [
     englishTemplate: "The problem began to {word} at an early stage.",
     word: "manifest",
     pixabayQuery: "symptoms becoming visible",
-    pixabayQueryVersion: 3,
     russianWord: "очевидный",
     revealIndices: [2, 4, 6]
   },
@@ -4070,7 +3704,6 @@ export const SENTENCES = [
     englishTemplate: "I disagree with the very {word}.",
     word: "notion",
     pixabayQuery: "light bulb idea",
-    pixabayQueryVersion: 3,
     russianWord: "идея",
     revealIndices: [2, 4]
   },
@@ -4081,7 +3714,6 @@ export const SENTENCES = [
     englishTemplate: "This problem is {word} across the industry.",
     word: "pervasive",
     pixabayQuery: "citywide air pollution",
-    pixabayQueryVersion: 3,
     russianWord: "широко распространённый",
     revealIndices: [2, 4, 6]
   },
@@ -4092,7 +3724,6 @@ export const SENTENCES = [
     englishTemplate: "His explanation sounds {word}.",
     word: "plausible",
     pixabayQuery: "detective examining evidence",
-    pixabayQueryVersion: 3,
     russianWord: "правдоподобный",
     revealIndices: [2, 4, 6]
   },
@@ -4103,7 +3734,6 @@ export const SENTENCES = [
     englishTemplate: "This discovery had a {word} impact.",
     word: "profound",
     pixabayQuery: "deep ocean",
-    pixabayQueryVersion: 3,
     russianWord: "глубокий",
     revealIndices: [2, 4, 6]
   },
@@ -4114,7 +3744,6 @@ export const SENTENCES = [
     englishTemplate: "Some stages of the process proved {word}.",
     word: "redundant",
     pixabayQuery: "duplicate office paperwork",
-    pixabayQueryVersion: 3,
     russianWord: "лишний",
     revealIndices: [2, 4, 6]
   },
@@ -4125,7 +3754,6 @@ export const SENTENCES = [
     englishTemplate: "The committee will {word} the proposal.",
     word: "scrutinise",
     pixabayQuery: "magnifying glass examining document",
-    pixabayQueryVersion: 3,
     russianWord: "тщательно изучить",
     revealIndices: [2, 5, 7]
   },
@@ -4136,7 +3764,6 @@ export const SENTENCES = [
     englishTemplate: "We need evidence to {word} this claim.",
     word: "substantiate",
     pixabayQuery: "research evidence documents",
-    pixabayQueryVersion: 3,
     russianWord: "подтвердить",
     revealIndices: [2, 4, 7, 9]
   },
@@ -4147,7 +3774,6 @@ export const SENTENCES = [
     englishTemplate: "For now, it is only a {word} agreement.",
     word: "tentative",
     pixabayQuery: "unsigned preliminary agreement",
-    pixabayQueryVersion: 3,
     russianWord: "предварительный",
     revealIndices: [2, 4, 6]
   },
@@ -4158,7 +3784,6 @@ export const SENTENCES = [
     englishTemplate: "He prefers working alone, {word} she enjoys teamwork.",
     word: "whereas",
     pixabayQuery: "two people with contrasting lifestyles",
-    pixabayQueryVersion: 3,
     russianWord: "тогда как",
     revealIndices: [2, 4]
   },
@@ -4169,7 +3794,6 @@ export const SENTENCES = [
     englishTemplate: "The new data {word} his account of events.",
     word: "corroborate",
     pixabayQuery: "two witnesses confirming a story",
-    pixabayQueryVersion: 3,
     russianWord: "подтверждать",
     revealIndices: [5, 6, 7]
   },
@@ -4180,7 +3804,6 @@ export const SENTENCES = [
     englishTemplate: "The {word} effect of these changes was significant.",
     word: "cumulative",
     pixabayQuery: "stack of coins growing",
-    pixabayQueryVersion: 3,
     russianWord: "совокупный",
     revealIndices: [2, 9]
   },
@@ -4191,7 +3814,6 @@ export const SENTENCES = [
     englishTemplate: "There is no {word} difference between the two versions.",
     word: "discernible",
     pixabayQuery: "subtle difference between two images",
-    pixabayQueryVersion: 3,
     russianWord: "различимый",
     revealIndices: [5, 6, 8, 10]
   },
@@ -4202,7 +3824,6 @@ export const SENTENCES = [
     englishTemplate: "The study revealed a significant {word} in income.",
     word: "disparity",
     pixabayQuery: "income inequality comparison",
-    pixabayQueryVersion: 3,
     russianWord: "неравенство",
     revealIndices: [2, 4]
   },
@@ -4213,7 +3834,6 @@ export const SENTENCES = [
     englishTemplate: "The organisation aims to {word} reliable information.",
     word: "disseminate",
     pixabayQuery: "news spreading through a network",
-    pixabayQueryVersion: 3,
     russianWord: "распространять",
     revealIndices: [3, 8, 10]
   },
@@ -4224,7 +3844,6 @@ export const SENTENCES = [
     englishTemplate: "The conclusion is based on {word} evidence.",
     word: "empirical",
     pixabayQuery: "scientist conducting an experiment",
-    pixabayQueryVersion: 3,
     russianWord: "эмпирический",
     revealIndices: [1, 4, 8]
   },
@@ -4235,7 +3854,6 @@ export const SENTENCES = [
     englishTemplate: "The new strategy will {word} several areas.",
     word: "encompass",
     pixabayQuery: "map showing a wide region",
-    pixabayQueryVersion: 3,
     russianWord: "охватывать",
     revealIndices: [1, 3, 4]
   },
@@ -4246,7 +3864,6 @@ export const SENTENCES = [
     englishTemplate: "This position will {word} frequent travel.",
     word: "entail",
     pixabayQuery: "business contract obligations",
-    pixabayQueryVersion: 3,
     russianWord: "влечь за собой",
     revealIndices: [4, 5]
   },
@@ -4257,7 +3874,6 @@ export const SENTENCES = [
     englishTemplate: "The committee considered the {word} aspects of the research.",
     word: "ethical",
     pixabayQuery: "judge weighing moral choices",
-    pixabayQueryVersion: 3,
     russianWord: "этический",
     revealIndices: [1, 2, 5]
   },
@@ -4268,7 +3884,6 @@ export const SENTENCES = [
     englishTemplate: "The new platform will {word} the exchange of knowledge.",
     word: "facilitate",
     pixabayQuery: "teacher helping students collaborate",
-    pixabayQueryVersion: 3,
     russianWord: "способствовать",
     revealIndices: [1, 6, 9]
   },
@@ -4279,7 +3894,6 @@ export const SENTENCES = [
     englishTemplate: "Let us consider a {word} situation.",
     word: "hypothetical",
     pixabayQuery: "imaginary scenario thought experiment",
-    pixabayQueryVersion: 3,
     russianWord: "гипотетический",
     revealIndices: [2, 11]
   },
@@ -4290,7 +3904,6 @@ export const SENTENCES = [
     englishTemplate: "A judge must remain {word}.",
     word: "impartial",
     pixabayQuery: "neutral judge in courtroom",
-    pixabayQueryVersion: 3,
     russianWord: "беспристрастный",
     revealIndices: [0, 3, 5]
   },
@@ -4301,7 +3914,6 @@ export const SENTENCES = [
     englishTemplate: "His words could {word} violence.",
     word: "incite",
     pixabayQuery: "angry crowd being provoked",
-    pixabayQueryVersion: 3,
     russianWord: "подстрекать",
     revealIndices: [0, 4]
   },
@@ -4312,7 +3924,6 @@ export const SENTENCES = [
     englishTemplate: "She has an {word} to avoid conflict.",
     word: "inclination",
     pixabayQuery: "person leaning toward one choice",
-    pixabayQueryVersion: 3,
     russianWord: "склонность",
     revealIndices: [1, 10]
   },
@@ -4323,7 +3934,6 @@ export const SENTENCES = [
     englishTemplate: "The report contained an {word}.",
     word: "inconsistency",
     pixabayQuery: "contradictory figures in a report",
-    pixabayQueryVersion: 3,
     russianWord: "несоответствие",
     revealIndices: [2, 8]
   },
@@ -4334,7 +3944,6 @@ export const SENTENCES = [
     englishTemplate: "His experience proved {word} to the team.",
     word: "indispensable",
     pixabayQuery: "essential tool in a workshop",
-    pixabayQueryVersion: 3,
     russianWord: "незаменимый",
     revealIndices: [0, 7]
   },
@@ -4345,7 +3954,6 @@ export const SENTENCES = [
     englishTemplate: "Curiosity is an {word} part of learning.",
     word: "intrinsic",
     pixabayQuery: "seed inside a fruit",
-    pixabayQueryVersion: 3,
     russianWord: "внутренне присущий",
     revealIndices: [1, 6]
   },
@@ -4356,7 +3964,6 @@ export const SENTENCES = [
     englishTemplate: "The author will {word} personal stories with official statistics.",
     word: "juxtapose",
     pixabayQuery: "two contrasting photographs side by side",
-    pixabayQueryVersion: 3,
     russianWord: "сопоставлять",
     revealIndices: [2, 6, 7]
   },
@@ -4367,7 +3974,6 @@ export const SENTENCES = [
     englishTemplate: "He had {word} grounds for complaint.",
     word: "legitimate",
     pixabayQuery: "official legal document",
-    pixabayQueryVersion: 3,
     russianWord: "законный",
     revealIndices: [2, 5]
   },
@@ -4378,7 +3984,6 @@ export const SENTENCES = [
     englishTemplate: "The company is {word} for the damage.",
     word: "liable",
     pixabayQuery: "damaged car after an accident",
-    pixabayQueryVersion: 3,
     russianWord: "ответственный",
     revealIndices: [0, 2, 5]
   },
@@ -4389,7 +3994,6 @@ export const SENTENCES = [
     englishTemplate: "The changes had only a {word} effect.",
     word: "marginal",
     pixabayQuery: "tiny difference on a graph",
-    pixabayQueryVersion: 3,
     russianWord: "незначительный",
     revealIndices: [3, 5]
   },
@@ -4400,7 +4004,6 @@ export const SENTENCES = [
     englishTemplate: "The evidence was limited; {word}, the conclusion was convincing.",
     word: "nonetheless",
     pixabayQuery: "person continuing through heavy rain",
-    pixabayQueryVersion: 3,
     russianWord: "тем не менее",
     revealIndices: [0, 4]
   },
@@ -4411,7 +4014,6 @@ export const SENTENCES = [
     englishTemplate: "The wording was deliberately {word}.",
     word: "obscure",
     pixabayQuery: "faint writing in dim light",
-    pixabayQueryVersion: 3,
     russianWord: "неясный",
     revealIndices: [1, 6]
   },
@@ -4422,7 +4024,6 @@ export const SENTENCES = [
     englishTemplate: "The savings helped to {word} the extra costs.",
     word: "offset",
     pixabayQuery: "balance scale weights",
-    pixabayQueryVersion: 3,
     russianWord: "компенсировать",
     revealIndices: [1, 2, 4]
   },
@@ -4433,7 +4034,6 @@ export const SENTENCES = [
     englishTemplate: "Work experience is a {word} for this position.",
     word: "prerequisite",
     pixabayQuery: "university admission requirements",
-    pixabayQueryVersion: 3,
     russianWord: "предварительное условие",
     revealIndices: [3, 11]
   },
@@ -4444,7 +4044,6 @@ export const SENTENCES = [
     englishTemplate: "We need to {word} the conflicting data.",
     word: "reconcile",
     pixabayQuery: "two people resolving a disagreement",
-    pixabayQueryVersion: 3,
     russianWord: "согласовывать",
     revealIndices: [0, 2, 7, 8]
   },
@@ -4455,7 +4054,6 @@ export const SENTENCES = [
     englishTemplate: "The results {word} our confidence in the hypothesis.",
     word: "reinforce",
     pixabayQuery: "steel reinforcement bars in concrete",
-    pixabayQueryVersion: 3,
     russianWord: "укреплять",
     revealIndices: [1, 8]
   },
@@ -4466,7 +4064,6 @@ export const SENTENCES = [
     englishTemplate: "The company introduced {word} security measures.",
     word: "stringent",
     pixabayQuery: "strict security checkpoint",
-    pixabayQueryVersion: 3,
     russianWord: "строгий",
     revealIndices: [0, 3, 4, 5]
   },
@@ -4477,7 +4074,6 @@ export const SENTENCES = [
     englishTemplate: "{word} events changed our opinion.",
     word: "subsequent",
     pixabayQuery: "sequence of events timeline",
-    pixabayQueryVersion: 3,
     russianWord: "последующий",
     revealIndices: [0, 4, 6]
   },
@@ -4488,7 +4084,6 @@ export const SENTENCES = [
     englishTemplate: "It was an {word} move for the organisation.",
     word: "unprecedented",
     pixabayQuery: "record breaking world first event",
-    pixabayQueryVersion: 3,
     russianWord: "беспрецедентный",
     revealIndices: [1, 3, 12]
   }
