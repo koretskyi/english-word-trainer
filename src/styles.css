@@ -4297,3 +4297,65 @@ button:disabled {
     flex: 1 1 130px;
   }
 }
+
+
+/* Result states replace the photo with a centered icon without changing slot height. */
+.study-card-image-slot.is-feedback {
+  flex: 0 0 210px;
+  height: 210px;
+  min-height: 210px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.study-feedback-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: min(100%, 360px);
+  height: 190px;
+  border-radius: 18px;
+  background: #f8fafc;
+  animation: study-feedback-pop 260ms cubic-bezier(.2, .75, .25, 1) both;
+}
+
+.study-feedback-visual-icon {
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  font-size: 58px;
+  line-height: 1;
+  box-shadow: 0 8px 24px rgba(30, 50, 80, .09);
+}
+
+.study-feedback-visual-title {
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 800;
+  letter-spacing: .01em;
+}
+
+.study-feedback-visual.is-correct .study-feedback-visual-icon { background: #e9f8d9; }
+.study-feedback-visual.is-correct .study-feedback-visual-title { color: #43851e; }
+.study-feedback-visual.is-review .study-feedback-visual-icon { background: #fff3d8; }
+.study-feedback-visual.is-review .study-feedback-visual-title { color: #9a6a19; }
+.study-feedback-visual.is-known .study-feedback-visual-icon { background: #e8edff; }
+.study-feedback-visual.is-known .study-feedback-visual-title { color: #4059b8; }
+
+@keyframes study-feedback-pop {
+  from { opacity: 0; transform: translateY(5px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 700px) {
+  .study-card-image-slot.is-feedback { flex-basis: 180px; height: 180px; min-height: 180px; }
+  .study-feedback-visual { height: 160px; }
+  .study-feedback-visual-icon { width: 88px; height: 88px; font-size: 49px; }
+}
+
+@media (prefers-reduced-motion: reduce) { .study-feedback-visual { animation: none; } }
