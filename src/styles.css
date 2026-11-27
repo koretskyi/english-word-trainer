@@ -4911,3 +4911,40 @@ button:disabled {
     font-size: 21px;
   }
 }
+
+
+/* Incorrect-answer tiles sit at the bottom, aligned with the three main actions. */
+.study-card-shell .answer-result-card.is-incorrect {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 0;
+  margin: 8px 0 0;
+  padding: 0 0 14px;
+  box-sizing: border-box;
+}
+.study-card-shell .answer-result-card.is-incorrect .incorrect-result-content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 100%;
+  min-height: 0;
+}
+.study-card-shell .answer-result-card.is-incorrect .incorrect-word-pair {
+  width: 94%;
+  max-width: 820px;
+  margin: auto auto 0;
+  gap: 12px;
+  box-sizing: border-box;
+}
+@media (max-width: 520px) {
+  .study-card-shell .answer-result-card.is-incorrect {
+    padding-bottom: 12px;
+  }
+  .study-card-shell .answer-result-card.is-incorrect .incorrect-word-pair {
+    width: 94%;
+    gap: 8px;
+  }
+}
