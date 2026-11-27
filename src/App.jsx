@@ -842,8 +842,9 @@ function StudyPage({
           )}
         </div>
       )}
-      {levelSelector}
-      {statsPanel}
+      <div key={selectedLevel} className="level-switch-content">
+        {levelSelector}
+        {statsPanel}
       <div key={`${sentence.id}-${sentence.word}`} className={`study-card-shell${isReview ? " is-review" : ""}${checked ? " is-answered" : ""}`}>
         {checked ? (
           <div className={`answer-result-card ${resultState}`} role="status" aria-live="polite">
@@ -930,6 +931,7 @@ function StudyPage({
         {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
 </>
         )}
+      </div>
       </div>
     </section>
   );
