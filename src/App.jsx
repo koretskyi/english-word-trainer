@@ -51,10 +51,7 @@ function loadSentences() {
             ? {
                 ...sentence,
                 ...savedSentence,
-                pixabayQuery: sentence.level === "C1"
-                  ? (savedSentence.pixabayQueryVersion === 3 ? savedSentence.pixabayQuery : sentence.pixabayQuery)
-                  : (savedSentence.pixabayQueryVersion === 2 ? savedSentence.pixabayQuery : sentence.pixabayQuery),
-                pixabayQueryVersion: sentence.level === "C1" ? 3 : 2,
+                pixabayQuery: savedSentence.pixabayQuery || sentence.pixabayQuery,
                 russianWord: savedSentence.russianWord || sentence.russianWord,
               }
             : sentence;
@@ -1001,7 +998,6 @@ const EMPTY_FORM = {
   englishTemplate: "",
   word: "",
   pixabayQuery: "",
-  pixabayQueryVersion: 2,
   level: "A1",
 };
 
@@ -1089,7 +1085,6 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
 
       word: sentence.word,
       pixabayQuery: sentence.pixabayQuery || "",
-      pixabayQueryVersion: sentence.level === "C1" ? 3 : 2,
       level: sentence.level || "A1",
 
     });
@@ -1173,7 +1168,6 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
 
       word,
       pixabayQuery: form.pixabayQuery.trim(),
-      pixabayQueryVersion: form.level === "C1" ? 3 : 2,
       level: form.level,
 
     });
