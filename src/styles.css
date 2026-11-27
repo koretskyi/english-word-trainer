@@ -5330,3 +5330,16 @@ button:disabled {
     transition: none;
   }
 }
+
+
+/* Larger, clearer voice prompts without changing the card layout. */
+.study-card-shell .word-voice-status {
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.study-card-shell .voice-status-label,
+.study-card-shell .voice-button-label {
+  font-size: 16px;
+  line-height: 1.35;
+}
