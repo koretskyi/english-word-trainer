@@ -5357,3 +5357,44 @@ button:disabled {
 .study-card-shell .word-voice-status {
   min-height: 28px;
 }
+
+
+/* Clearer voice prompts with a gentle, low-amplitude breathing pulse. */
+.study-card-shell .word-voice-status {
+  min-height: 40px;
+  gap: 12px;
+  font-size: 22px;
+  line-height: 1.35;
+  font-weight: 650;
+}
+.study-card-shell .voice-status-label {
+  font-size: 22px;
+  line-height: 1.35;
+  animation: voice-prompt-breathe 2.2s ease-in-out infinite;
+}
+.study-card-shell .voice-speaking-indicator {
+  flex-basis: 38px;
+  width: 38px;
+  height: 38px;
+}
+.study-card-shell .voice-speaking-indicator svg {
+  width: 35px;
+  height: 35px;
+}
+.study-card-shell .voice-speaking-indicator.is-visible {
+  animation: voice-icon-breathe 2.2s ease-in-out infinite;
+}
+@keyframes voice-prompt-breathe {
+  0%, 100% { opacity: .82; }
+  50% { opacity: 1; }
+}
+@keyframes voice-icon-breathe {
+  0%, 100% { opacity: .78; transform: translateY(0) scale(.98); }
+  50% { opacity: 1; transform: translateY(0) scale(1.04); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .study-card-shell .voice-status-label,
+  .study-card-shell .voice-speaking-indicator.is-visible {
+    animation: none;
+  }
+}
