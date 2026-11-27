@@ -1018,7 +1018,7 @@ function StudyPage({
                 <span className={`voice-speaking-indicator${voiceListening ? " is-visible" : ""}`} aria-hidden="true">
                   <svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M5 20c.7-3.4 3.1-5 7-5s6.3 1.6 7 5"/><path d="M3 10v4m18-4v4"/></svg>
                 </span>
-                <span className="voice-status-label">
+                <span className={`voice-status-label${voiceListening ? " is-speaking" : voicePreparing && voiceCountdown > 0 ? " is-countdown" : ""}`}>
                   {voiceListening ? "Говорите" :
                     voiceStatus === "transcribing" ? "Распознавание…" :
                     voicePreparing ? (voiceError
