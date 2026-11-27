@@ -572,7 +572,7 @@ function StudyPage({
 
   useEffect(() => {
     if (!checked || (correct && !audioFinished)) return undefined;
-    const timer = setTimeout(onAdvance, correct ? 0 : 4000);
+    const timer = setTimeout(onAdvance, correct ? 1400 : 4000);
     return () => clearTimeout(timer);
   }, [checked, correct, audioFinished, onAdvance]);
 
@@ -880,7 +880,7 @@ function StudyPage({
           )}
         </div>
       )}
-      {!checked && levelSelector}
+      {levelSelector}
       {!checked && statsPanel}
       <div key={`${sentence.id}-${sentence.word}`} className={`${isReview ? "review-card-progress" : "study-card-unframed"}${checked ? " is-answered" : ""}`}>
         {checked ? (
@@ -946,7 +946,7 @@ function StudyPage({
             <div className="english-sentence">
               <span>{parts[0]}</span>
               <WordGap key={`${sentence.id}-${sentence.word}`} sentence={sentence} value={answer}
-                onChange={handleAnswerChange} disabled={checked}
+                onChange={handleAnswerChange} disabled={checked} autoFocus={false}
                 showMistakes={checked && !correct} />
               <span>{parts.slice(1).join("{word}")}</span>
             </div>
