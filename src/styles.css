@@ -5194,11 +5194,11 @@ button:disabled {
   outline-offset: 2px;
 }
 
-/* Keep the control physically still; only its red fill breathes while recording. */
+/* The microphone stays still; only color and text fade smoothly between states. */
 .study-card-shell .word-answer-actions .word-microphone-button,
 .study-card-shell .word-answer-actions .word-microphone-button:hover:not(:disabled) {
   transform: none !important;
-  transition: none !important;
+  transition: background-color 1.1s ease, border-color 1.1s ease, color .35s ease !important;
   box-shadow: none !important;
 }
 
@@ -5214,7 +5214,7 @@ button:disabled {
   background: #e53935;
   border-color: #c62828;
   color: #ffffff;
-  animation: card-mic-recording-blink 1.8s ease-in-out infinite alternate;
+  animation: card-mic-recording-blink 2.2s ease-in-out infinite alternate;
   opacity: 1;
 }
 
@@ -5228,9 +5228,39 @@ button:disabled {
   cursor: wait;
 }
 
+.voice-status-label,
+.voice-button-label {
+  display: inline-block;
+  animation: voice-state-appear .42s ease both;
+}
+
+.study-card-shell .word-voice-status {
+  min-height: 20px;
+  overflow: hidden;
+}
+
+@keyframes voice-state-appear {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.voice-retry-actions {
+  animation: voice-state-appear .45s ease both;
+}
+
+.study-card-shell .word-answer-actions .word-microphone-button.is-transcribing,
+.study-card-shell .word-answer-actions .word-microphone-button:disabled {
+  background: #e8e8e8;
+  border-color: #c9c9c9;
+  color: #666666;
+  animation: none !important;
+  opacity: 1;
+  cursor: wait;
+}
+
 @keyframes card-mic-recording-blink {
-  from { background-color: #e53935; }
-  to { background-color: #ef7773; }
+  from { background-color: #df302d; }
+  to { background-color: #ed7772; }
 }
 
 .voice-retry-actions {
