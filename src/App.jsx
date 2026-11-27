@@ -881,8 +881,8 @@ function StudyPage({
         </div>
       )}
       {levelSelector}
-      {!checked && statsPanel}
-      <div key={`${sentence.id}-${sentence.word}`} className={`${isReview ? "review-card-progress" : "study-card-unframed"}${checked ? " is-answered" : ""}`}>
+      {statsPanel}
+      <div key={`${sentence.id}-${sentence.word}`} className={`study-card-shell${isReview ? " is-review" : ""}${checked ? " is-answered" : ""}`}>
         {checked ? (
           <div className={`answer-result-card ${resultState}`} role="status" aria-live="polite">
             {!markedKnown && (
