@@ -4868,13 +4868,13 @@ button:disabled {
 }
 .study-card-shell .incorrect-word-pair > .answer-value-label.is-wrong-label {
   color: #a6535d;
-  background: #fff3f3;
-  border-color: #f0dfe1;
+  background: #fce4e6;
+  border-color: #f0c6cc;
 }
 .study-card-shell .incorrect-word-pair > .answer-value-label.is-correct-label {
-  color: #438345;
-  background: #f0f8e9;
-  border-color: #dfebd4;
+  color: #34783b;
+  background: #dff2d8;
+  border-color: #c5e4b9;
 }
 .study-card-shell .incorrect-word-pair > .answer-value {
   min-height: 76px;
@@ -4886,14 +4886,14 @@ button:disabled {
   font-weight: 800;
 }
 .study-card-shell .incorrect-word-pair > .answer-value.is-wrong-answer {
-  color: #ad5660;
-  background: #fff8f8;
-  border-color: #efdadd;
+  color: #a94350;
+  background: #fce4e6;
+  border-color: #efc4ca;
 }
 .study-card-shell .incorrect-word-pair > .answer-value.is-correct-answer {
-  color: #438345;
-  background: #f7fbf2;
-  border-color: #dcebd0;
+  color: #34783b;
+  background: #dff2d8;
+  border-color: #c5e4b9;
 }
 @media (max-width: 520px) {
   .study-card-shell .incorrect-word-pair {
