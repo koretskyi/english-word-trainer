@@ -51,7 +51,7 @@ function loadSentences() {
             ? {
                 ...sentence,
                 ...savedSentence,
-                pixabayQuery: savedSentence.pixabayQuery || sentence.pixabayQuery,
+                pixabayQuery: sentence.pixabayQuery === "" ? "" : savedSentence.pixabayQuery || sentence.pixabayQuery,
                 russianWord: savedSentence.russianWord || sentence.russianWord,
               }
             : sentence;
@@ -412,7 +412,7 @@ const WordImage = ({ sentence }) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             word,
-            context: sentence?.pixabayQuery || String(sentence?.englishTemplate || "").replace("{word}", word),
+            context: sentence?.pixabayQuery ?? String(sentence?.englishTemplate || "").replace("{word}", word),
           }),
           signal: controller.signal,
         });
