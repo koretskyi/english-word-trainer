@@ -937,7 +937,6 @@ function StudyPage({
               <CorrectFeedback />
             ) : (
               <div className="incorrect-result-content">
-                <strong className="incorrect-result-message">Слово добавлено на повторение</strong>
                 <div className="incorrect-word-pair">
                   <div className="answer-value-group is-correct-answer">
                     <span className="answer-value-label">Правильный ответ</span>
