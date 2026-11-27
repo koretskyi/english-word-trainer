@@ -5348,3 +5348,12 @@ button:disabled {
   min-height: 46px;
   padding: 8px 7px;
 }
+
+
+/* Keep the active voice-mode exit action obvious and available in every phase. */
+.study-card-shell .word-answer-actions .word-microphone-button {
+  min-width: 150px;
+}
+.study-card-shell .word-voice-status {
+  min-height: 28px;
+}
