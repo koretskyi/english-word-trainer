@@ -1014,26 +1014,26 @@ function StudyPage({
           </>
         ) : (
           <div className="study-card-footer">
-            {continuousVoiceMode && (voiceStatus === "transcribing" || voicePreparing || voiceError) && (
-              <p className="word-voice-status" role="status">
+            {continuousVoiceMode && (
+              <p className="word-voice-status" role="status" aria-live="polite">
+                <span className={`voice-speaking-indicator${voiceListening ? " is-visible" : ""}`} aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M5 20c.7-3.4 3.1-5 7-5s6.3 1.6 7 5"/><path d="M3 10v4m18-4v4"/></svg>
+                </span>
                 <span className="voice-status-label">
-                  {voiceStatus === "transcribing" ? "Распознавание…" :
+                  {voiceListening ? "Говорите" :
+                    voiceStatus === "transcribing" ? "Распознавание…" :
                     voicePreparing ? (voiceCountdown > 0 ? `Новая запись через ${voiceCountdown}…` : "Подготовка записи…") :
-                    voiceError}
+                    voiceError || "Голосовой режим включён"}
                 </span>
               </p>
             )}
             <div className="form-actions word-answer-actions">
               <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}${voicePreparing ? " is-preparing" : ""}${voiceStatus === "transcribing" ? " is-transcribing" : ""}`}
                 type="button" onClick={continuousVoiceMode ? stopContinuousVoiceMode : startContinuousVoiceMode}
-                disabled={voiceStatus === "transcribing"}
-                aria-label={voiceStatus === "transcribing" ? "Распознавание ответа" : continuousVoiceMode ? "Остановить голосовой режим" : "Запустить голосовой режим без рук"}>
+                aria-label={continuousVoiceMode ? "Выйти из голосового режима" : "Запустить голосовой режим без рук"}>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4m-4 0h8"/></svg>
                 <span className="voice-button-label">
-                  {voiceStatus === "transcribing" ? "Распознавание…" :
-                    voiceListening ? "Запись голоса" :
-                    voicePreparing ? (voiceCountdown > 0 ? String(voiceCountdown) : "Подготовка…") :
-                    continuousVoiceMode ? "Остановить" : "Ответить голосом"}
+                  {continuousVoiceMode ? "Выйти из режима" : "Ответить голосом"}
                 </span>
               </button>
               <button className="button button-secondary button-dont-know" type="button"
