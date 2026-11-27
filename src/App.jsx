@@ -637,12 +637,14 @@ function StudyPage({
   const levelSelector = (
     <div className="review-progress-meta">
       <div className="level-selector">
-        <label htmlFor="study-level">уровень:</label>
+        <div className="level-label-group">
+          <label htmlFor="study-level">уровень:</label>
+          <span className="level-word-count">({levelWordCount} слов)</span>
+        </div>
         <select id="study-level" value={selectedLevel}
           onChange={(event) => setSelectedLevel(event.target.value)}>
           {levels.map((level) => <option key={level} value={level}>{level}</option>)}
         </select>
-        <span className="level-word-count">({levelWordCount} слов)</span>
         <div className="learning-progress-card learning-progress-card-compact" aria-label={`Прогресс уровня: ${selectedLevelProgressPercent}%`}>
           <div className="learning-progress-heading">
             <span>Прогресс</span>
