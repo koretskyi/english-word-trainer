@@ -1014,19 +1014,6 @@ function StudyPage({
           </>
         ) : (
           <div className="study-card-footer">
-            {continuousVoiceMode && (
-              <p className="word-voice-status" role="status">
-                <span className={`voice-speaking-indicator${voiceListening ? " is-visible" : ""}`} aria-hidden="true">
-                  <svg viewBox="0 0 28 28"><circle cx="10" cy="8" r="4" /><path d="M3.5 23c.4-5 2.7-7.5 6.5-7.5s6.1 2.5 6.5 7.5" /><path d="M18 10.5c1.4 1 2.2 2.2 2.2 3.8s-.8 2.8-2.2 3.8M21 7.5c2.3 1.7 3.5 4 3.5 6.8s-1.2 5.1-3.5 6.8" /></svg>
-                </span>
-                <span className="voice-status-label">
-                  {voiceStatus === "transcribing" ? "Распознавание…" :
-                    voiceStatus === "listening" ? "Идёт запись голоса…" :
-                    voicePreparing ? (voiceCountdown > 0 ? `Новая запись через ${voiceCountdown}…` : "Подготовка записи…") :
-                    voiceError || "Голосовой режим включён."}
-                </span>
-              </p>
-            )}
             <div className="form-actions word-answer-actions">
               <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}${voicePreparing ? " is-preparing" : ""}${voiceStatus === "transcribing" ? " is-transcribing" : ""}`}
                 type="button" onClick={continuousVoiceMode ? stopContinuousVoiceMode : startContinuousVoiceMode}
