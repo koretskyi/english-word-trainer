@@ -497,14 +497,13 @@ def score_pixabay_hit(hit: dict, context: str) -> int:
     return score
 
 
-class A2ImageRequest(BaseModel):
+class WordImageRequest(BaseModel):
     word: str = ""
     context: str
 
 
 @app.post("/api/word-image")
-@app.post("/api/a2-image")
-def get_or_download_a2_image(payload: A2ImageRequest):
+def get_or_download_word_image(payload: WordImageRequest):
     word = re.sub(r"\s+", " ", payload.word.strip())
     context = re.sub(r"\s+", " ", payload.context.strip())
     # Pixabay exposes one q parameter, so combine the target word and context.
