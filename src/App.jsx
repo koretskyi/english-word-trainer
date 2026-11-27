@@ -596,9 +596,21 @@ function StudyPage({
 
   function scheduleContinuousVoiceRetry() {
     if (!continuousVoiceModeRef.current) return;
-    beginVoiceCountdown(voiceRetryTimerRef, () => {
-      if (continuousVoiceModeRef.current) startVoiceInput();
-    });
+    setVoiceListening(false);
+    setVoiceStatus("idle");
+    setVoiceError("Запись не распознана");
+    setVoicePreparing(false);
+    setVoiceCountdown(0);
+    if (voiceRetryTimerRef.current) window.clearTimeout(voiceRetryTimerRef.current);
+    voiceRetryTimerRef.current = window.setTimeout(() => {
+      voiceRetryTimerRef.current = null;
+      if (!continuousVoiceModeRef.current) return;
+      setVoiceError("");
+      setVoicePreparing(true);
+      beginVoiceCountdown(voiceRetryTimerRef, () => {
+        if (continuousVoiceModeRef.current) startVoiceInput();
+      });
+    }, 1000);
   }
 
   function startContinuousVoiceMode() {
@@ -672,12 +684,10 @@ function StudyPage({
       },
       onError: (message) => {
         setVoiceRecognizedText("");
-        setVoiceError("Запись не получилась. Повторите ещё раз.");
         scheduleContinuousVoiceRetry();
       },
       onNoSpeech: () => {
         setVoiceRecognizedText("");
-        setVoiceError("Не удалось услышать ответ. Повторим запись через:");
         scheduleContinuousVoiceRetry();
       },
     });
@@ -1035,7 +1045,6 @@ function StudyPage({
               <button className="button button-primary" type="button"
                 onClick={knowWord}>Я знаю</button>
             </div>
-            {voiceError && <p className="word-voice-error" role="alert">{voiceError}</p>}
           </div>
         )}
       </div>
