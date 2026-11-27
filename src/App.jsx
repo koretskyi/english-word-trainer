@@ -956,7 +956,6 @@ function StudyPage({
         )}
       </div>
       </div>
-      </div>
     </section>
   );
 }
