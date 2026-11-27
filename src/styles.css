@@ -5234,6 +5234,10 @@ button:disabled {
   animation: voice-state-appear .42s ease both;
 }
 
+.study-card-shell .word-voice-error {
+  animation: voice-state-appear .42s ease both;
+}
+
 .study-card-shell .word-voice-status {
   min-height: 20px;
   overflow: hidden;
