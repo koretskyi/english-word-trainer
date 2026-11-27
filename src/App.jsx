@@ -453,6 +453,21 @@ const WordImage = ({ sentence }) => {
   );
 };
 
+// Визуальная замена фотографии на экранах результата.
+function StudyFeedbackVisual({ correct, markedKnown }) {
+  const visual = markedKnown
+    ? { icon: "🧑‍🎓", title: "Уже выучено", tone: "known" }
+    : correct
+      ? { icon: "🏆", title: "Отличная работа!", tone: "correct" }
+      : { icon: "📖", title: "На повторение", tone: "review" };
+
+  return (
+    <div className={`study-feedback-visual is-${visual.tone}`} role="img" aria-label={visual.title}>
+      <span className="study-feedback-visual-icon" aria-hidden="true">{visual.icon}</span>
+      <span className="study-feedback-visual-title">{visual.title}</span>
+    </div>
+  );
+}
 // Страница обучения с интервальным повторением.
 function StudyPage({
   sentence,
@@ -872,8 +887,10 @@ function StudyPage({
             style={{ width: `${isReview ? (Math.min(6, reviewStage) / 6) * 100 : 0}%` }} />
           <span className="word-learning-progress-label">Прогресс изучения слова</span>
         </div>
-        <div className="study-card-image-slot">
-          <WordImage sentence={sentence} />
+        <div className={`study-card-image-slot${checked ? " is-feedback" : ""}`}>
+          {checked
+            ? <StudyFeedbackVisual correct={correct} markedKnown={markedKnown} />
+            : <WordImage sentence={sentence} />}
         </div>
         <h2 className="russian-sentence">{renderRussianSentence(sentence.russian, sentence.russianWord)}</h2>
         <div className={`study-card-english${checked ? " is-result" : ""}`}>
