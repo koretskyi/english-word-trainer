@@ -389,7 +389,7 @@ export const SENTENCES = [
 
   // C1 — продвинутая лексика
   { id: "c1_001", russian: "Нам необходимо устранить первопричину проблемы.", englishTemplate: "We need to address the {word} cause of the problem.", word: "underlying",
-      pixabayQuery: "root cause of a problem",
+      pixabayQuery: "tree roots underground",
       pixabayQueryVersion: 3,
       russianWord: "лежащий в основе", revealIndices: [2, 6], level: "C1" },
   { id: "c1_002", russian: "Его выводы основаны на ошибочных предпосылках.", englishTemplate: "His conclusions are based on flawed {word}.", word: "assumptions",
