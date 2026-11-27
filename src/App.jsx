@@ -527,7 +527,7 @@ function StudyPage({
     setVoiceError("");
     setVoiceRecognizedText("");
     setVoiceSuccessConfetti(false);
-  }, [sentence?.id]);
+  }, [selectedLevel, sentence?.id]);
 
   function startVoiceInput() {
     voiceCaptureRef.current?.stop();
