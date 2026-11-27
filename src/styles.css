@@ -4359,3 +4359,71 @@ button:disabled {
 }
 
 @media (prefers-reduced-motion: reduce) { .study-feedback-visual { animation: none; } }
+
+
+/* Clear, separate label and answer blocks on the incorrect-answer screen. */
+.study-card-shell .incorrect-word-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+  max-width: 680px;
+  margin: 14px auto 0;
+}
+
+.study-card-shell .answer-value-group {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 9px;
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.study-card-shell .answer-value-label {
+  display: block;
+  padding: 9px 12px;
+  border-radius: 9px;
+  font-size: 14px;
+  line-height: 1.25;
+  font-weight: 700;
+  text-align: center;
+}
+
+.study-card-shell .answer-value {
+  display: grid;
+  place-items: center;
+  min-height: 76px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.12;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.study-card-shell .is-correct-answer .answer-value-label,
+.study-card-shell .is-correct-answer .answer-value {
+  color: #287b35;
+  background: #e8f7dc;
+}
+
+.study-card-shell .is-wrong-answer .answer-value-label,
+.study-card-shell .is-wrong-answer .answer-value {
+  color: #a94f5c;
+  background: #fff0f1;
+}
+
+@media (max-width: 520px) {
+  .study-card-shell .incorrect-word-pair {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .study-card-shell .answer-value {
+    min-height: 58px;
+    font-size: 30px;
+  }
+}
