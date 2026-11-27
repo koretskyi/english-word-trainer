@@ -1809,6 +1809,7 @@ export default function App() {
         </div>
       </header>
       <main className="main-content">
+        <div key={`${page}-${page === "study" ? (showStats ? "stats" : "words") : "screen"}`} className="app-screen-transition">
         {page === "study" ? (
           <div className={`study-level-transition is-${levelTransition}`}>
           <StudyPage
@@ -1848,6 +1849,7 @@ export default function App() {
         ) : (
           <AdminPage sentences={sentences} onSave={saveSentence} onDelete={deleteSentence} videos={videos} onSaveVideo={saveVideo} onDeleteVideo={deleteVideo} />
         )}
+        </div>
       </main>
       <footer className="app-footer">English Word Trainer · MVP v1</footer>
     </div>
