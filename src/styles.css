@@ -5190,3 +5190,52 @@ button:disabled {
     animation: none;
   }
 }
+
+
+/* Voice mode: no pale footer halo; use the card's button styling only. */
+.study-card-shell > .study-card-footer {
+  background: transparent !important;
+}
+
+.study-card-shell .study-card-footer .word-answer-actions {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.study-card-shell .word-answer-actions .word-microphone-button {
+  box-shadow: none !important;
+  outline-offset: 2px;
+}
+
+.study-card-shell .word-answer-actions .word-microphone-button.is-preparing {
+  background: #8bcf35;
+  border-color: #8bcf35;
+  color: #243414;
+  animation: card-mic-ready-pulse .24s ease-in-out infinite alternate;
+  box-shadow: none !important;
+}
+
+.study-card-shell .word-answer-actions .word-microphone-button.is-listening {
+  background: #e53935;
+  border-color: #c62828;
+  color: #ffffff;
+  animation: card-mic-recording-blink .65s steps(2, end) infinite;
+  box-shadow: none !important;
+}
+
+@keyframes card-mic-ready-pulse {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: .58; transform: scale(1.025); }
+}
+
+@keyframes card-mic-recording-blink {
+  0%, 100% { background: #e53935; border-color: #c62828; }
+  50% { background: #a91515; border-color: #8f1010; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .study-card-shell .word-answer-actions .word-microphone-button.is-preparing,
+  .study-card-shell .word-answer-actions .word-microphone-button.is-listening {
+    animation: none;
+  }
+}
