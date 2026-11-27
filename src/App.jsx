@@ -513,7 +513,6 @@ function StudyPage({
   const [markedKnown, setMarkedKnown] = useState(false);
   const [voiceListening, setVoiceListening] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState("idle");
-  const [voiceModeActive, setVoiceModeActive] = useState(false);
   const [voiceError, setVoiceError] = useState("");
   const [voiceRecognizedText, setVoiceRecognizedText] = useState("");
   const [micLevel, setMicLevel] = useState(0);
@@ -521,6 +520,7 @@ function StudyPage({
   const [continuousVoiceMode, setContinuousVoiceMode] = useState(false);
   const [voicePreparing, setVoicePreparing] = useState(false);
   const [voiceImageReady, setVoiceImageReady] = useState(false);
+  const markVoiceImageReady = useCallback(() => setVoiceImageReady(true), []);
   const continuousVoiceModeRef = useRef(false);
   const voiceRetryTimerRef = useRef(null);
   const voicePrepareTimerRef = useRef(null);
@@ -562,7 +562,6 @@ function StudyPage({
     setMarkedKnown(false);
     setVoiceListening(false);
     setVoiceStatus("idle");
-    setVoiceModeActive(false);
     setVoiceError("");
     setVoiceRecognizedText("");
     setVoiceSuccessConfetti(false);
@@ -581,7 +580,6 @@ function StudyPage({
   function startContinuousVoiceMode() {
     continuousVoiceModeRef.current = true;
     setContinuousVoiceMode(true);
-    setVoiceModeActive(true);
     setVoiceError("");
     setVoicePreparing(true);
   }
@@ -597,7 +595,6 @@ function StudyPage({
     voiceCaptureRef.current?.stop();
     voiceCaptureRef.current = null;
     setVoiceListening(false);
-    setVoiceModeActive(false);
     setVoiceStatus("idle");
     setVoiceSuccessConfetti(false);
     stopMicrophoneMeter();
@@ -609,7 +606,6 @@ function StudyPage({
     voiceCaptureRef.current?.stop();
     setVoiceError("");
     setVoiceRecognizedText("");
-    setVoiceModeActive(true);
     setVoiceListening(true);
     const capture = startAutoVoiceCapture({
       expectedWord: sentence.word,
@@ -865,7 +861,6 @@ function StudyPage({
     if (!sentence || checked) return;
     voiceCaptureRef.current?.stop();
     setVoiceListening(false);
-    setVoiceModeActive(false);
     setVoiceStatus("idle");
     setChecked(true);
     onComplete(sentence.word, false);
@@ -895,68 +890,6 @@ function StudyPage({
 
   return (
     <section ref={studyCardRef} className="panel study-panel">
-          <button className={"word-listening-mic-button" + (voiceStatus === "listening" ? " is-listening" : "")} type="button"
-            onClick={startVoiceInput} disabled={voiceListening}
-            aria-label={voiceListening ? "Микрофон слушает" : "Повторить голосовой ответ"}>
-            <span className="word-mic-visualizer" aria-hidden="true"
-              style={{ "--mic-level": micLevel, "--mic-scale": 1 + micLevel * 0.34 }}>
-              <span className="word-mic-glow" />
-              <svg viewBox="0 0 120 120">
-                <path d="M60 70a15 15 0 0 0 15-15V30a15 15 0 0 0-30 0v25a15 15 0 0 0 15 15Z" />
-                <path d="M90 55a30 30 0 0 1-60 0M60 85v18m-18 0h36" />
-              </svg>
-            </span>
-            {voiceSuccessConfetti && (
-              <span className="mic-success-confetti confetti" aria-hidden="true">
-                {Array.from({ length: 42 }, (_, index) => (
-                  <span
-                    key={index}
-                    style={{
-                      left: `${(index * 37) % 100}%`,
-                      animationDelay: `${(index % 12) * 0.035}s`,
-                      "--fall-duration": `${1.05 + (index % 6) * 0.1}s`,
-                    }}
-                  />
-                ))}
-              </span>
-            )}
-          </button>
-          <p className="word-listening-target">{sentence.russianWord || "Переведите слово"}</p>
-          {continuousVoiceMode && <p className="word-continuous-status">Режим без рук: после ответа откроется следующая карточка.</p>}
-          {voiceStatus === "listening" && <p className="word-listening-status" role="status">Слушаю… Произнесите слово.</p>}
-          {voiceStatus === "transcribing" && (
-            <div className="word-listening-recognition" role="status" aria-live="polite">
-              <div className="word-listening-received">
-                <span className="word-listening-check" aria-hidden="true">✓</span>
-                <strong>Текст распознан</strong>
-              </div>
-              <p className="word-listening-processing">Распознавание…</p>
-            </div>
-          )}
-          <div className="word-listening-english">
-            <WordGap key={"voice-" + sentence.id + "-" + sentence.word} sentence={sentence}
-              value={answer} onChange={handleAnswerChange} disabled={checked}
-              showMistakes={false} autoFocus={false} />
-          </div>
-          {voiceError && (
-            <div className="word-listening-error" role="alert">
-              {voiceRecognizedText && (
-                <>
-                  <span className="word-listening-error-label">Распознано:</span>
-                  <strong className="word-listening-recognized-word">{voiceRecognizedText}</strong>
-                </>
-              )}
-              <span>{voiceError}</span>
-            </div>
-          )}
-          {!voiceListening && (
-            <button className="button button-secondary word-listening-retry"
-              type="button" onClick={startVoiceInput}>Попробовать ещё раз</button>
-          )}
-          {!checked && (
-            <button className="button button-secondary word-listening-dont-know"
-              type="button" onClick={dontKnow}>Не знаю</button>
-          )}
       <div className="level-switch-content">
         {levelSelector}
         {statsPanel}
@@ -987,7 +920,7 @@ function StudyPage({
         <div className={`study-card-image-slot${checked && !correct && !markedKnown ? " is-feedback" : ""}`}>
           {checked && !correct && !markedKnown
             ? <StudyFeedbackVisual correct={correct} markedKnown={markedKnown} />
-            : <WordImage key={sentence.id} sentence={sentence} onReady={() => setVoiceImageReady(true)} />}
+            : <WordImage key={sentence.id} sentence={sentence} onReady={markVoiceImageReady} />}
         </div>
         <h2 className="russian-sentence">{renderRussianSentence(sentence.russian, sentence.russianWord)}</h2>
         <div className={`study-card-english${checked ? " is-result" : ""}`}>
