@@ -4239,3 +4239,61 @@ button:disabled {
     flex-basis: 160px;
   }
 }
+
+
+/* Keep action buttons inside the study card even when sentence text is long.
+   The card grows with its content instead of pushing the controls outside. */
+.study-card-shell {
+  height: auto !important;
+  min-height: 640px;
+  overflow: visible !important;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+.study-card-shell .russian-sentence,
+.study-card-shell .study-card-english,
+.study-card-shell .english-section,
+.study-card-shell .answer-area {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+
+.study-card-shell .word-answer-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 8px 0 0;
+}
+
+.study-card-shell .word-answer-actions > button {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+}
+
+@media (max-width: 700px) {
+  .study-card-shell {
+    min-height: 660px;
+  }
+}
+
+@media (max-width: 420px) {
+  .study-card-shell {
+    min-height: 680px;
+  }
+
+  .study-card-shell .word-answer-actions > button {
+    flex: 1 1 130px;
+  }
+}
