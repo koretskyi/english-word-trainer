@@ -5370,6 +5370,16 @@ button:disabled {
 .study-card-shell .voice-status-label {
   font-size: 22px;
   line-height: 1.35;
+  font-weight: 800;
+  color: #287a35;
+  text-shadow: 0 0 0 rgba(40, 122, 53, 0);
+  animation: voice-prompt-breathe 2.2s ease-in-out infinite;
+}
+
+.study-card-shell .voice-status-label.is-speaking,
+.study-card-shell .voice-status-label.is-countdown {
+  color: #287a35;
+  font-weight: 850;
   animation: voice-prompt-breathe 2.2s ease-in-out infinite;
 }
 .study-card-shell .voice-speaking-indicator {
