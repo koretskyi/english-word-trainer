@@ -375,7 +375,7 @@ def health():
 # Pixabay images are fetched only when a learner opens a card without a local image.
 # The selected file and manifest are stored on this computer; repeat views are local.
 PIXABAY_ROOT = Path(__file__).resolve().parent.parent
-PIXABAY_IMAGE_DIR = PIXABAY_ROOT / "public" / "images" / "a2"
+PIXABAY_IMAGE_DIR = PIXABAY_ROOT / "public" / "images" / "words"
 PIXABAY_MANIFEST = PIXABAY_IMAGE_DIR / "manifest.json"
 PIXABAY_QUERY_CACHE = PIXABAY_ROOT / ".cache" / "pixabay"
 PIXABAY_CACHE_TTL = 24 * 60 * 60
@@ -503,6 +503,7 @@ class A2ImageRequest(BaseModel):
     context: str = ""
 
 
+@app.post("/api/word-image")
 @app.post("/api/a2-image")
 def get_or_download_a2_image(payload: A2ImageRequest):
     word = payload.word.strip().lower()
@@ -517,7 +518,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
 
     # Reuse the local image only when it was downloaded for this exact query.
     # If an A2 exception changes its query, refresh only that word's image.
-    if existing and existing.get("searchVersion") == 10 and existing.get("searchQuery") == search_query and existing.get("src") and existing.get("provider") == "Pixabay":
+    if existing and existing.get("searchVersion") == 11 and existing.get("searchQuery") == search_query and existing.get("src") and existing.get("provider") == "Pixabay":
         existing_file = PIXABAY_ROOT / "public" / existing["src"].lstrip("/")
         if existing_file.is_file():
             return existing
@@ -607,7 +608,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
     image_path = PIXABAY_IMAGE_DIR / filename
     image_path.write_bytes(image_bytes)
     entry = {
-        "src": f"/images/a2/{filename}",
+        "src": f"/images/words/{filename}",
         "provider": "Pixabay",
         "title": str(selected.get("tags") or word),
         "source": str(selected.get("pageURL") or "https://pixabay.com/"),
@@ -615,7 +616,7 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         "license": "Pixabay Content License",
         "tags": str(selected.get("tags") or ""),
         "imageId": selected.get("id"),
-        "searchVersion": 10,
+        "searchVersion": 11,
         "searchQuery": search_query,
     }
     manifest[word] = entry
@@ -630,5 +631,5 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         except OSError:
             pass
         PIXABAY_MANIFEST.write_text(manifest_text, encoding="utf-8")
-    logger.info("Saved Pixabay image for A2 word %r using query %r to %s", word, search_query, image_path)
+    logger.info("Saved Pixabay image for %s using query %r to %s", word, search_query, image_path)
     return entry
