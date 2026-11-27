@@ -981,29 +981,31 @@ function StudyPage({
           )}
         </div>
         {checked ? (
-          <div className={`answer-result-card ${resultState}`} role="status" aria-live="polite">
-            {markedKnown ? (
-              <strong className="known-result-message">✓ Слово перенесено в выученные</strong>
-            ) : correct ? (
-              <CorrectFeedback />
-            ) : (
-              <div className="incorrect-result-content">
-                <div className="incorrect-word-pair">
-                  <div className="answer-value-label is-correct-label">Правильный ответ</div>
-                  <div className="answer-value-label is-wrong-label">Ваш ответ</div>
-                  <strong className="answer-value is-correct-answer">{sentence.word}</strong>
-                  <strong className="answer-value is-wrong-answer">{answer.join("").trim() || "—"}</strong>
+          <>
+            <div className={`answer-result-card ${resultState}`} role="status" aria-live="polite">
+              {markedKnown ? (
+                <strong className="known-result-message">✓ Слово перенесено в выученные</strong>
+              ) : correct ? (
+                <CorrectFeedback />
+              ) : (
+                <div className="incorrect-result-content">
+                  <div className="incorrect-word-pair">
+                    <div className="answer-value-label is-correct-label">Правильный ответ</div>
+                    <div className="answer-value-label is-wrong-label">Ваш ответ</div>
+                    <strong className="answer-value is-correct-answer">{sentence.word}</strong>
+                    <strong className="answer-value is-wrong-answer">{answer.join("").trim() || "—"}</strong>
+                  </div>
                 </div>
+              )}
+            </div>
+            {voiceWrongAttempt && (
+              <div className="voice-retry-actions">
+                <button className="button button-primary voice-retry-button" type="button" onClick={retryVoiceAnswer}>
+                  Попробовать ещё раз
+                </button>
               </div>
             )}
-          </div>
-          {voiceWrongAttempt && (
-            <div className="voice-retry-actions">
-              <button className="button button-primary voice-retry-button" type="button" onClick={retryVoiceAnswer}>
-                Попробовать ещё раз
-              </button>
-            </div>
-          )}
+          </>
         ) : (
           <div className="study-card-footer">
             {continuousVoiceMode && (
