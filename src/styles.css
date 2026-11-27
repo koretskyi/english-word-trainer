@@ -5206,7 +5206,7 @@ button:disabled {
   background: #e53935;
   border-color: #c62828;
   color: #ffffff;
-  animation: card-mic-recording-blink .65s steps(2, end) infinite;
+  animation: card-mic-recording-blink 1.25s ease-in-out infinite alternate;
   box-shadow: none !important;
 }
 
@@ -5216,8 +5216,8 @@ button:disabled {
 }
 
 @keyframes card-mic-recording-blink {
-  0%, 100% { background: #e53935; border-color: #c62828; }
-  50% { background: #a91515; border-color: #8f1010; }
+  from { opacity: 1; }
+  to { opacity: .78; }
 }
 
 @media (prefers-reduced-motion: reduce) {
