@@ -1,4 +1,5 @@
 import gc
+import hashlib
 import html
 import logging
 import json
@@ -406,14 +407,13 @@ def safe_image_word(value: str) -> str:
     return re.sub(r"[^a-z0-9-]", "", value.lower().strip().replace(" ", "-"))[:60]
 
 
-def pixabay_search(word: str, context: str, api_key: str) -> dict:
+def pixabay_search(context: str, api_key: str) -> dict:
     PIXABAY_QUERY_CACHE.mkdir(parents=True, exist_ok=True)
-    # Use the prepared English subject + predicate + target-word phrase.
-    # Fall back to the vocabulary word when no phrase is supplied.
-    raw_query = context.strip() or word
+    # Search using only the prepared visual context; no vocabulary word is sent.
+    raw_query = context.strip()
     query = re.sub(r"[^a-zA-Z0-9 ]", " ", raw_query)
     query = re.sub(r"\s+", " ", query).strip()[:100]
-    cache_key = re.sub(r"[^a-z0-9]+", "-", query.lower()).strip("-") or safe_image_word(word)
+    cache_key = re.sub(r"[^a-z0-9]+", "-", query.lower()).strip("-") or "empty-context"
     cache_file = PIXABAY_QUERY_CACHE / f"{cache_key}.json"
     if cache_file.exists() and time.time() - cache_file.stat().st_mtime < PIXABAY_CACHE_TTL:
         try:
@@ -476,14 +476,13 @@ def pixabay_token_forms(value: str) -> set[str]:
     return forms
 
 
-def score_pixabay_hit(hit: dict, word: str, context: str) -> int:
+def score_pixabay_hit(hit: dict, context: str) -> int:
     """Rank one of the five Pixabay results using its descriptive tags."""
     tag_text = str(hit.get("tags") or "").lower()
     tag_tokens = set(re.findall(r"[a-z]+", tag_text))
     tag_forms = set().union(*(pixabay_token_forms(token) for token in tag_tokens)) if tag_tokens else set()
 
-    target_forms = pixabay_token_forms(word)
-    score = 10 if target_forms and target_forms.intersection(tag_forms) else 0
+    score = 0
 
     context_tokens = [
         token for token in re.findall(r"[a-z]+", context.lower())
@@ -499,26 +498,26 @@ def score_pixabay_hit(hit: dict, word: str, context: str) -> int:
 
 
 class A2ImageRequest(BaseModel):
-    word: str
-    context: str = ""
+    context: str
 
 
 @app.post("/api/word-image")
 @app.post("/api/a2-image")
 def get_or_download_a2_image(payload: A2ImageRequest):
-    word = payload.word.strip().lower()
-    slug = safe_image_word(word)
-    if not slug or not re.fullmatch(r"[a-z][a-z0-9 -]{0,59}", word):
-        raise HTTPException(status_code=400, detail="Некорректное слово для изображения.")
+    search_query = re.sub(r"\s+", " ", payload.context.strip())[:100]
+    if not search_query:
+        raise HTTPException(status_code=400, detail="Не передан контекст для поиска изображения.")
+
+    # Context itself identifies the cached image; the vocabulary word is not
+    # part of the request or Pixabay search/ranking logic.
+    context_hash = hashlib.sha256(search_query.casefold().encode("utf-8")).hexdigest()[:24]
+    manifest_key = f"context:{context_hash}"
+    filename = f"context-{context_hash}.jpg"
 
     PIXABAY_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
     manifest = read_image_manifest()
-    existing = manifest.get(word)
-    search_query = payload.context.strip() or word
-
-    # Reuse the local image only when it was downloaded for this exact query.
-    # If an A2 exception changes its query, refresh only that word's image.
-    if existing and existing.get("searchVersion") == 11 and existing.get("searchQuery") == search_query and existing.get("src") and existing.get("provider") == "Pixabay":
+    existing = manifest.get(manifest_key)
+    if existing and existing.get("searchVersion") == 12 and existing.get("searchQuery") == search_query and existing.get("src") and existing.get("provider") == "Pixabay":
         existing_file = PIXABAY_ROOT / "public" / existing["src"].lstrip("/")
         if existing_file.is_file():
             return existing
@@ -530,65 +529,53 @@ def get_or_download_a2_image(payload: A2ImageRequest):
             detail="Не найден PIXABAY_API_KEY. Добавь ключ в .env.local в корне проекта и перезапусти приложение.",
         )
 
-    # Search using the curated English subject + predicate + target-word phrase,
-    # or the word-specific exception supplied by the sentence data.
-    data = pixabay_search(word, search_query, api_key)
+    data = pixabay_search(search_query, api_key)
     hits = data.get("hits") or []
     if not hits:
-        raise HTTPException(status_code=404, detail=f"Pixabay не нашёл фотографий для «{word}».")
+        raise HTTPException(status_code=404, detail=f"Pixabay не нашёл фотографий по контексту «{search_query}».")
 
-    # Rank the five primary results by tag relevance. If none reaches the
-    # minimum, retry once with a simpler query focused on the scene, not the
-    # target word (which may be abstract or absent from photo tags).
-    def rank_hits(items: list[dict]) -> list[tuple[int, int, dict]]:
+    def rank_hits(items: list[dict], context: str) -> list[tuple[int, int, dict]]:
         ranked = [
-            (score_pixabay_hit(hit, word, search_query), index, hit)
+            (score_pixabay_hit(hit, context), index, hit)
             for index, hit in enumerate(items[:5])
         ]
         ranked.sort(key=lambda item: (-item[0], item[1]))
         return ranked
 
     MIN_RELEVANCE_SCORE = 4
-    scored_hits = rank_hits(hits)
+    scored_hits = rank_hits(hits, search_query)
     best_score, _, selected = scored_hits[0]
 
     if best_score < MIN_RELEVANCE_SCORE:
-        target_forms = pixabay_token_forms(word)
         fallback_tokens = [
             token for token in re.findall(r"[a-z]+", search_query.lower())
-            if token not in PIXABAY_TAG_STOPWORDS
-            and len(token) >= 3
-            and not (pixabay_token_forms(token) & target_forms)
+            if token not in PIXABAY_TAG_STOPWORDS and len(token) >= 3
         ]
         fallback_query = " ".join(dict.fromkeys(fallback_tokens))
         if fallback_query and fallback_query.lower() != search_query.lower():
             logger.info(
-                "Pixabay relevance too low for %r (score %s); retrying with %r",
-                word, best_score, fallback_query,
+                "Pixabay relevance too low for context %r (score %s); retrying with %r",
+                search_query, best_score, fallback_query,
             )
-            fallback_data = pixabay_search(word, fallback_query, api_key)
+            fallback_data = pixabay_search(fallback_query, api_key)
             fallback_hits = fallback_data.get("hits") or []
             if fallback_hits:
-                fallback_ranked = [
-                    (score_pixabay_hit(hit, word, fallback_query), index, hit)
-                    for index, hit in enumerate(fallback_hits[:5])
-                ]
-                fallback_ranked.sort(key=lambda item: (-item[0], item[1]))
+                fallback_ranked = rank_hits(fallback_hits, fallback_query)
                 fallback_score, _, fallback_selected = fallback_ranked[0]
                 if fallback_score > best_score:
                     best_score, selected = fallback_score, fallback_selected
                     scored_hits = fallback_ranked
 
     logger.info(
-        "Pixabay tag ranking for %r (best score %s): %s",
-        word,
+        "Pixabay context-only tag ranking (best score %s) for %r: %s",
         best_score,
+        search_query,
         [(score, str(hit.get("tags") or "")) for score, _, hit in scored_hits],
     )
     if best_score < MIN_RELEVANCE_SCORE:
         raise HTTPException(
             status_code=404,
-            detail=f"Pixabay не нашёл достаточно подходящую фотографию для «{word}».",
+            detail=f"Pixabay не нашёл достаточно подходящую фотографию по контексту «{search_query}».",
         )
     image_url = selected.get("webformatURL")
     if not image_url:
@@ -604,22 +591,21 @@ def get_or_download_a2_image(payload: A2ImageRequest):
     if not content_type.startswith("image/") or len(image_bytes) < 1500:
         raise HTTPException(status_code=502, detail="Pixabay вернул некорректный файл изображения.")
 
-    filename = f"{slug}.jpg"
     image_path = PIXABAY_IMAGE_DIR / filename
     image_path.write_bytes(image_bytes)
     entry = {
         "src": f"/images/words/{filename}",
         "provider": "Pixabay",
-        "title": str(selected.get("tags") or word),
+        "title": str(selected.get("tags") or search_query),
         "source": str(selected.get("pageURL") or "https://pixabay.com/"),
         "creator": str(selected.get("user") or ""),
         "license": "Pixabay Content License",
         "tags": str(selected.get("tags") or ""),
         "imageId": selected.get("id"),
-        "searchVersion": 11,
+        "searchVersion": 12,
         "searchQuery": search_query,
     }
-    manifest[word] = entry
+    manifest[manifest_key] = entry
     manifest_text = json.dumps(manifest, ensure_ascii=False, indent=2) + "\n"
     temp_manifest = PIXABAY_MANIFEST.with_suffix(".json.tmp")
     try:
@@ -631,5 +617,5 @@ def get_or_download_a2_image(payload: A2ImageRequest):
         except OSError:
             pass
         PIXABAY_MANIFEST.write_text(manifest_text, encoding="utf-8")
-    logger.info("Saved Pixabay image for %s using query %r to %s", word, search_query, image_path)
+    logger.info("Saved Pixabay image for context %r to %s", search_query, image_path)
     return entry
