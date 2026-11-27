@@ -3,7 +3,7 @@ import WordGap from "./components/LetterGap.jsx";
 import CorrectFeedback from "./components/CorrectFeedback.jsx";
 import AuditionPage from "./pages/AuditionPage.jsx";
 import VideoPage from "./pages/VideoPage.jsx";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { startAutoVoiceCapture } from "./utils/autoVoice.js";
 
 
@@ -509,6 +509,24 @@ function StudyPage({
   useEffect(() => () => {
     voiceCaptureRef.current?.stop();
     setVoiceListening(false);
+  }, [sentence?.id]);
+
+  // Keep StudyPage mounted between levels. Reset card-local state before the
+  // browser paints the newly selected sentence to avoid a one-frame flash.
+  useLayoutEffect(() => {
+    voiceCaptureRef.current?.stop();
+    voiceCaptureRef.current = null;
+    stopMicrophoneMeter();
+    setAnswer(createInitialAnswer(sentence));
+    setChecked(false);
+    setAudioFinished(false);
+    setMarkedKnown(false);
+    setVoiceListening(false);
+    setVoiceStatus("idle");
+    setVoiceModeActive(false);
+    setVoiceError("");
+    setVoiceRecognizedText("");
+    setVoiceSuccessConfetti(false);
   }, [sentence?.id]);
 
   function startVoiceInput() {
@@ -1813,7 +1831,6 @@ export default function App() {
         {page === "study" ? (
           <div className={`study-level-transition is-${levelTransition}`}>
           <StudyPage
-            key={selectedLevel + ":" + (sentence ? normalizeWord(sentence.word) : "empty")}
             sentence={sentence}
             audioEnabled={audioEnabled}
             selectedLevel={selectedLevel}
