@@ -4480,3 +4480,23 @@ button:disabled {
     padding: 9px 11px;
   }
 }
+
+
+/* Pin the review indicator to the very top edge of the study card. */
+.study-card-shell {
+  position: relative;
+}
+.study-card-shell > .study-card-review-progress {
+  order: -1;
+  align-self: stretch;
+  width: 100%;
+  max-width: none;
+  margin: 0 0 12px;
+  padding: 7px 12px 9px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .78);
+}
+.study-card-review-progress-heading span {
+  text-transform: uppercase;
+  letter-spacing: .055em;
+}
