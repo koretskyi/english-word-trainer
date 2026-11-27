@@ -4128,3 +4128,8 @@ button:disabled {
     transition: none !important;
   }
 }
+
+/* The complete Words panel also fades in when the active card changes. */
+.study-panel {
+  animation: app-screen-fade-in 280ms cubic-bezier(.2, .7, .2, 1) both;
+}
