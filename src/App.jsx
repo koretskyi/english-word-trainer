@@ -31,7 +31,7 @@ function loadSentences() {
             typeof sentence.level === "string" &&
             // Remove the obsolete imported batch (cards 051–080) from each level.
             // New user-created cards use timestamp-based IDs and remain untouched.
-            !/^(?:a1|a2|b1|b2|c1)_(?:05[1-9]|0[6-7]\\d|080)$/i.test(String(sentence.id))
+            !/^(?:a1|a2|b1|b2|c1)_(?:05[1-9]|0[6-7]\d|080)$/i.test(String(sentence.id))
         );
         const savedById = new Map();
 
