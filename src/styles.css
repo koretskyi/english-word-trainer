@@ -4673,3 +4673,53 @@ button:disabled {
   line-height: 1.2;
   letter-spacing: .055em;
 }
+
+
+/* Give the correct and submitted answers distinct, spacious result tiles. */
+.study-card-shell .incorrect-result-content {
+  gap: 0;
+}
+.study-card-shell .incorrect-word-pair {
+  width: 100%;
+  max-width: 760px;
+  gap: 22px;
+  margin: 10px auto 0;
+}
+.study-card-shell .answer-value-group {
+  gap: 9px;
+  padding: 12px;
+  border: 1px solid rgba(120, 145, 160, .16);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(35, 55, 75, .06);
+}
+.study-card-shell .answer-value-label {
+  padding: 0;
+  background: transparent !important;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+.study-card-shell .answer-value {
+  min-height: 64px;
+  padding: 10px 12px;
+  border-radius: 11px;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 800;
+}
+.study-card-shell .is-correct-answer .answer-value-label { color: #438b43; }
+.study-card-shell .is-wrong-answer .answer-value-label { color: #b45d68; }
+@media (max-width: 520px) {
+  .study-card-shell .incorrect-word-pair {
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .study-card-shell .answer-value-group {
+    padding: 10px;
+  }
+  .study-card-shell .answer-value {
+    min-height: 52px;
+    font-size: 22px;
+  }
+}
