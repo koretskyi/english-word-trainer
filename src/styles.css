@@ -5078,3 +5078,19 @@ button:disabled {
     font-size: 22px;
   }
 }
+
+
+/* Stack the word count directly beneath the level label. */
+.review-progress-meta .level-label-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+
+.review-progress-meta .level-label-group .level-word-count {
+  color: #6b7280;
+  font-size: 0.78rem;
+  line-height: 1.15;
+}
