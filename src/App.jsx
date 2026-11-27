@@ -1022,7 +1022,7 @@ function StudyPage({
                 <span className="voice-status-label">
                   {voiceStatus === "transcribing" ? "Распознавание…" :
                     voiceStatus === "listening" ? "Идёт запись голоса…" :
-                    voicePreparing ? (voiceCountdown > 0 ? `Начало записи через ${voiceCountdown}…` : "Подготовка записи…") :
+                    voicePreparing ? (voiceCountdown > 0 ? `Новая запись через ${voiceCountdown}…` : "Подготовка записи…") :
                     voiceError || "Голосовой режим включён."}
                 </span>
               </p>
