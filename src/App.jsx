@@ -519,6 +519,7 @@ function StudyPage({
   const [voiceSuccessConfetti, setVoiceSuccessConfetti] = useState(false);
   const [continuousVoiceMode, setContinuousVoiceMode] = useState(false);
   const [voicePreparing, setVoicePreparing] = useState(false);
+  const [voiceWrongAttempt, setVoiceWrongAttempt] = useState(false);
   const [voiceImageReady, setVoiceImageReady] = useState(false);
   const markVoiceImageReady = useCallback(() => setVoiceImageReady(true), []);
   const continuousVoiceModeRef = useRef(false);
@@ -567,6 +568,7 @@ function StudyPage({
     setVoiceRecognizedText("");
     setVoiceSuccessConfetti(false);
     setVoicePreparing(false);
+    setVoiceWrongAttempt(false);
     setVoiceImageReady(false);
   }, [selectedLevel, sentence?.id]);
 
@@ -621,8 +623,8 @@ function StudyPage({
       noSpeechTimeoutMs: 2000,
       onStatus: (status) => {
         setVoiceStatus(status);
-        if (status === "transcribing") setVoiceSuccessConfetti(true);
-        const active = status === "listening" || status === "transcribing";
+        if (status === "transcribing") setVoiceSuccessConfetti(false);
+        const active = status === "listening";
         setVoiceListening(active);
         if (!active) setMicLevel(0);
       },
@@ -637,11 +639,16 @@ function StudyPage({
           }, 1300);
           return;
         }
-        // Keep the answer mask empty after an incorrect recognition.
-        setAnswer(targetLetters.map(() => ""));
+        // Show the recognized wrong answer and wait for an explicit retry.
+        setAnswer([...transcript]);
         setVoiceRecognizedText(transcript);
-        setVoiceError(transcript ? "Попробуйте ещё раз." : "Не удалось разобрать речь. Попробуйте ещё раз.");
-        scheduleContinuousVoiceRetry(850);
+        setVoiceError("");
+        setVoiceListening(false);
+        setVoiceStatus("idle");
+        setVoiceWrongAttempt(true);
+        setChecked(true);
+        onComplete(sentence.word, false);
+        if (audioEnabled) speakEnglish(sentence.word);
       },
       onError: (message) => {
         setVoiceRecognizedText("");
@@ -682,10 +689,10 @@ function StudyPage({
   }, [continuousVoiceMode, voiceImageReady, sentence?.id, checked]);
 
   useEffect(() => {
-    if (!checked || (correct && !audioFinished)) return undefined;
+    if (!checked || voiceWrongAttempt || (correct && !audioFinished)) return undefined;
     const timer = setTimeout(onAdvance, correct ? 1400 : 4000);
     return () => clearTimeout(timer);
-  }, [checked, correct, audioFinished, onAdvance]);
+  }, [checked, correct, audioFinished, onAdvance, voiceWrongAttempt]);
 
   const englishText = sentence
     ? sentence.englishTemplate.replace("{word}", sentence.word)
@@ -877,6 +884,15 @@ function StudyPage({
     onKnow();
   }
 
+  function retryVoiceAnswer() {
+    if (!voiceWrongAttempt) return;
+    setAnswer(targetLetters.map(() => ""));
+    setVoiceWrongAttempt(false);
+    setVoiceError("");
+    setVoiceRecognizedText("");
+    setChecked(false);
+  }
+
   if (!sentence) {
     return (
       <section className="panel">
@@ -963,22 +979,30 @@ function StudyPage({
               </div>
             )}
           </div>
+          {voiceWrongAttempt && (
+            <div className="voice-retry-actions">
+              <button className="button button-primary voice-retry-button" type="button" onClick={retryVoiceAnswer}>
+                Попробовать ещё раз
+              </button>
+            </div>
+          )}
         ) : (
           <div className="study-card-footer">
             {continuousVoiceMode && (
               <p className="word-voice-status" role="status">
-                {voicePreparing ? "Посмотрите на картинку и прочитайте предложение — микрофон включится через несколько секунд." :
-                  voiceStatus === "listening" ? "Слушаю… Произнесите слово." :
-                  voiceStatus === "transcribing" ? "Распознаю ответ…" :
+                {voicePreparing ? "Прочитайте предложение — микрофон скоро включится." :
+                  voiceStatus === "listening" ? "Запись голоса…" :
+                  voiceStatus === "transcribing" ? "Распознавание…" :
                   "Голосовой режим включён."}
               </p>
             )}
             <div className="form-actions word-answer-actions">
-              <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}${voicePreparing ? " is-preparing" : ""}`}
+              <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}${voicePreparing ? " is-preparing" : ""}${voiceStatus === "transcribing" ? " is-transcribing" : ""}`}
                 type="button" onClick={continuousVoiceMode ? stopContinuousVoiceMode : startContinuousVoiceMode}
-                aria-label={continuousVoiceMode ? "Остановить голосовой режим" : "Запустить голосовой режим без рук"}>
+                disabled={voiceStatus === "transcribing"}
+                aria-label={voiceStatus === "transcribing" ? "Распознавание ответа" : continuousVoiceMode ? "Остановить голосовой режим" : "Запустить голосовой режим без рук"}>
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4m-4 0h8"/></svg>
-                {continuousVoiceMode ? (voiceListening ? "Остановить" : voicePreparing ? "Подготовка…" : "Остановить") : "Ответить голосом"}
+                {voiceStatus === "transcribing" ? "Распознавание…" : voiceListening ? "Запись голоса" : voicePreparing ? "Подготовка…" : continuousVoiceMode ? "Остановить" : "Ответить голосом"}
               </button>
               <button className="button button-secondary button-dont-know" type="button"
                 onClick={dontKnow}>Не знаю</button>
