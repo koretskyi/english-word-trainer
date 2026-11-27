@@ -5123,3 +5123,19 @@ button:disabled {
     padding-top: 10px;
   }
 }
+
+/* Hands-free vocabulary session controls. */
+.word-continuous-status {
+  margin: 4px 0 10px;
+  color: #4f6f35;
+  font-size: 13px;
+  font-weight: 650;
+  text-align: center;
+}
+.word-continuous-stop {
+  margin: 8px auto 0;
+  min-height: 42px;
+}
+.study-panel.is-voice-listening .word-listening-mode {
+  padding-bottom: 16px;
+}
