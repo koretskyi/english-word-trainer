@@ -4582,3 +4582,62 @@ button:disabled {
   letter-spacing: .07em;
   text-align: center;
 }
+
+
+/* Keep the study card's footprint stable when an answer is incorrect.
+   Long sentences may still expand naturally; compact feedback is overlaid
+   in the existing card space instead of increasing its height. */
+.study-card-shell {
+  display: flex;
+  flex-direction: column;
+}
+.study-card-shell .study-card-image-slot {
+  flex: 0 0 210px;
+}
+.study-card-shell .answer-result-card.is-incorrect {
+  flex: 0 0 auto;
+  margin-top: 8px;
+  padding: 8px 12px;
+}
+.study-card-shell .incorrect-result-content {
+  display: grid;
+  gap: 7px;
+}
+.study-card-shell .incorrect-result-message {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.25;
+}
+.study-card-shell .incorrect-word-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.study-card-shell .answer-value-group {
+  min-width: 0;
+  gap: 3px;
+  padding: 5px 8px;
+}
+.study-card-shell .answer-value-label {
+  font-size: 10px;
+  line-height: 1.2;
+}
+.study-card-shell .answer-value {
+  font-size: 15px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 520px) {
+  .study-card-shell .study-card-image-slot {
+    flex-basis: 180px;
+  }
+  .study-card-shell .incorrect-word-pair {
+    gap: 6px;
+  }
+  .study-card-shell .answer-value-group {
+    padding: 5px 6px;
+  }
+  .study-card-shell .answer-value {
+    font-size: 14px;
+  }
+}
