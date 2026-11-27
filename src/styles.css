@@ -4554,3 +4554,31 @@ button:disabled {
     font-size: 13px;
   }
 }
+
+
+/* Fine-tune the pinned action row: slightly narrower and lifted from the card edge. */
+.study-card-shell > .study-card-footer {
+  padding-bottom: 12px;
+}
+.study-card-shell .study-card-footer .word-answer-actions {
+  width: 94%;
+  max-width: 780px;
+  margin-left: auto;
+  margin-right: auto;
+  gap: 10px;
+}
+.study-card-shell .study-card-footer .word-answer-actions > button {
+  min-height: 46px;
+  padding: 8px 7px;
+}
+.study-card-review-reset {
+  display: grid;
+  min-height: 34px;
+  place-items: center;
+  color: #a65b36;
+  font-size: 12px;
+  line-height: 1.3;
+  font-weight: 850;
+  letter-spacing: .07em;
+  text-align: center;
+}
