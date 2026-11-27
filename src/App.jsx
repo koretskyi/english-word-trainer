@@ -515,6 +515,11 @@ function StudyPage({
   const [voiceRecognizedText, setVoiceRecognizedText] = useState("");
   const [micLevel, setMicLevel] = useState(0);
   const [voiceSuccessConfetti, setVoiceSuccessConfetti] = useState(false);
+  const [continuousVoiceMode, setContinuousVoiceMode] = useState(false);
+  const continuousVoiceModeRef = useRef(false);
+  const voiceRetryTimerRef = useRef(null);
+  const lastVoiceSentenceIdRef = useRef(sentence?.id);
+  const studyCardRef = useRef(null);
   const voiceCaptureRef = useRef(null);
   const voiceActiveRef = useRef(false);
   const micStreamRef = useRef(null);
@@ -535,6 +540,7 @@ function StudyPage({
   }
 
   useEffect(() => () => {
+    if (voiceRetryTimerRef.current) window.clearTimeout(voiceRetryTimerRef.current);
     voiceCaptureRef.current?.stop();
     setVoiceListening(false);
   }, [sentence?.id]);
@@ -557,7 +563,38 @@ function StudyPage({
     setVoiceSuccessConfetti(false);
   }, [selectedLevel, sentence?.id]);
 
+  function scheduleContinuousVoiceRetry(delay = 800) {
+    if (!continuousVoiceModeRef.current) return;
+    if (voiceRetryTimerRef.current) window.clearTimeout(voiceRetryTimerRef.current);
+    voiceRetryTimerRef.current = window.setTimeout(() => {
+      if (continuousVoiceModeRef.current) startVoiceInput();
+    }, delay);
+  }
+
+  function startContinuousVoiceMode() {
+    continuousVoiceModeRef.current = true;
+    setContinuousVoiceMode(true);
+    setVoiceModeActive(true);
+    startVoiceInput();
+  }
+
+  function stopContinuousVoiceMode() {
+    continuousVoiceModeRef.current = false;
+    setContinuousVoiceMode(false);
+    if (voiceRetryTimerRef.current) window.clearTimeout(voiceRetryTimerRef.current);
+    voiceRetryTimerRef.current = null;
+    voiceCaptureRef.current?.stop();
+    voiceCaptureRef.current = null;
+    setVoiceListening(false);
+    setVoiceModeActive(false);
+    setVoiceStatus("idle");
+    setVoiceSuccessConfetti(false);
+    stopMicrophoneMeter();
+  }
+
   function startVoiceInput() {
+    if (voiceRetryTimerRef.current) window.clearTimeout(voiceRetryTimerRef.current);
+    voiceRetryTimerRef.current = null;
     voiceCaptureRef.current?.stop();
     setVoiceError("");
     setVoiceRecognizedText("");
@@ -588,7 +625,7 @@ function StudyPage({
           handleAnswerChange(targetLetters.map((letter) => letter));
           window.setTimeout(() => {
             setVoiceSuccessConfetti(false);
-            setVoiceModeActive(false);
+            if (!continuousVoiceModeRef.current) setVoiceModeActive(false);
           }, 1300);
           return;
         }
@@ -596,16 +633,19 @@ function StudyPage({
         setAnswer(targetLetters.map(() => ""));
         setVoiceRecognizedText(transcript);
         setVoiceError(transcript ? "Попробуйте ещё раз." : "Не удалось разобрать речь. Попробуйте ещё раз.");
+        scheduleContinuousVoiceRetry(850);
       },
       onError: (message) => {
         setVoiceRecognizedText("");
         setVoiceError(message || "Ошибка локального распознавания Whisper.");
+        scheduleContinuousVoiceRetry(1200);
       },
       onNoSpeech: () => {
         // Keep the expanded voice card open when no speech was detected.
         // The user can retry or choose "Не знаю" explicitly.
         setVoiceRecognizedText("");
         setVoiceError("Не расслышал. Повторите, пожалуйста.");
+        scheduleContinuousVoiceRetry(850);
       },
     });
     voiceCaptureRef.current = capture;
@@ -616,6 +656,17 @@ function StudyPage({
     targetLetters.every((letter, position) =>
       (answer[position] || "").toLowerCase() === letter.toLowerCase()
     );
+
+  useEffect(() => {
+    const sentenceChanged = lastVoiceSentenceIdRef.current !== sentence?.id;
+    lastVoiceSentenceIdRef.current = sentence?.id;
+    if (!sentenceChanged || !continuousVoiceModeRef.current || !sentence) return undefined;
+    const timer = window.setTimeout(() => {
+      studyCardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      startVoiceInput();
+    }, 450);
+    return () => window.clearTimeout(timer);
+  }, [sentence?.id]);
 
   useEffect(() => {
     if (!checked || (correct && !audioFinished)) return undefined;
@@ -829,7 +880,7 @@ function StudyPage({
   const resultState = markedKnown ? "is-known" : correct ? "is-correct" : "is-incorrect";
 
   return (
-    <section className={`panel study-panel${voiceModeActive ? " is-voice-listening" : ""}`}>
+    <section ref={studyCardRef} className={`panel study-panel${voiceModeActive ? " is-voice-listening" : ""}`}>
       {voiceModeActive && (
         <div className="word-listening-mode">
           <button className={"word-listening-mic-button" + (voiceStatus === "listening" ? " is-listening" : "")} type="button"
@@ -859,6 +910,7 @@ function StudyPage({
             )}
           </button>
           <p className="word-listening-target">{sentence.russianWord || "Переведите слово"}</p>
+          {continuousVoiceMode && <p className="word-continuous-status">Режим без рук: после ответа откроется следующая карточка.</p>}
           {voiceStatus === "listening" && <p className="word-listening-status" role="status">Слушаю… Произнесите слово.</p>}
           {voiceStatus === "transcribing" && (
             <div className="word-listening-recognition" role="status" aria-live="polite">
@@ -892,6 +944,10 @@ function StudyPage({
           {!checked && (
             <button className="button button-secondary word-listening-dont-know"
               type="button" onClick={dontKnow}>Не знаю</button>
+          )}
+          {continuousVoiceMode && (
+            <button className="button button-secondary word-continuous-stop" type="button"
+              onClick={stopContinuousVoiceMode}>Остановить режим</button>
           )}
         </div>
       )}
@@ -969,10 +1025,10 @@ function StudyPage({
           <div className="study-card-footer">
             <div className="form-actions word-answer-actions">
               <button className={`button button-secondary word-microphone-button${voiceListening ? " is-listening" : ""}`}
-                type="button" onClick={startVoiceInput} disabled={voiceListening}
-                aria-label="Ввести слово голосом">
+                type="button" onClick={startContinuousVoiceMode} disabled={voiceListening}
+                aria-label="Запустить голосовой режим без рук">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4m-4 0h8"/></svg>
-                {voiceListening ? "Слушаю…" : "Ответить голосом"}
+                {voiceListening ? "Слушаю…" : continuousVoiceMode ? "Голосовой режим включён" : "Ответить голосом"}
               </button>
               <button className="button button-secondary button-dont-know" type="button"
                 onClick={dontKnow}>Не знаю</button>
