@@ -605,7 +605,6 @@ function StudyPage({
     voiceRetryTimerRef.current = window.setTimeout(() => {
       voiceRetryTimerRef.current = null;
       if (!continuousVoiceModeRef.current) return;
-      setVoiceError("");
       setVoicePreparing(true);
       beginVoiceCountdown(voiceRetryTimerRef, () => {
         if (continuousVoiceModeRef.current) startVoiceInput();
@@ -1022,7 +1021,9 @@ function StudyPage({
                 <span className="voice-status-label">
                   {voiceListening ? "Говорите" :
                     voiceStatus === "transcribing" ? "Распознавание…" :
-                    voicePreparing ? (voiceCountdown > 0 ? `Новая запись через ${voiceCountdown}…` : "Подготовка записи…") :
+                    voicePreparing ? (voiceError
+                      ? `${voiceError}. ${voiceCountdown > 0 ? `Новая запись через ${voiceCountdown}…` : "Подготовка новой записи…"}`
+                      : (voiceCountdown > 0 ? `Новая запись через ${voiceCountdown}…` : "Подготовка записи…")) :
                     voiceError || "Голосовой режим включён"}
                 </span>
               </p>
