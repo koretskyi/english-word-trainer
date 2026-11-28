@@ -1253,7 +1253,15 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
 
     }
 
-
+    const duplicate = safeSentences.find((sentence) =>
+      sentence.id !== editingId &&
+      sentence.level === form.level &&
+      normalizeWord(sentence.word) === normalizeWord(word)
+    );
+    if (duplicate) {
+      setError(`Слово «${word}» уже есть на уровне ${form.level}. Измени существующую карточку или выбери другое слово.`);
+      return;
+    }
 
     const placeholderCount = (
 
