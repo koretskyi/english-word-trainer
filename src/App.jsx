@@ -1037,7 +1037,7 @@ function StudyPage({
             )}
           </div>
         )}
-        <div className={`study-card-image-slot${checked && !correct && !markedKnown ? " is-feedback" : ""}`}>
+        <div className="study-card-image-slot">
           <WordImage key={sentence.id} sentence={sentence} onReady={markVoiceImageReady} />
         </div>
         <h2 className="russian-sentence">{renderRussianSentence(sentence.russian, sentence.russianWord)}</h2>
