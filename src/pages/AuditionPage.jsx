@@ -560,8 +560,8 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
             )}
             {result === "incorrect" && (
               <div className="audition-feedback audition-feedback-incorrect" role="alert">
-                <strong>Не совсем. Проверь все буквы и их порядок.</strong>
-                <span>Исправь ошибки прямо в ячейках предложения или попробуй ответить голосом ещё раз.</span>
+                <strong>Допущены ошибки</strong>
+                <span>Устраните их для перехода к следующему предложению.</span>
                 {voiceAnswer && (
                   <button className="button button-primary voice-retry-button" type="button" onClick={startContinuousVoiceMode}>
                     Попробовать ещё раз
