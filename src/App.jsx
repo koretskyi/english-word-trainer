@@ -72,8 +72,10 @@ function loadSentenceState() {
       const deletedIds = new Set(deletedBuiltInIds);
       const mergedBuiltIn = SENTENCES
         .filter((sentence) => !deletedIds.has(sentence.id))
-        .map((sentence) => ({ ...sentence, ...(overrides[sentence.id] || {}) }))
-        .filter(isValidSentence);
+        .map((sentence) => {
+          const merged = { ...sentence, ...(overrides[sentence.id] || {}) };
+          return isValidSentence(merged) ? merged : sentence;
+        });
       const validUserCreated = userCreated.filter((sentence) =>
         isValidSentence(sentence) && !builtInIds.has(sentence.id)
       );
