@@ -379,8 +379,12 @@ function speakEnglish(text, onFinished) {
     utterance.lang = preferredVoice?.lang || "en-US";
     utterance.rate = 0.9;
     utterance.pitch = 1.08;
+    let finished = false;
     const finish = () => {
-      if (requestId === speechRequestId) onFinished?.();
+      if (requestId === speechRequestId && !finished) {
+        finished = true;
+        onFinished?.();
+      }
     };
     utterance.onend = finish;
     utterance.onerror = finish;
@@ -1756,6 +1760,7 @@ export default function App() {
         console.error("Не удалось сохранить настройку звука:", error);
       }
       if (!next && "speechSynthesis" in window) {
+        speechRequestId += 1;
         window.speechSynthesis.cancel();
       }
       return next;
@@ -1860,36 +1865,40 @@ export default function App() {
         userCreated: sentenceState.userCreated,
         deletedBuiltInIds: sentenceState.deletedBuiltInIds,
       }));
+      setStorageWarning("");
     } catch (error) {
       console.error("Не удалось сохранить предложения:", error);
-      setStorageWarning("Не удалось сохранить карточки: возможно, переполнено хранилище браузера. Освободи место и обнови страницу.");
+      setStorageWarning("Не удалось сохранить карточки: возможно, переполнено хранилище браузера. Освободи место и повтори сохранение; пока не перезагружай страницу.");
     }
   }, [sentenceState]);
 
   useEffect(() => {
     try {
       localStorage.setItem(VIDEO_LIBRARY_KEY, JSON.stringify(videos));
+      setStorageWarning("");
     } catch (error) {
       console.error("Не удалось сохранить библиотеку видео:", error);
-      setStorageWarning("Не удалось сохранить библиотеку видео: возможно, переполнено хранилище браузера.");
+      setStorageWarning("Не удалось сохранить библиотеку видео: возможно, переполнено хранилище браузера. Освободи место и повтори сохранение; пока не перезагружай страницу.");
     }
   }, [videos]);
 
   useEffect(() => {
     try {
       localStorage.setItem(VIDEO_PROGRESS_KEY, JSON.stringify(completedVideoIds));
+      setStorageWarning("");
     } catch (error) {
       console.error("Не удалось сохранить прогресс по видео:", error);
-      setStorageWarning("Не удалось сохранить прогресс видео: возможно, переполнено хранилище браузера.");
+      setStorageWarning("Не удалось сохранить прогресс видео: возможно, переполнено хранилище браузера. Освободи место и повтори действие; пока не перезагружай страницу.");
     }
   }, [completedVideoIds]);
 
   useEffect(() => {
     try {
       localStorage.setItem(LEARNING_STORAGE_KEY, JSON.stringify(learningData));
+      setStorageWarning("");
     } catch (error) {
       console.error("Не удалось сохранить прогресс:", error);
-      setStorageWarning("Не удалось сохранить учебный прогресс: возможно, переполнено хранилище браузера.");
+      setStorageWarning("Не удалось сохранить учебный прогресс: возможно, переполнено хранилище браузера. Освободи место и повтори действие; пока не перезагружай страницу.");
     }
   }, [learningData]);
 
