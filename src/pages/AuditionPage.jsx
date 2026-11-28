@@ -120,12 +120,15 @@ function speakAuditionSentence(text, onFinished, onError) {
   return true;
 }
 
-export default function AuditionPage({ sentences, selectedLevel, setSelectedLevel, levels, audioEnabled }) {
+export default function AuditionPage({ sentences, selectedLevel, setSelectedLevel, levels, audioEnabled, levelProgress = [], reviewWords = [] }) {
   const filteredSentences = useMemo(
     () => (Array.isArray(sentences) ? sentences : [])
       .filter((item) => item && item.level === selectedLevel && item.word && item.englishTemplate),
     [sentences, selectedLevel]
   );
+  const levelWordCount = new Set(filteredSentences.map((item) => String(item.word || "").trim().toLowerCase()).filter(Boolean)).size;
+  const currentLevelProgress = levelProgress.find((item) => item.level === selectedLevel) || { total: levelWordCount, mastered: 0, percent: 0 };
+  const levelReviewCount = reviewWords.filter((item) => item.level === selectedLevel).length;
   const [cardIndex, setCardIndex] = useState(0);
   const [voiceAnswer, setVoiceAnswer] = useState("");
   const [result, setResult] = useState("");
@@ -422,19 +425,34 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
 
   return (
     <section className={"panel audition-panel study-panel" + (result === "correct" ? " answer-correct" : "")}>
-      <div className="audition-toolbar">
+      <div className="review-progress-meta audition-level-meta">
         <div className="level-selector">
-          <label htmlFor="audition-level">Уровень:</label>
+          <div className="level-label-group">
+            <label htmlFor="audition-level">уровень:</label>
+            <span className="level-word-count">({levelWordCount} слов)</span>
+          </div>
           <select id="audition-level" value={selectedLevel} onChange={(event) => setSelectedLevel(event.target.value)}>
             {levels.map((level) => <option key={level} value={level}>{level}</option>)}
           </select>
+          <div className="learning-progress-card learning-progress-card-compact" aria-label={`Прогресс уровня: ${currentLevelProgress.percent}%`}>
+            <div className="learning-progress-heading">
+              <span>Прогресс</span>
+              <strong>{currentLevelProgress.percent}%</strong>
+            </div>
+            <div className="learning-progress-track">
+              <div className="learning-progress-fill" style={{ width: `${currentLevelProgress.percent}%` }} />
+            </div>
+          </div>
+          <div className="level-review-shortcut audition-review-count" aria-label={`${levelReviewCount} слов на повторении`}>
+            <strong>{levelReviewCount}</strong>
+            <span>на повторении</span>
+          </div>
         </div>
         <span className="audition-counter">Предложение {cardIndex + 1} из {filteredSentences.length}</span>
       </div>
 
-      <p className="eyebrow">ПРОСЛУШАЙ И ВОССТАНОВИ ПРЕДЛОЖЕНИЕ</p>
-
       <div className={`study-card-shell audition-card-shell${result === "correct" ? " is-answered" : ""}`}>
+        <p className="eyebrow audition-card-heading">ПРОСЛУШАЙТЕ И ВОСПРОИЗВЕДИТЕ ПРЕДЛОЖЕНИЕ ГОЛОСОМ</p>
         <div className="study-card-image-slot audition-image-slot">
           <AuditionWordImage key={sentence.id} sentence={sentence} />
         </div>
