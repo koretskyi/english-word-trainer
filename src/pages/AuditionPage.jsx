@@ -73,10 +73,10 @@ function loadAuditionPosition(level) {
 
 function loadAuditionCompletedWords() {
   try {
-    const saved = JSON.parse(localStorage.getItem(AUDITION_PROGRESS_KEY) || "[]");
-    return Array.isArray(saved) ? saved.filter((word) => typeof word === "string") : [];
+    const saved = JSON.parse(localStorage.getItem(AUDITION_PROGRESS_KEY) || "{}");
+    return saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
   } catch {
-    return [];
+    return {};
   }
 }
 
@@ -142,7 +142,7 @@ function speakAuditionSentence(text, onStarted, onFinished, onError) {
   return true;
 }
 
-export default function AuditionPage({ sentences, selectedLevel, setSelectedLevel, levels, audioEnabled, levelProgress = [], reviewWords = [], wordLearningData = {} }) {
+export default function AuditionPage({ sentences, selectedLevel, setSelectedLevel, levels, audioEnabled, levelProgress = [], reviewWords = [] }) {
   const filteredSentences = useMemo(
     () => (Array.isArray(sentences) ? sentences : [])
       .filter((item) => item && item.level === selectedLevel && item.word && item.englishTemplate),
@@ -150,10 +150,13 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   );
   const levelWordCount = new Set(filteredSentences.map((item) => String(item.word || "").trim().toLowerCase()).filter(Boolean)).size;
   const [auditionCompletedWords, setAuditionCompletedWords] = useState(loadAuditionCompletedWords);
+  const completedWordsForLevel = Array.isArray(auditionCompletedWords[selectedLevel])
+    ? auditionCompletedWords[selectedLevel]
+    : [];
   const auditionProgressPercent = levelWordCount
     ? Math.round((new Set(filteredSentences
       .map((item) => String(item.word || "").trim().toLowerCase())
-      .filter((word) => auditionCompletedWords.includes(word))).size / levelWordCount) * 100)
+      .filter((word) => completedWordsForLevel.includes(word))).size / levelWordCount) * 100)
     : 0;
   const levelReviewCount = reviewWords.filter((item) => item.level === selectedLevel).length;
   const [cardIndex, setCardIndex] = useState(() => loadAuditionPosition(selectedLevel));
@@ -255,9 +258,11 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   useEffect(() => {
     if (result !== "correct" || !sentence?.word) return;
     const completedWord = String(sentence.word).trim().toLowerCase();
-    setAuditionCompletedWords((current) => current.includes(completedWord)
-      ? current
-      : [...current, completedWord]);
+    setAuditionCompletedWords((current) => {
+      const levelWords = Array.isArray(current[selectedLevel]) ? current[selectedLevel] : [];
+      if (levelWords.includes(completedWord)) return current;
+      return { ...current, [selectedLevel]: [...levelWords, completedWord] };
+    });
   }, [result, sentence?.id, sentence?.word]);
 
   useEffect(() => {
@@ -586,17 +591,14 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
           <>
             <div className="study-card-review-progress audition-success-progress"
               role="progressbar"
-              aria-label={`Прогресс изучения слова: этап ${Math.min(6, Math.max(1, wordLearningData[String(sentence.word).trim().toLowerCase()]?.status === "MASTERED" ? 6 : wordLearningData[String(sentence.word).trim().toLowerCase()]?.stage || 1))} из 6`}
-              aria-valuemin={1} aria-valuemax={6}
-              aria-valuenow={Math.min(6, Math.max(1, wordLearningData[String(sentence.word).trim().toLowerCase()]?.status === "MASTERED" ? 6 : wordLearningData[String(sentence.word).trim().toLowerCase()]?.stage || 1))}>
+              aria-label={`Прогресс уровня ${selectedLevel}: ${auditionProgressPercent}%`}
+              aria-valuemin={0} aria-valuemax={100} aria-valuenow={auditionProgressPercent}>
               <div className="study-card-review-progress-heading">
-                <span>ПРОГРЕСС ПОВТОРЕНИЯ</span>
-                <strong>{Math.min(6, Math.max(1, wordLearningData[String(sentence.word).trim().toLowerCase()]?.status === "MASTERED" ? 6 : wordLearningData[String(sentence.word).trim().toLowerCase()]?.stage || 1))}/6</strong>
+                <span>ПРОГРЕСС УРОВНЯ {selectedLevel}</span>
+                <strong>{auditionProgressPercent}%</strong>
               </div>
-              <div className="study-card-review-progress-track">
-                {Array.from({ length: 6 }, (_, index) => (
-                  <span key={index} className={index < Math.min(6, Math.max(1, wordLearningData[String(sentence.word).trim().toLowerCase()]?.status === "MASTERED" ? 6 : wordLearningData[String(sentence.word).trim().toLowerCase()]?.stage || 1)) ? "is-filled" : ""} />
-                ))}
+              <div className="study-card-review-progress-track audition-level-progress-track">
+                <span className="is-filled" style={{ width: `${auditionProgressPercent}%` }} />
               </div>
             </div>
             {sentence.russian && <h2 className="russian-sentence audition-success-translation">{sentence.russian}</h2>}
