@@ -5805,3 +5805,12 @@ button:disabled {
 .study-panel .level-selector .level-word-count {
   font-size: 1rem;
 }
+
+
+/* Audition hint countdown: lowercase soft lime-green message. */
+.audition-panel .audition-countdown {
+  color: #8fbd91;
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 750;
+  text-transform: lowercase;
+}
