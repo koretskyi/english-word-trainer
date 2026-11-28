@@ -2152,6 +2152,7 @@ export default function App() {
             audioEnabled={audioEnabled}
             levelProgress={levelProgress}
             reviewWords={reviewWords}
+            wordLearningData={learningData.words}
           />
         ) : page === "video" ? (
           <VideoPage videos={videos} completedVideoIds={completedVideoIds} onCompleteVideo={completeVideo} />
