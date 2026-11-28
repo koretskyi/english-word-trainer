@@ -5786,3 +5786,22 @@ button:disabled {
     font-size: 18px !important;
   }
 }
+
+
+/* Audition: increase spacing between masked words and emphasize sentence counter. */
+.audition-panel .audition-card-shell .audition-mask {
+  column-gap: 16px;
+}
+.audition-panel .audition-level-meta .audition-counter-uppercase {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Words tab: make the level word count slightly larger. */
+.study-panel .level-selector .level-word-count {
+  font-size: 1rem;
+}
