@@ -2144,6 +2144,8 @@ export default function App() {
             setSelectedLevel={changeLevel}
             levels={levels}
             audioEnabled={audioEnabled}
+            levelProgress={levelProgress}
+            reviewWords={reviewWords}
           />
         ) : page === "video" ? (
           <VideoPage videos={videos} completedVideoIds={completedVideoIds} onCompleteVideo={completeVideo} />
