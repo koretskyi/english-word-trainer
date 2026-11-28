@@ -52,7 +52,7 @@ function loadSentenceState() {
           : Array.isArray(parsed?.sentences) ? parsed.sentences : [];
         const validParsed = savedSentences.filter((sentence) =>
           isValidSentence(sentence) &&
-          !/^(?:a1|a2|b1|b2|c1)_(?:0*(?:5[1-9]|[6-7]\\d|80))$/i.test(String(sentence.id))
+          !/^(?:a1|a2|b1|b2|c1)_(?:0*(?:5[1-9]|[6-7]\d|80))$/i.test(String(sentence.id))
         );
         for (const savedSentence of validParsed) {
           const base = builtInById.get(savedSentence.id);
@@ -524,6 +524,7 @@ function StudyPage({
   isReview,
   reviewStage,
   onKnow,
+  cardSession,
 }) {
   const [answer, setAnswer] = useState(() => createInitialAnswer(sentence));
   const [checked, setChecked] = useState(false);
@@ -595,7 +596,7 @@ function StudyPage({
     setVoiceCountdown(0);
     setVoiceWrongAttempt(false);
     setVoiceImageReady(false);
-  }, [selectedLevel, sentence?.id]);
+  }, [selectedLevel, sentence?.id, cardSession]);
 
   function beginVoiceCountdown(timerRef, onComplete) {
     if (timerRef.current) window.clearTimeout(timerRef.current);
@@ -1688,6 +1689,7 @@ export default function App() {
   const [statsLevel, setStatsLevel] = useState("A1");
   const [learningData, setLearningData] = useState(loadLearningData);
   const [activeWordKey, setActiveWordKey] = useState(null);
+  const [cardSession, setCardSession] = useState(0);
   const [audioEnabled, setAudioEnabled] = useState(() => {
     try {
       return localStorage.getItem("english-word-trainer-audio") !== "off";
@@ -1793,7 +1795,10 @@ export default function App() {
   }), [reviewQueue, learningData.completedCount, readyReviewCount]);
 
   useEffect(() => {
-    if (page !== "study") setActiveWordKey(null);
+    if (page !== "study") {
+      setActiveWordKey(null);
+      setCardSession((current) => current + 1);
+    }
   }, [page]);
 
   useEffect(() => {
@@ -1860,12 +1865,14 @@ export default function App() {
 
   const advanceCard = useCallback(() => {
     setActiveWordKey(null);
+    setCardSession((current) => current + 1);
   }, []);
 
   // Keep the study layout mounted; only replace the selected level's data.
   function changeLevel(level) {
     if (level === selectedLevel) return;
     setActiveWordKey(null);
+    setCardSession((current) => current + 1);
     setSelectedLevel(level);
   }
 
@@ -2043,6 +2050,7 @@ export default function App() {
             onKnow={() => markWordKnown(sentence?.word)}
             isReview={Boolean(sentence && learningData.words[normalizeWord(sentence.word)]?.status === "REVIEW")}
             reviewStage={learningData.words[normalizeWord(sentence?.word)]?.stage || 1}
+            cardSession={cardSession}
             onAdvance={advanceCard}
             masteredCount={masteredCount}
             totalWords={totalWords}
