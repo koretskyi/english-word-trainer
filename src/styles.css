@@ -5622,3 +5622,44 @@ button:disabled {
     max-height: 164px;
   }
 }
+
+
+/* Audition header and level controls mirror the Words tab layout. */
+.audition-panel .audition-level-meta {
+  margin-bottom: 18px;
+}
+.audition-panel .audition-level-meta .level-selector {
+  width: 100%;
+}
+.audition-panel .audition-level-meta .audition-review-count {
+  cursor: default;
+}
+.audition-panel .audition-level-meta .audition-review-count:hover {
+  transform: none;
+}
+.audition-panel .audition-card-shell > .audition-card-heading {
+  align-self: stretch;
+  width: 100%;
+  margin: 0 0 2px;
+  padding: 2px 0 8px;
+  color: #596b50;
+  font-size: clamp(15px, 1.8vw, 19px);
+  line-height: 1.35;
+  font-weight: 800;
+  letter-spacing: .045em;
+  text-align: center;
+}
+.audition-panel .audition-card-shell .audition-mask .word-gap {
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+}
+.audition-panel .audition-card-shell .audition-mask .word-gap:focus {
+  border-bottom: 0 !important;
+  outline: 2px solid rgba(49, 87, 213, .28);
+  outline-offset: 1px;
+}
+@media (max-width: 700px) {
+  .audition-panel .audition-card-shell > .audition-card-heading {
+    font-size: 14px;
+  }
+}
