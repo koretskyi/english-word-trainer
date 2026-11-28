@@ -5575,3 +5575,50 @@ button:disabled {
 .study-card-shell {
   scroll-margin-bottom: 14px;
 }
+
+
+/* Audition illustration uses the same framed image treatment as the Words tab. */
+.audition-panel .audition-card-shell > .audition-image-slot {
+  display: flex;
+  flex: 0 0 236px;
+  width: 100%;
+  height: 236px;
+  min-height: 236px;
+  align-items: center;
+  justify-content: center;
+}
+.audition-panel .audition-card-shell > .audition-image-slot .word-image-card,
+.audition-panel .audition-card-shell > .audition-image-slot .word-image-placeholder {
+  width: min(100%, 520px);
+  height: 220px;
+  min-height: 220px;
+  max-height: 220px;
+  flex: 0 0 220px;
+  margin: 0 auto;
+  padding: 6px;
+  box-sizing: border-box;
+}
+.audition-panel .audition-card-shell > .audition-image-slot .word-image-card img {
+  width: 100%;
+  height: 206px;
+  max-height: 206px;
+  object-fit: cover;
+}
+@media (max-width: 700px) {
+  .audition-panel .audition-card-shell > .audition-image-slot {
+    flex-basis: 190px;
+    height: 190px;
+    min-height: 190px;
+  }
+  .audition-panel .audition-card-shell > .audition-image-slot .word-image-card,
+  .audition-panel .audition-card-shell > .audition-image-slot .word-image-placeholder {
+    height: 178px;
+    min-height: 178px;
+    max-height: 178px;
+    flex-basis: 178px;
+  }
+  .audition-panel .audition-card-shell > .audition-image-slot .word-image-card img {
+    height: 164px;
+    max-height: 164px;
+  }
+}
