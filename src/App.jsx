@@ -797,7 +797,7 @@ function StudyPage({
 
   useEffect(() => {
     if (!checked || voiceWrongAttempt || (correct && !audioFinished)) return undefined;
-    const timer = setTimeout(onAdvance, correct ? 3000 : 4000);
+    const timer = setTimeout(onAdvance, correct ? 1500 : 4000);
     return () => clearTimeout(timer);
   }, [checked, correct, audioFinished, onAdvance, voiceWrongAttempt]);
 
