@@ -13,62 +13,51 @@ const STORAGE_KEY = "english-word-trainer-v1";
 
 
 
-function loadSentences() {
+function isValidSentence(sentence) {
+  return Boolean(
+    sentence &&
+    typeof sentence === "object" &&
+    sentence.id != null &&
+    typeof sentence.level === "string" &&
+    LEVELS.includes(sentence.level) &&
+    typeof sentence.word === "string" &&
+    sentence.word.trim() &&
+    typeof sentence.russian === "string" &&
+    typeof sentence.englishTemplate === "string" &&
+    sentence.englishTemplate.includes("{word}") &&
+    (sentence.revealIndices == null || Array.isArray(sentence.revealIndices))
+  );
+}
+
+function loadSentenceState() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-
     if (saved !== null) {
       const parsed = JSON.parse(saved);
-
-      if (Array.isArray(parsed)) {
-        // Ignore corrupted or incomplete localStorage entries.
-        const validParsed = parsed.filter(
-          (sentence) =>
-            sentence &&
-            typeof sentence === "object" &&
-            sentence.id != null &&
-            typeof sentence.word === "string" &&
-            typeof sentence.level === "string" &&
-            // Remove the obsolete imported batch (cards 051–080) from each level.
-            // New user-created cards use timestamp-based IDs and remain untouched.
-            !/^(?:a1|a2|b1|b2|c1)_(?:0*(?:5[1-9]|[6-7]\d|80))$/i.test(String(sentence.id))
-        );
-        const savedById = new Map();
-
-        for (const sentence of validParsed) {
-          if (sentence && sentence.id != null) {
-            savedById.set(sentence.id, sentence);
-          }
-        }
-
-        const builtInIds = new Set(SENTENCES.map((sentence) => sentence.id));
-
-        // Keep built-in order; user edits of the same id win.
-        // New built-in ids still appear even if they were never saved.
-        const mergedBuiltIn = SENTENCES.map((sentence) => {
-          const savedSentence = savedById.get(sentence.id);
-          return savedSentence
-            ? {
-                ...sentence,
-                ...savedSentence,
-                pixabayQuery: sentence.pixabayQuery === "" ? "" : savedSentence.pixabayQuery || sentence.pixabayQuery,
-                russianWord: savedSentence.russianWord || sentence.russianWord,
-              }
-            : sentence;
-        });
-
-        const userCreated = validParsed.filter(
-          (sentence) => !builtInIds.has(sentence.id)
-        );
-
-        return [...mergedBuiltIn, ...userCreated];
-      }
+      const savedSentences = Array.isArray(parsed)
+        ? parsed
+        : Array.isArray(parsed?.sentences) ? parsed.sentences : [];
+      const deletedBuiltInIds = Array.isArray(parsed?.deletedBuiltInIds)
+        ? parsed.deletedBuiltInIds.filter((id) => typeof id === "string")
+        : [];
+      const validParsed = savedSentences.filter((sentence) =>
+        isValidSentence(sentence) &&
+        // Remove the obsolete imported batch (cards 051–080) from each level.
+        !/^(?:a1|a2|b1|b2|c1)_(?:0*(?:5[1-9]|[6-7]\d|80))$/i.test(String(sentence.id))
+      );
+      const savedById = new Map(validParsed.map((sentence) => [sentence.id, sentence]));
+      const builtInIds = new Set(SENTENCES.map((sentence) => sentence.id));
+      const deletedIds = new Set(deletedBuiltInIds);
+      const mergedBuiltIn = SENTENCES
+        .filter((sentence) => !deletedIds.has(sentence.id))
+        .map((sentence) => ({ ...sentence, ...(savedById.get(sentence.id) || {}) }));
+      const userCreated = validParsed.filter((sentence) => !builtInIds.has(sentence.id));
+      return { sentences: [...mergedBuiltIn, ...userCreated], deletedBuiltInIds };
     }
   } catch (error) {
     console.error("Ошибка загрузки предложений:", error);
   }
-
-  return SENTENCES;
+  return { sentences: SENTENCES.filter(isValidSentence), deletedBuiltInIds: [] };
 }
 
 
@@ -275,19 +264,17 @@ function VideoTimeFields({ label, value, onSave, allowEmpty = false }) {
   return (
     <div className="admin-video-time-field">
       <span>{label}</span>
-      <div className="admin-video-time-inputs">
+      <div className="admin-video-time-inputs" onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) saveParts();
+      }}>
         <label><input type="number" min="0" step="1" value={minutes}
-          onChange={(event) => {
-            const next = event.target.value;
-            setMinutes(next);
-            saveParts(next, seconds);
-          }} placeholder="0" aria-label={`${label}: минуты`} /> <small>мин</small></label>
+          onChange={(event) => setMinutes(event.target.value)}
+          onKeyDown={(event) => { if (event.key === "Enter") event.currentTarget.blur(); }}
+          placeholder="0" aria-label={`${label}: минуты`} /> <small>мин</small></label>
         <label><input type="number" min="0" max="59" step="1" value={seconds}
-          onChange={(event) => {
-            const next = event.target.value;
-            setSeconds(next);
-            saveParts(minutes, next);
-          }} placeholder="0" aria-label={`${label}: секунды`} /> <small>сек</small></label>
+          onChange={(event) => setSeconds(event.target.value)}
+          onKeyDown={(event) => { if (event.key === "Enter") event.currentTarget.blur(); }}
+          placeholder="0" aria-label={`${label}: секунды`} /> <small>сек</small></label>
       </div>
     </div>
   );
@@ -1659,7 +1646,8 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
 
 // Главный компонент приложения.
 export default function App() {
-  const [sentences, setSentences] = useState(loadSentences);
+  const [sentenceState, setSentenceState] = useState(loadSentenceState);
+  const sentences = sentenceState.sentences;
   const [videos, setVideos] = useState(loadVideos);
   const [completedVideoIds, setCompletedVideoIds] = useState(loadCompletedVideoIds);
   const [page, setPage] = useState("study");
@@ -1774,11 +1762,12 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(sentences));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sentenceState));
     } catch (error) {
       console.error("Не удалось сохранить предложения:", error);
+      setStorageWarning("Не удалось сохранить карточки: возможно, переполнено хранилище браузера. Освободи место и обнови страницу.");
     }
-  }, [sentences]);
+  }, [sentenceState]);
 
   useEffect(() => {
     try {
@@ -1840,15 +1829,27 @@ export default function App() {
   }
 
   function saveSentence(sentence) {
-    setSentences((current) => {
-      const exists = current.some((item) => item.id === sentence.id);
-      if (exists) return current.map((item) => item.id === sentence.id ? sentence : item);
-      return [...current, sentence];
+    setSentenceState((current) => {
+      const exists = current.sentences.some((item) => item.id === sentence.id);
+      return {
+        ...current,
+        sentences: exists
+          ? current.sentences.map((item) => item.id === sentence.id ? sentence : item)
+          : [...current.sentences, sentence],
+        deletedBuiltInIds: current.deletedBuiltInIds.filter((deletedId) => deletedId !== sentence.id),
+      };
     });
   }
 
   function deleteSentence(id) {
-    setSentences((current) => current.filter((item) => item.id !== id));
+    const isBuiltIn = SENTENCES.some((item) => item.id === id);
+    setSentenceState((current) => ({
+      ...current,
+      sentences: current.sentences.filter((item) => item.id !== id),
+      deletedBuiltInIds: isBuiltIn && !current.deletedBuiltInIds.includes(id)
+        ? [...current.deletedBuiltInIds, id]
+        : current.deletedBuiltInIds,
+    }));
   }
 
   function saveVideo(video) {
@@ -1958,6 +1959,7 @@ export default function App() {
           </div>
         </div>
       </header>
+      {storageWarning && <div className="storage-warning" role="alert">{storageWarning}</div>}
       <main className="main-content">
         <div key={`${page}-${page === "study" ? (showStats ? "stats" : "words") : "screen"}`} className="app-screen-transition">
         {page === "study" ? (
