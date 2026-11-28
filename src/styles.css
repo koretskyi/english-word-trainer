@@ -5535,7 +5535,7 @@ button:disabled {
 }
 .study-card-shell .incorrect-word-pair.is-compact > .answer-value-label {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   justify-content: center;
   gap: 4px;
   min-height: 0;
