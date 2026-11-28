@@ -194,7 +194,10 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     setSpeechError("");
     setVoiceAnswer("");
     window.clearTimeout(retryTimerRef.current);
+    window.clearTimeout(countdownTimerRef.current);
+    voiceAttemptIdRef.current += 1;
     autoVoiceRef.current?.stop();
+    autoVoiceRef.current = null;
     beginVoiceCountdown(startVoiceInput);
   }
 
@@ -287,7 +290,10 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     if (!englishText || result === "correct") return;
     manualInputRef.current = false;
     window.clearTimeout(retryTimerRef.current);
+    window.clearTimeout(countdownTimerRef.current);
+    voiceAttemptIdRef.current += 1;
     autoVoiceRef.current?.stop();
+    autoVoiceRef.current = null;
     voiceModeActiveRef.current = true;
     setVoiceModeActive(true);
     setSpeechError("");
@@ -371,7 +377,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
 
       <p className="eyebrow">ПРОСЛУШАЙ И ВОССТАНОВИ ПРЕДЛОЖЕНИЕ</p>
 
-      <div className={`study-card-shell audition-card-shell${result === "correct" ? " is-answered is-success" : ""}`}>
+      <div className={`study-card-shell audition-card-shell${result === "correct" ? " is-answered" : ""}`}>
         <div className="audition-mask" aria-label="Английское предложение с пропущенными буквами">
           {maskedTokens.map((token) => {
             if (!token.isWord) return <span key={token.id}>{token.value}</span>;
