@@ -5826,3 +5826,28 @@ button:disabled {
 .study-panel .level-selector .level-word-count {
   font-size: 13px;
 }
+
+
+/* Audition replay button: soft blue standby, brighter blue during playback. */
+.audition-panel .audition-replay-button {
+  border: 1px solid #bfd2f3;
+  background: #eaf1ff;
+  color: #3157a5;
+  transition: background-color .22s ease, border-color .22s ease, color .22s ease, box-shadow .22s ease;
+}
+.audition-panel .audition-replay-button:hover:not(:disabled) {
+  border-color: #91afe8;
+  background: #dce8ff;
+  color: #244b98;
+}
+.audition-panel .audition-replay-button.is-pending {
+  border-color: #a9c2ed;
+  background: #dce8ff;
+  color: #244b98;
+}
+.audition-panel .audition-replay-button.is-playing {
+  border-color: #3157d5;
+  background: #3157d5;
+  color: #fff;
+  box-shadow: 0 0 0 3px rgba(49, 87, 213, .15);
+}
