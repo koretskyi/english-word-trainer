@@ -273,7 +273,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     if (result !== "correct") return undefined;
     const timer = window.setTimeout(() => {
       setCardIndex((current) => (current + 1) % Math.max(1, filteredSentences.length));
-    }, 1600);
+    }, 3600);
     return () => window.clearTimeout(timer);
   }, [result, sentence?.id, filteredSentences.length]);
 
