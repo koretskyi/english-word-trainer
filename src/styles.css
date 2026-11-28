@@ -5653,11 +5653,11 @@ button:disabled {
   width: 100%;
   margin: 0 0 2px;
   padding: 2px 0 8px;
-  color: #596b50;
-  font-size: clamp(15px, 1.8vw, 19px);
+  color: #8fbd91;
+  font-size: 12px;
   line-height: 1.35;
-  font-weight: 800;
-  letter-spacing: .045em;
+  font-weight: 700;
+  letter-spacing: .035em;
   text-align: center;
 }
 .audition-panel .audition-card-shell .audition-mask .word-gap {
