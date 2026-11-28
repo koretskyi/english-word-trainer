@@ -1085,8 +1085,8 @@ function StudyPage({
               ) : (
                 <div className="incorrect-result-content">
                   <div className="incorrect-word-pair is-compact">
-                    <span className="answer-value-label is-correct-label">Правильно: <strong>{sentence.word}</strong></span>
-                    <span className="answer-value-label is-wrong-label">Ваш ответ: <strong>{answer.join("").trim() || "—"}</strong></span>
+                    <span className="answer-value-label is-correct-label"><strong>{sentence.word}</strong><small>Правильно:</small></span>
+                    <span className="answer-value-label is-wrong-label"><strong>{answer.join("").trim() || "—"}</strong><small>Ваш ответ:</small></span>
                   </div>
                 </div>
               )}
