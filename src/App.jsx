@@ -1865,7 +1865,7 @@ export default function App() {
         userCreated: sentenceState.userCreated,
         deletedBuiltInIds: sentenceState.deletedBuiltInIds,
       }));
-      setStorageWarning("");
+      setStorageWarning((current) => current.startsWith("Не удалось сохранить карточки:") ? "" : current);
     } catch (error) {
       console.error("Не удалось сохранить предложения:", error);
       setStorageWarning("Не удалось сохранить карточки: возможно, переполнено хранилище браузера. Освободи место и повтори сохранение; пока не перезагружай страницу.");
@@ -1875,7 +1875,7 @@ export default function App() {
   useEffect(() => {
     try {
       localStorage.setItem(VIDEO_LIBRARY_KEY, JSON.stringify(videos));
-      setStorageWarning("");
+      setStorageWarning((current) => current.startsWith("Не удалось сохранить библиотеку видео:") ? "" : current);
     } catch (error) {
       console.error("Не удалось сохранить библиотеку видео:", error);
       setStorageWarning("Не удалось сохранить библиотеку видео: возможно, переполнено хранилище браузера. Освободи место и повтори сохранение; пока не перезагружай страницу.");
@@ -1885,7 +1885,7 @@ export default function App() {
   useEffect(() => {
     try {
       localStorage.setItem(VIDEO_PROGRESS_KEY, JSON.stringify(completedVideoIds));
-      setStorageWarning("");
+      setStorageWarning((current) => current.startsWith("Не удалось сохранить прогресс видео:") ? "" : current);
     } catch (error) {
       console.error("Не удалось сохранить прогресс по видео:", error);
       setStorageWarning("Не удалось сохранить прогресс видео: возможно, переполнено хранилище браузера. Освободи место и повтори действие; пока не перезагружай страницу.");
@@ -1895,7 +1895,7 @@ export default function App() {
   useEffect(() => {
     try {
       localStorage.setItem(LEARNING_STORAGE_KEY, JSON.stringify(learningData));
-      setStorageWarning("");
+      setStorageWarning((current) => current.startsWith("Не удалось сохранить учебный прогресс:") ? "" : current);
     } catch (error) {
       console.error("Не удалось сохранить прогресс:", error);
       setStorageWarning("Не удалось сохранить учебный прогресс: возможно, переполнено хранилище браузера. Освободи место и повтори действие; пока не перезагружай страницу.");
