@@ -1373,9 +1373,17 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
               <div className="admin-video-settings">
                 <div className="admin-video-range">
                   <VideoTimeFields label="Начало фрагмента" value={video.startTime || "0:00"}
-                    onSave={(startTime) => onSaveVideo({ ...video, startTime, transcript: "", subtitleCues: [] })} />
+                    onSave={(startTime) => onSaveVideo({
+                      ...video,
+                      startTime,
+                      ...(startTime !== (video.startTime || "0:00") ? { transcript: "", subtitleCues: [] } : {}),
+                    })} />
                   <VideoTimeFields label="Конец фрагмента" value={video.endTime || ""}
-                    allowEmpty onSave={(endTime) => onSaveVideo({ ...video, endTime, transcript: "", subtitleCues: [] })} />
+                    allowEmpty onSave={(endTime) => onSaveVideo({
+                      ...video,
+                      endTime,
+                      ...(endTime !== (video.endTime || "") ? { transcript: "", subtitleCues: [] } : {}),
+                    })} />
                   <small className="muted">Оставь минуты и секунды конца пустыми, чтобы использовать остаток ролика.</small>
                 </div>
                 <div className="admin-video-actions">
