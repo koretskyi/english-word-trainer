@@ -3,6 +3,62 @@ import WordGap, { createWordGapOpenedPositions } from "../components/LetterGap.j
 import CorrectFeedback from "../components/CorrectFeedback.jsx";
 import { startAutoVoiceCapture } from "../utils/autoVoice.js";
 
+// Та же загрузка иллюстрации через backend /api/word-image, что и на вкладке «Слова».
+function AuditionWordImage({ sentence }) {
+  const word = sentence?.word;
+  const [image, setImage] = useState(null);
+  const [status, setStatus] = useState("loading");
+
+  useEffect(() => {
+    if (!word) {
+      setImage(null);
+      setStatus("empty");
+      return undefined;
+    }
+    const controller = new AbortController();
+    setImage(null);
+    setStatus("loading");
+    async function loadImage() {
+      try {
+        const response = await fetch("/api/word-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            word,
+            context: sentence?.pixabayQuery ?? String(sentence?.englishTemplate || "").replace("{word}", word),
+          }),
+          signal: controller.signal,
+        });
+        const contentType = response.headers.get("content-type") || "";
+        const body = await response.text();
+        let data = {};
+        if (contentType.includes("application/json")) {
+          try { data = JSON.parse(body); }
+          catch { throw new Error("Повреждённый ответ сервера изображений"); }
+        } else {
+          throw new Error(`Сервер изображений вернул не JSON (HTTP ${response.status})`);
+        }
+        if (!response.ok) throw new Error(data.detail || `Image API HTTP ${response.status}`);
+        setImage(data);
+        setStatus("ready");
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          console.warn("Не удалось загрузить иллюстрацию аудирования:", error);
+          setImage(null);
+          setStatus("error");
+        }
+      }
+    }
+    loadImage();
+    return () => controller.abort();
+  }, [word, sentence?.pixabayQuery, sentence?.englishTemplate]);
+
+  if (status === "loading") return <div className="word-image-placeholder" aria-live="polite">Подбираю изображение…</div>;
+  if (status !== "ready" || !image?.src) return <div className="word-image-placeholder is-empty">Иллюстрация пока не найдена</div>;
+  return <figure className="word-image-card"><img src={image.src} alt={`Иллюстрация к предложению: ${word}`} loading="eager"
+    onError={() => { setImage(null); setStatus("error"); }} /></figure>;
+}
+
 function getSentenceText(sentence) {
   if (!sentence) return "";
   return (sentence.englishTemplate || "")
@@ -132,14 +188,15 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     wordInputRefs.current = [];
   }, [sentence?.id, englishText]);
 
-  // При «Не знаю» временно показываем полный ответ на 3 секунды,
-  // затем снова скрываем буквы и разрешаем пользователю заполнить предложение.
+  // «Не знаю» показывает правильное предложение на 3 секунды,
+  // затем возвращает пустые поля. Голосовой режим не запускается.
   useEffect(() => {
     if (dontKnowCountdown === null) return undefined;
     const timer = window.setTimeout(() => {
       if (dontKnowCountdown <= 1) {
         setDontKnowCountdown(null);
-        startContinuousVoiceMode();
+        setWordAnswers({});
+        setResult("");
       } else {
         setDontKnowCountdown((current) => current === null ? null : current - 1);
       }
@@ -378,6 +435,9 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
       <p className="eyebrow">ПРОСЛУШАЙ И ВОССТАНОВИ ПРЕДЛОЖЕНИЕ</p>
 
       <div className={`study-card-shell audition-card-shell${result === "correct" ? " is-answered" : ""}`}>
+        <div className="study-card-image-slot audition-image-slot">
+          <AuditionWordImage key={sentence.id} sentence={sentence} />
+        </div>
         <div className="audition-mask" aria-label="Английское предложение с пропущенными буквами">
           {maskedTokens.map((token) => {
             if (!token.isWord) return <span key={token.id}>{token.value}</span>;
