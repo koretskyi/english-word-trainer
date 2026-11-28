@@ -5751,3 +5751,14 @@ button:disabled {
     font-size: clamp(29px, 7vw, 38px);
   }
 }
+
+
+/* Slightly smaller word only inside the pink wrong-answer field. */
+.study-card-shell .incorrect-word-pair.is-compact > .answer-value-item > .answer-value-label.is-wrong-label strong {
+  font-size: clamp(26px, 3.4vw, 34px);
+}
+@media (max-width: 520px) {
+  .study-card-shell .incorrect-word-pair.is-compact > .answer-value-item > .answer-value-label.is-wrong-label strong {
+    font-size: clamp(24px, 6vw, 30px);
+  }
+}
