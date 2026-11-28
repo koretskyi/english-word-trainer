@@ -59,6 +59,17 @@ function AuditionWordImage({ sentence }) {
     onError={() => { setImage(null); setStatus("error"); }} /></figure>;
 }
 
+const AUDITION_PROGRESS_KEY = "english-word-trainer-audition-progress-v1";
+
+function loadAuditionCompletedWords() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(AUDITION_PROGRESS_KEY) || "[]");
+    return Array.isArray(saved) ? saved.filter((word) => typeof word === "string") : [];
+  } catch {
+    return [];
+  }
+}
+
 function getSentenceText(sentence) {
   if (!sentence) return "";
   return (sentence.englishTemplate || "")
@@ -128,7 +139,14 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     [sentences, selectedLevel]
   );
   const levelWordCount = new Set(filteredSentences.map((item) => String(item.word || "").trim().toLowerCase()).filter(Boolean)).size;
-  const currentLevelProgress = levelProgress.find((item) => item.level === selectedLevel) || { total: levelWordCount, mastered: 0, percent: 0 };
+  const [auditionCompletedWords, setAuditionCompletedWords] = useState(loadAuditionCompletedWords);
+  const completedWordsInLevel = filteredSentences.reduce((count, item) =>
+    count + (auditionCompletedWords.includes(String(item.word || "").trim().toLowerCase()) ? 1 : 0), 0);
+  const auditionProgressPercent = levelWordCount
+    ? Math.round((new Set(filteredSentences
+      .map((item) => String(item.word || "").trim().toLowerCase())
+      .filter((word) => auditionCompletedWords.includes(word))).size / levelWordCount) * 100)
+    : 0;
   const levelReviewCount = reviewWords.filter((item) => item.level === selectedLevel).length;
   const [cardIndex, setCardIndex] = useState(0);
   const [voiceAnswer, setVoiceAnswer] = useState("");
@@ -461,13 +479,13 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
           <select id="audition-level" value={selectedLevel} onChange={(event) => setSelectedLevel(event.target.value)}>
             {levels.map((level) => <option key={level} value={level}>{level}</option>)}
           </select>
-          <div className="learning-progress-card learning-progress-card-compact" aria-label={`Прогресс уровня: ${currentLevelProgress.percent}%`}>
+          <div className="learning-progress-card learning-progress-card-compact" aria-label={`Прогресс аудирования: ${auditionProgressPercent}%`}>
             <div className="learning-progress-heading">
               <span>Прогресс</span>
-              <strong>{currentLevelProgress.percent}%</strong>
+              <strong>{auditionProgressPercent}%</strong>
             </div>
             <div className="learning-progress-track">
-              <div className="learning-progress-fill" style={{ width: `${currentLevelProgress.percent}%` }} />
+              <div className="learning-progress-fill" style={{ width: `${auditionProgressPercent}%` }} />
             </div>
           </div>
           <span className="audition-counter audition-counter-uppercase">Предложение {cardIndex + 1} из {filteredSentences.length}</span>
