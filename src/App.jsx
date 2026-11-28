@@ -584,6 +584,7 @@ function StudyPage({
   const voiceRetryTimerRef = useRef(null);
   const voicePrepareTimerRef = useRef(null);
   const studyCardRef = useRef(null);
+  const studyCardShellRef = useRef(null);
   const voiceCaptureRef = useRef(null);
   const voiceAttemptIdRef = useRef(0);
   const answerRecordedRef = useRef(false);
@@ -635,6 +636,19 @@ function StudyPage({
     setVoiceWrongAttempt(false);
     setVoiceImageReady(false);
   }, [selectedLevel, sentence?.id, cardSession]);
+
+  // Keep the lower edge of the active card (including its action buttons or result)
+  // in view whenever a new card appears or the answer state changes.
+  useLayoutEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      studyCardShellRef.current?.scrollIntoView({
+        block: "end",
+        inline: "nearest",
+        behavior: "smooth",
+      });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [sentence?.id, selectedLevel, cardSession, checked]);
 
   function beginVoiceCountdown(timerRef, onComplete) {
     if (timerRef.current) window.clearTimeout(timerRef.current);
@@ -1013,7 +1027,7 @@ function StudyPage({
       <div className="level-switch-content">
         {levelSelector}
         {statsPanel}
-      <div className={`study-card-shell${checked ? " is-answered" : ""}${checked && (correct || markedKnown) ? " is-success" : ""}`}>
+      <div ref={studyCardShellRef} className={`study-card-shell${checked ? " is-answered" : ""}${checked && (correct || markedKnown) ? " is-success" : ""}`}>
         {(isReview || checked) && (
           <div className="study-card-review-progress"
             role="progressbar"
