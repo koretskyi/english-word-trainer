@@ -196,15 +196,13 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     wordInputRefs.current = [];
   }, [sentence?.id, englishText]);
 
-  // «Подсказка» показывает правильное предложение на 3 секунды,
-  // затем возвращает пустые поля. Голосовой режим не запускается.
+  // «Подсказка» временно раскрывает все буквы на 3 секунды.
+  // После исчезновения подсказки введённые пользователем буквы сохраняются.
   useEffect(() => {
     if (dontKnowCountdown === null) return undefined;
     const timer = window.setTimeout(() => {
       if (dontKnowCountdown <= 1) {
         setDontKnowCountdown(null);
-        setWordAnswers({});
-        setResult("");
       } else {
         setDontKnowCountdown((current) => current === null ? null : current - 1);
       }
