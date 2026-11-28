@@ -5762,3 +5762,15 @@ button:disabled {
     font-size: clamp(24px, 6vw, 30px);
   }
 }
+
+
+/* Make the entered wrong word noticeably smaller (keep the pink field unchanged). */
+.study-card-shell .incorrect-word-pair.is-compact .answer-value-item .answer-value-label.is-wrong-label strong {
+  font-size: 24px !important;
+  line-height: 1.15;
+}
+@media (max-width: 520px) {
+  .study-card-shell .incorrect-word-pair.is-compact .answer-value-item .answer-value-label.is-wrong-label strong {
+    font-size: 22px !important;
+  }
+}
