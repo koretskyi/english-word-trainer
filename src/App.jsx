@@ -528,6 +528,9 @@ function StudyPage({
   const voicePrepareTimerRef = useRef(null);
   const studyCardRef = useRef(null);
   const voiceCaptureRef = useRef(null);
+  const voiceAttemptIdRef = useRef(0);
+  const answerRecordedRef = useRef(false);
+  const [wasReviewAtStart, setWasReviewAtStart] = useState(isReview);
   const voiceActiveRef = useRef(false);
   const micStreamRef = useRef(null);
   const audioContextRef = useRef(null);
@@ -546,6 +549,7 @@ function StudyPage({
   }
 
   useEffect(() => () => {
+    voiceAttemptIdRef.current += 1;
     if (voiceRetryTimerRef.current) window.clearTimeout(voiceRetryTimerRef.current);
     voiceCaptureRef.current?.stop();
     setVoiceListening(false);
@@ -554,6 +558,9 @@ function StudyPage({
   // Keep StudyPage mounted between levels. Reset card-local state before the
   // browser paints the newly selected sentence to avoid a one-frame flash.
   useLayoutEffect(() => {
+    voiceAttemptIdRef.current += 1;
+    answerRecordedRef.current = false;
+    setWasReviewAtStart(isReview);
     voiceCaptureRef.current?.stop();
     voiceCaptureRef.current = null;
     stopMicrophoneMeter();
@@ -627,6 +634,7 @@ function StudyPage({
     if (voicePrepareTimerRef.current) window.clearTimeout(voicePrepareTimerRef.current);
     voiceRetryTimerRef.current = null;
     voicePrepareTimerRef.current = null;
+    voiceAttemptIdRef.current += 1;
     setVoicePreparing(false);
     setVoiceCountdown(0);
     voiceCaptureRef.current?.stop();
@@ -640,6 +648,7 @@ function StudyPage({
   function startVoiceInput() {
     if (voiceRetryTimerRef.current) window.clearTimeout(voiceRetryTimerRef.current);
     voiceRetryTimerRef.current = null;
+    const attemptId = ++voiceAttemptIdRef.current;
     voiceCaptureRef.current?.stop();
     setVoiceError("");
     setVoiceRecognizedText("");
@@ -655,12 +664,14 @@ function StudyPage({
       calibrationMs: 0,
       noSpeechTimeoutMs: 2000,
       onStatus: (status) => {
+        if (attemptId !== voiceAttemptIdRef.current) return;
         setVoiceStatus(status);
         if (status === "transcribing") setVoiceSuccessConfetti(false);
         const active = status === "listening";
         setVoiceListening(active);
       },
       onText: (recognizedText, recognitionData) => {
+        if (attemptId !== voiceAttemptIdRef.current || !sentence) return;
         const transcript = String(recognizedText || "").trim();
         if (recognitionData?.is_correct === true) {
           setVoiceError("");
@@ -678,14 +689,16 @@ function StudyPage({
         setVoiceStatus("idle");
         setVoiceWrongAttempt(true);
         setChecked(true);
-        onComplete(sentence.word, false);
+        recordAnswerOnce(sentence.word, false);
         if (audioEnabled) speakEnglish(sentence.word);
       },
       onError: (message) => {
+        if (attemptId !== voiceAttemptIdRef.current) return;
         setVoiceRecognizedText("");
         scheduleContinuousVoiceRetry();
       },
       onNoSpeech: () => {
+        if (attemptId !== voiceAttemptIdRef.current) return;
         setVoiceRecognizedText("");
         scheduleContinuousVoiceRetry();
       },
@@ -865,6 +878,12 @@ function StudyPage({
     );
   }
 
+  function recordAnswerOnce(word, isCorrect) {
+    if (answerRecordedRef.current) return;
+    answerRecordedRef.current = true;
+    onComplete(word, isCorrect);
+  }
+
   function handleAnswerChange(nextAnswer) {
     if (checked) return;
     setAnswer(nextAnswer);
@@ -874,7 +893,7 @@ function StudyPage({
         (nextAnswer[position] || "").toLowerCase() === letter.toLowerCase()
       );
       setChecked(true);
-      onComplete(sentence.word, isRight);
+      recordAnswerOnce(sentence.word, isRight);
       if (isRight) {
         // Экран результата показывается сразу; озвучка завершится отдельно.
         if (audioEnabled) {
@@ -892,11 +911,13 @@ function StudyPage({
 
   function dontKnow() {
     if (!sentence || checked) return;
+    voiceAttemptIdRef.current += 1;
     voiceCaptureRef.current?.stop();
+    voiceCaptureRef.current = null;
     setVoiceListening(false);
     setVoiceStatus("idle");
     setChecked(true);
-    onComplete(sentence.word, false);
+    recordAnswerOnce(sentence.word, false);
     if (audioEnabled) speakEnglish(sentence.word);
   }
 
@@ -942,7 +963,7 @@ function StudyPage({
             aria-label={`Прогресс изучения слова: этап ${Math.min(6, Math.max(1, reviewStage))} из 6`}
             aria-valuemin={1} aria-valuemax={6}
             aria-valuenow={Math.min(6, Math.max(1, reviewStage))}>
-{checked && !correct && !markedKnown && isReview ? (
+{checked && !correct && !markedKnown && wasReviewAtStart ? (
               <div className="study-card-review-reset" role="status">ПРОГРЕСС СБРОШЕН</div>
             ) : (
               <>
@@ -1084,19 +1105,37 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
   const [subtitleErrors, setSubtitleErrors] = useState({});
 
   async function fetchVideoSubtitles(video) {
+    const source = {
+      url: video.url,
+      startTime: video.startTime || "00:00",
+      endTime: video.endTime || "",
+    };
     setSubtitleErrors((current) => ({ ...current, [video.id]: "" }));
     setSubtitleJobs((current) => ({ ...current, [video.id]: "loading" }));
     try {
       const response = await fetch("/api/youtube-subtitles", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: video.url, startTime: video.startTime || "00:00", endTime: video.endTime || "" }),
+        body: JSON.stringify(source),
       });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || "Не удалось получить субтитры.");
+      const raw = await response.text();
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        throw new Error("Сервер вернул не JSON. Проверь, что backend запущен и адрес API правильный.");
+      }
+      if (!response.ok) throw new Error(data.detail || data.error || "Не удалось получить субтитры.");
       const transcript = String(data.text || "").trim();
       if (!transcript) throw new Error("YouTube не вернул английские субтитры.");
-      onSaveVideo({ ...video, transcript, subtitleCues: Array.isArray(data.cues) ? data.cues : [] });
+      onSaveVideo({
+        id: video.id,
+        _sourceUrl: source.url,
+        _sourceStartTime: source.startTime,
+        _sourceEndTime: source.endTime,
+        transcript,
+        subtitleCues: Array.isArray(data.cues) ? data.cues : [],
+      });
       setSubtitleJobs((current) => ({ ...current, [video.id]: "done" }));
     } catch (error) {
       setSubtitleErrors((current) => ({ ...current, [video.id]: error.message || "Ошибка загрузки субтитров." }));
@@ -1307,9 +1346,9 @@ function AdminPage({ sentences, onSave, onDelete, videos, onSaveVideo, onDeleteV
               <div className="admin-video-settings">
                 <div className="admin-video-range">
                   <VideoTimeFields label="Начало фрагмента" value={video.startTime || "0:00"}
-                    onSave={(startTime) => onSaveVideo({ ...video, startTime })} />
+                    onSave={(startTime) => onSaveVideo({ ...video, startTime, transcript: "", subtitleCues: [] })} />
                   <VideoTimeFields label="Конец фрагмента" value={video.endTime || ""}
-                    allowEmpty onSave={(endTime) => onSaveVideo({ ...video, endTime })} />
+                    allowEmpty onSave={(endTime) => onSaveVideo({ ...video, endTime, transcript: "", subtitleCues: [] })} />
                   <small className="muted">Оставь минуты и секунды конца пустыми, чтобы использовать остаток ролика.</small>
                 </div>
                 <div className="admin-video-actions">
@@ -1746,6 +1785,7 @@ export default function App() {
       localStorage.setItem(VIDEO_LIBRARY_KEY, JSON.stringify(videos));
     } catch (error) {
       console.error("Не удалось сохранить библиотеку видео:", error);
+      setStorageWarning("Не удалось сохранить библиотеку видео: возможно, переполнено хранилище браузера.");
     }
   }, [videos]);
 
@@ -1754,6 +1794,7 @@ export default function App() {
       localStorage.setItem(VIDEO_PROGRESS_KEY, JSON.stringify(completedVideoIds));
     } catch (error) {
       console.error("Не удалось сохранить прогресс по видео:", error);
+      setStorageWarning("Не удалось сохранить прогресс видео: возможно, переполнено хранилище браузера.");
     }
   }, [completedVideoIds]);
 
@@ -1762,6 +1803,7 @@ export default function App() {
       localStorage.setItem(LEARNING_STORAGE_KEY, JSON.stringify(learningData));
     } catch (error) {
       console.error("Не удалось сохранить прогресс:", error);
+      setStorageWarning("Не удалось сохранить учебный прогресс: возможно, переполнено хранилище браузера.");
     }
   }, [learningData]);
 
@@ -1811,8 +1853,18 @@ export default function App() {
 
   function saveVideo(video) {
     setVideos((current) => {
+      const { _sourceUrl, _sourceStartTime, _sourceEndTime, ...updates } = video;
       const exists = current.some((item) => item.id === video.id);
-      return exists ? current.map((item) => item.id === video.id ? video : item) : [...current, video];
+      if (!exists) return [...current, updates];
+      return current.map((item) => {
+        if (item.id !== video.id) return item;
+        if (_sourceUrl && (
+          item.url !== _sourceUrl ||
+          (item.startTime || "00:00") !== _sourceStartTime ||
+          (item.endTime || "") !== _sourceEndTime
+        )) return item;
+        return { ...item, ...updates };
+      });
     });
   }
 
