@@ -251,13 +251,13 @@ function VideoTimeFields({ label, value, onSave, allowEmpty = false }) {
     setSeconds(value ? (parts.length > 1 ? parts[parts.length - 1] : "00") : "");
   }, [value]);
 
-  function saveParts(nextMinutes, nextSeconds) {
-    if (allowEmpty && !nextMinutes.trim() && !nextSeconds.trim()) {
+  function saveParts() {
+    if (allowEmpty && !minutes.trim() && !seconds.trim()) {
       onSave("");
       return;
     }
-    const mins = Math.max(0, Number.parseInt(nextMinutes || "0", 10) || 0);
-    const secs = Math.min(59, Math.max(0, Number.parseInt(nextSeconds || "0", 10) || 0));
+    const mins = Math.max(0, Number.parseInt(minutes || "0", 10) || 0);
+    const secs = Math.min(59, Math.max(0, Number.parseInt(seconds || "0", 10) || 0));
     onSave(`${mins}:${String(secs).padStart(2, "0")}`);
   }
 
@@ -1652,6 +1652,7 @@ export default function App() {
   const [completedVideoIds, setCompletedVideoIds] = useState(loadCompletedVideoIds);
   const [page, setPage] = useState("study");
   const [showStats, setShowStats] = useState(false);
+  const [storageWarning, setStorageWarning] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("A1");
   const [statsLevel, setStatsLevel] = useState("A1");
   const [learningData, setLearningData] = useState(loadLearningData);
@@ -1759,6 +1760,10 @@ export default function App() {
       : item.dueAt - learningData.completedCount + readyReviewCount + sameFutureDueBefore;
     return { ...item, remaining };
   }), [reviewQueue, learningData.completedCount, readyReviewCount]);
+
+  useEffect(() => {
+    if (page !== "study") setActiveWordKey(null);
+  }, [page]);
 
   useEffect(() => {
     try {
