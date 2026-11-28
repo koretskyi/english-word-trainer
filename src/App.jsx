@@ -184,7 +184,16 @@ function selectNextSentence(sentences, learningData) {
     const state = learningData.words[key];
     return !state || state.status === "NEW";
   });
-  return fresh ? fresh[1] : null;
+  if (fresh) return fresh[1];
+
+  // No new words and no review item due yet: continue with the nearest review.
+  const soonest = entries
+    .filter(([key]) => learningData.words[key]?.status === "REVIEW")
+    .sort((a, b) =>
+      (learningData.words[a[0]].dueAt - learningData.words[b[0]].dueAt) ||
+      ((learningData.words[a[0]].order || 0) - (learningData.words[b[0]].order || 0))
+    )[0];
+  return soonest ? soonest[1] : null;
 }
 
 function recordWordAnswer(previous, word, isCorrect) {
@@ -342,33 +351,56 @@ function createInitialAnswer(sentence) {
 
 
 // Озвучивание английского предложения встроенным синтезом речи браузера.
+let speechRequestId = 0;
+
 function speakEnglish(text, onFinished) {
   if (!text || !("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
     return false;
   }
 
+  const requestId = ++speechRequestId;
   window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  if (onFinished) {
-    utterance.onend = onFinished;
-    utterance.onerror = onFinished;
-  }
-  const voices = window.speechSynthesis.getVoices();
-  const englishVoices = voices.filter((voice) => /^en(-|_)/i.test(voice.lang));
-  // Сначала выбираем именно Microsoft Jenny; остальные голоса — только запасной вариант.
-  const preferredVoice =
-    englishVoices.find((voice) => /microsoft.*jenny|jenny.*microsoft/i.test(voice.name)) ||
-    englishVoices.find((voice) => /jenny/i.test(voice.name)) ||
-    englishVoices.find((voice) => /aria|samantha|ava|zira|susan|karen|victoria|female/i.test(voice.name)) ||
-    englishVoices.find((voice) => /^en-US/i.test(voice.lang)) ||
-    englishVoices.find((voice) => /^en-GB/i.test(voice.lang)) ||
-    englishVoices[0];
 
-  if (preferredVoice) utterance.voice = preferredVoice;
-  utterance.lang = preferredVoice?.lang || "en-US";
-  utterance.rate = 0.9;
-  utterance.pitch = 1.08;
-  window.speechSynthesis.speak(utterance);
+  const startSpeaking = () => {
+    if (requestId !== speechRequestId) return;
+    const voices = window.speechSynthesis.getVoices();
+    const englishVoices = voices.filter((voice) => /^en(-|_)/i.test(voice.lang));
+    // Prefer Microsoft Jenny; fall back to another English voice when unavailable.
+    const preferredVoice =
+      englishVoices.find((voice) => /microsoft.*jenny|jenny.*microsoft/i.test(voice.name)) ||
+      englishVoices.find((voice) => /jenny/i.test(voice.name)) ||
+      englishVoices.find((voice) => /aria|samantha|ava|zira|susan|karen|victoria|female/i.test(voice.name)) ||
+      englishVoices.find((voice) => /^en-US/i.test(voice.lang)) ||
+      englishVoices.find((voice) => /^en-GB/i.test(voice.lang)) ||
+      englishVoices[0];
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    if (preferredVoice) utterance.voice = preferredVoice;
+    utterance.lang = preferredVoice?.lang || "en-US";
+    utterance.rate = 0.9;
+    utterance.pitch = 1.08;
+    const finish = () => {
+      if (requestId === speechRequestId) onFinished?.();
+    };
+    utterance.onend = finish;
+    utterance.onerror = finish;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  if (window.speechSynthesis.getVoices().length) {
+    startSpeaking();
+  } else {
+    let fallbackTimer = window.setTimeout(() => {
+      window.speechSynthesis.removeEventListener?.("voiceschanged", onVoicesChanged);
+      startSpeaking();
+    }, 500);
+    const onVoicesChanged = () => {
+      window.clearTimeout(fallbackTimer);
+      window.speechSynthesis.removeEventListener?.("voiceschanged", onVoicesChanged);
+      startSpeaking();
+    };
+    window.speechSynthesis.addEventListener?.("voiceschanged", onVoicesChanged);
+  }
   return true;
 }
 
