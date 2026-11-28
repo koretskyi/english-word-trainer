@@ -1747,7 +1747,10 @@ export default function App() {
     sentences.forEach((item) => {
       if (!item || typeof item !== "object") return;
       const key = normalizeWord(item.word);
-      if (key && !index.has(key)) index.set(key, item);
+      if (!key) return;
+      if (!index.has(key)) index.set(key, { word: item.word, levels: [] });
+      const entry = index.get(key);
+      if (!entry.levels.includes(item.level)) entry.levels.push(item.level);
     });
     return index;
   }, [sentences]);
@@ -1769,7 +1772,7 @@ export default function App() {
     .map(([key, state]) => ({
       key,
       word: sentenceByWord.get(key)?.word || key,
-      level: sentenceByWord.get(key)?.level || "—",
+      level: sentenceByWord.get(key)?.levels?.join(", ") || "—",
       stage: state.stage,
       dueAt: state.dueAt,
       order: state.order || 0,
@@ -1795,11 +1798,11 @@ export default function App() {
   }), [reviewQueue, learningData.completedCount, readyReviewCount]);
 
   useEffect(() => {
-    if (page !== "study") {
+    if (page !== "study" || showStats) {
       setActiveWordKey(null);
       setCardSession((current) => current + 1);
     }
-  }, [page]);
+  }, [page, showStats]);
 
   useEffect(() => {
     try {
