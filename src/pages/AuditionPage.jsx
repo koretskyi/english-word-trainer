@@ -211,6 +211,15 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     return () => window.clearTimeout(timer);
   }, [dontKnowCountdown]);
 
+  // Автоматически переходим дальше после короткой паузы с правильным ответом.
+  useEffect(() => {
+    if (result !== "correct") return undefined;
+    const timer = window.setTimeout(() => {
+      setCardIndex((current) => (current + 1) % Math.max(1, filteredSentences.length));
+    }, 1600);
+    return () => window.clearTimeout(timer);
+  }, [result, sentence?.id, filteredSentences.length]);
+
   function beginVoiceCountdown(onComplete) {
     window.clearTimeout(countdownTimerRef.current);
     setVoicePreparing(true);
@@ -519,9 +528,6 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
         {result === "correct" ? (
           <div className="answer-result-card is-correct" role="status" aria-live="polite">
             <CorrectFeedback />
-            <button className="button button-primary" type="button" onClick={nextCard}>
-              Следующее предложение
-            </button>
           </div>
         ) : (
           <div className="study-card-footer">
