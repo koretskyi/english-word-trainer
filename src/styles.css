@@ -5814,3 +5814,9 @@ button:disabled {
   font-weight: 750;
   text-transform: lowercase;
 }
+
+
+/* Words tab: render the level word count in uppercase. */
+.study-panel .level-selector .level-word-count {
+  text-transform: uppercase;
+}
