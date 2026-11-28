@@ -142,7 +142,7 @@ function speakAuditionSentence(text, onStarted, onFinished, onError) {
   return true;
 }
 
-export default function AuditionPage({ sentences, selectedLevel, setSelectedLevel, levels, audioEnabled, levelProgress = [], reviewWords = [] }) {
+export default function AuditionPage({ sentences, selectedLevel, setSelectedLevel, levels, audioEnabled, levelProgress = [], reviewWords = [], wordLearningData = {} }) {
   const filteredSentences = useMemo(
     () => (Array.isArray(sentences) ? sentences : [])
       .filter((item) => item && item.level === selectedLevel && item.word && item.englishTemplate),
@@ -531,7 +531,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
         </div>
       </div>
 
-      <div className={`study-card-shell audition-card-shell${result === "correct" ? " is-answered" : ""}`}>
+      <div className={`study-card-shell audition-card-shell${result === "correct" ? " is-answered is-success" : ""}`}>
         <p className="eyebrow audition-card-heading">ПРОСЛУШАЙТЕ И ВОСПРОИЗВЕДИТЕ ПРЕДЛОЖЕНИЕ ГОЛОСОМ</p>
         <div className="study-card-image-slot audition-image-slot">
           <AuditionWordImage key={sentence.id} sentence={sentence} />
@@ -583,9 +583,28 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
         </div>
 
         {result === "correct" ? (
-          <div className="answer-result-card is-correct" role="status" aria-live="polite">
-            <CorrectFeedback />
-          </div>
+          <>
+            <div className="study-card-review-progress audition-success-progress"
+              role="progressbar"
+              aria-label={`Прогресс изучения слова: этап ${Math.min(6, Math.max(1, wordLearningData[String(sentence.word).trim().toLowerCase()]?.status === "MASTERED" ? 6 : wordLearningData[String(sentence.word).trim().toLowerCase()]?.stage || 1))} из 6`}
+              aria-valuemin={1} aria-valuemax={6}
+              aria-valuenow={Math.min(6, Math.max(1, wordLearningData[String(sentence.word).trim().toLowerCase()]?.status === "MASTERED" ? 6 : wordLearningData[String(sentence.word).trim().toLowerCase()]?.stage || 1))}>
+              <div className="study-card-review-progress-heading">
+                <span>ПРОГРЕСС ПОВТОРЕНИЯ</span>
+                <strong>{Math.min(6, Math.max(1, wordLearningData[String(sentence.word).trim().toLowerCase()]?.status === "MASTERED" ? 6 : wordLearningData[String(sentence.word).trim().toLowerCase()]?.stage || 1))}/6</strong>
+              </div>
+              <div className="study-card-review-progress-track">
+                {Array.from({ length: 6 }, (_, index) => (
+                  <span key={index} className={index < Math.min(6, Math.max(1, wordLearningData[String(sentence.word).trim().toLowerCase()]?.status === "MASTERED" ? 6 : wordLearningData[String(sentence.word).trim().toLowerCase()]?.stage || 1)) ? "is-filled" : ""} />
+                ))}
+              </div>
+            </div>
+            {sentence.russian && <h2 className="russian-sentence audition-success-translation">{sentence.russian}</h2>}
+            <p className="study-result-english audition-success-english">{englishText}</p>
+            <div className="answer-result-card is-correct" role="status" aria-live="polite">
+              <CorrectFeedback />
+            </div>
+          </>
         ) : (
           <div className="study-card-footer">
             {voiceModeActive && (
