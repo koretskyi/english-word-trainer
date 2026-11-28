@@ -5674,3 +5674,47 @@ button:disabled {
     font-size: 14px;
   }
 }
+
+
+/* Words tab: remove the underline from masked-word input slots. */
+.study-panel .study-card-shell .english-sentence .word-gap {
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Keep answer words inside their colored fields; captions sit underneath, outside. */
+.study-card-shell .incorrect-word-pair.is-compact {
+  align-items: flex-start;
+}
+.study-card-shell .incorrect-word-pair.is-compact > .answer-value-item {
+  display: flex;
+  flex: 1 1 180px;
+  min-width: min(0px, 100%);
+  max-width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.study-card-shell .incorrect-word-pair.is-compact > .answer-value-item > .answer-value-label {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  border: 1px solid;
+  border-radius: 12px;
+}
+.study-card-shell .incorrect-word-pair.is-compact > .answer-value-item > .answer-value-caption {
+  display: block;
+  margin: 0;
+  padding: 0;
+  color: var(--muted, #687080);
+  background: transparent;
+  border: 0;
+  font-size: 11px;
+  line-height: 1.25;
+  font-weight: 600;
+  text-align: center;
+}
