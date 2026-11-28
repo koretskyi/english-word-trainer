@@ -429,7 +429,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
         <div className="level-selector">
           <div className="level-label-group">
             <label htmlFor="audition-level">уровень:</label>
-            <span className="level-word-count">({levelWordCount} слов)</span>
+  
           </div>
           <select id="audition-level" value={selectedLevel} onChange={(event) => setSelectedLevel(event.target.value)}>
             {levels.map((level) => <option key={level} value={level}>{level}</option>)}
@@ -443,12 +443,8 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
               <div className="learning-progress-fill" style={{ width: `${currentLevelProgress.percent}%` }} />
             </div>
           </div>
-          <div className="level-review-shortcut audition-review-count" aria-label={`${levelReviewCount} слов на повторении`}>
-            <strong>{levelReviewCount}</strong>
-            <span>на повторении</span>
-          </div>
+          <span className="audition-counter audition-counter-uppercase">Предложение {cardIndex + 1} из {filteredSentences.length}</span>
         </div>
-        <span className="audition-counter">Предложение {cardIndex + 1} из {filteredSentences.length}</span>
       </div>
 
       <div className={`study-card-shell audition-card-shell${result === "correct" ? " is-answered" : ""}`}>
