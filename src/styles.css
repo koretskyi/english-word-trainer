@@ -5535,7 +5535,7 @@ button:disabled {
 }
 .study-card-shell .incorrect-word-pair.is-compact > .answer-value-label {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   justify-content: center;
   gap: 4px;
   min-height: 0;
@@ -5546,7 +5546,18 @@ button:disabled {
   text-transform: none;
   font-weight: 600;
 }
+.study-card-shell .incorrect-word-pair.is-compact > .answer-value-label small {
+  display: block;
+  order: 2;
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: .035em;
+  text-transform: none;
+}
 .study-card-shell .incorrect-word-pair.is-compact > .answer-value-label strong {
+  order: 1;
   display: block;
   font-size: clamp(25px, 3.4vw, 36px);
   line-height: 1.15;
