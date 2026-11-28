@@ -288,33 +288,33 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
 
   function playSentenceAndListen() {
     if (!englishText || result === "correct") return;
-    manualInputRef.current = false;
+    // Playback is independent: the replay button must never activate the microphone.
     window.clearTimeout(retryTimerRef.current);
     window.clearTimeout(countdownTimerRef.current);
+    retryTimerRef.current = null;
+    countdownTimerRef.current = null;
     voiceAttemptIdRef.current += 1;
     autoVoiceRef.current?.stop();
     autoVoiceRef.current = null;
-    voiceModeActiveRef.current = true;
-    setVoiceModeActive(true);
-    setSpeechError("");
+    voiceModeActiveRef.current = false;
+    setVoiceModeActive(false);
+    setVoicePreparing(false);
+    setVoiceCountdown(0);
     setAutoVoiceStatus("speaking");
+    setSpeechError("");
     const ok = speakAuditionSentence(englishText,
+      () => setAutoVoiceStatus("idle"),
       () => {
-        if (voiceModeActiveRef.current && !manualInputRef.current) {
-          beginVoiceCountdown(startVoiceInput);
-        }
-      },
-      () => {
-        if (voiceModeActiveRef.current) scheduleVoiceRetry("Не удалось озвучить предложение.");
+        setAutoVoiceStatus("idle");
+        setSpeechError("Не удалось озвучить предложение.");
       }
     );
     if (!ok) {
       setAutoVoiceStatus("idle");
       setSpeechError("Браузер не поддерживает озвучивание.");
-      voiceModeActiveRef.current = false;
-      setVoiceModeActive(false);
     }
   }
+
   function updateWordAnswer(token, nextValue) {
     manualInputRef.current = true;
     stopContinuousVoiceMode();
