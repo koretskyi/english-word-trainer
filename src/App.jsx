@@ -1934,7 +1934,7 @@ export default function App() {
     setVideos((current) => {
       const { _sourceUrl, _sourceStartTime, _sourceEndTime, ...updates } = video;
       const exists = current.some((item) => item.id === video.id);
-      if (!exists) return [...current, updates];
+      if (!exists) return _sourceUrl ? current : [...current, updates];
       return current.map((item) => {
         if (item.id !== video.id) return item;
         if (_sourceUrl && (
