@@ -173,7 +173,7 @@ function WordGap({ sentence, value, onChange, disabled, containerRef, showMistak
             type="text"
             inputMode="text"
             maxLength={1}
-            value={value[index] || ""}
+            value={revealAll ? "" : (value[index] || "")}
             placeholder={isOpened ? letter : "*"}
             onChange={(event) =>
               handleChange(index, event.target.value)
