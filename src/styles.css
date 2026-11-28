@@ -5414,3 +5414,17 @@ button:disabled {
 .study-card-shell .english-sentence .word-gap-container {
   margin-left: 10px;
 }
+
+
+/* Visible notice when browser storage refuses to save user data. */
+.storage-warning {
+  margin: 10px auto 0;
+  width: min(100% - 32px, 1120px);
+  padding: 10px 14px;
+  border: 1px solid rgba(190, 90, 45, 0.35);
+  border-radius: 10px;
+  background: rgba(190, 90, 45, 0.09);
+  color: var(--text-color, #7a321c);
+  font-size: 14px;
+  line-height: 1.45;
+}
