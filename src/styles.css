@@ -5822,9 +5822,10 @@ button:disabled {
 }
 
 
-/* Words tab: reduce the uppercase level word count by 3px. */
+/* Words tab: compact bold uppercase level word count. */
 .study-panel .level-selector .level-word-count {
   font-size: 13px;
+  font-weight: 700;
 }
 
 
