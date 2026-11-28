@@ -820,7 +820,7 @@ function StudyPage({
       <div className="level-selector">
         <div className="level-label-group">
           <label htmlFor="study-level">уровень:</label>
-          <span className="level-word-count">({levelWordCount} слов)</span>
+          <span className="level-word-count">{levelWordCount} слов</span>
         </div>
         <select id="study-level" value={selectedLevel}
           onChange={(event) => setSelectedLevel(event.target.value)}>
