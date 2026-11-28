@@ -151,6 +151,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   const voiceAttemptIdRef = useRef(0);
   const voiceModeActiveRef = useRef(false);
   const wordInputRefs = useRef([]);
+  const wordLastInputRefs = useRef([]);
   const sentence = filteredSentences.length
     ? filteredSentences[cardIndex % filteredSentences.length]
     : null;
@@ -482,6 +483,12 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
             }
             const thisWordRef = wordInputRefs.current[currentWordIndex];
             const nextWordRef = wordInputRefs.current[currentWordIndex + 1];
+            const thisWordLastRef = wordLastInputRefs.current[currentWordIndex] ||
+              (wordLastInputRefs.current[currentWordIndex] = { current: null });
+            const previousWordToken = wordTokens[currentWordIndex - 1];
+            const previousWordLastRef = currentWordIndex > 0
+              ? wordLastInputRefs.current[currentWordIndex - 1]
+              : null;
 
             return (
               <WordGap
@@ -492,7 +499,15 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
                 disabled={result === "correct" || dontKnowCountdown !== null}
                 autoFocus={currentWordIndex === 0}
                 firstInputRef={thisWordRef}
+                lastInputRef={thisWordLastRef}
                 nextInputRef={nextWordRef}
+                previousWordValue={previousWordToken
+                  ? (wordAnswers[previousWordToken.id] || Array([...previousWordToken.value].length).fill(""))
+                  : null}
+                previousWordOnChange={previousWordToken
+                  ? (nextValue) => updateWordAnswer(previousWordToken, nextValue)
+                  : null}
+                previousWordLastInputRef={previousWordLastRef}
                 showMistakes={result === "incorrect"}
                 openedPositions={openedPositionsByToken[token.id]}
                 revealAll={dontKnowCountdown !== null}
