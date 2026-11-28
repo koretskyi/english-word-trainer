@@ -140,8 +140,6 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   );
   const levelWordCount = new Set(filteredSentences.map((item) => String(item.word || "").trim().toLowerCase()).filter(Boolean)).size;
   const [auditionCompletedWords, setAuditionCompletedWords] = useState(loadAuditionCompletedWords);
-  const completedWordsInLevel = filteredSentences.reduce((count, item) =>
-    count + (auditionCompletedWords.includes(String(item.word || "").trim().toLowerCase()) ? 1 : 0), 0);
   const auditionProgressPercent = levelWordCount
     ? Math.round((new Set(filteredSentences
       .map((item) => String(item.word || "").trim().toLowerCase())
@@ -228,6 +226,23 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     }, 1000);
     return () => window.clearTimeout(timer);
   }, [dontKnowCountdown]);
+
+  // Фиксируем слово в прогрессе аудирования после правильного ответа.
+  useEffect(() => {
+    if (result !== "correct" || !sentence?.word) return;
+    const completedWord = String(sentence.word).trim().toLowerCase();
+    setAuditionCompletedWords((current) => current.includes(completedWord)
+      ? current
+      : [...current, completedWord]);
+  }, [result, sentence?.id, sentence?.word]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(AUDITION_PROGRESS_KEY, JSON.stringify(auditionCompletedWords));
+    } catch (error) {
+      console.warn("Не удалось сохранить прогресс аудирования:", error);
+    }
+  }, [auditionCompletedWords]);
 
   // Автоматически переходим дальше после короткой паузы с правильным ответом.
   useEffect(() => {
