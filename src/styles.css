@@ -5569,3 +5569,9 @@ button:disabled {
     font-size: clamp(23px, 6vw, 30px);
   }
 }
+
+
+/* Align the bottom of the Words card with the viewport after card/state changes. */
+.study-card-shell {
+  scroll-margin-bottom: 14px;
+}
