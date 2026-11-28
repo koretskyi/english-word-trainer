@@ -191,7 +191,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     wordInputRefs.current = [];
   }, [sentence?.id, englishText]);
 
-  // «Не знаю» показывает правильное предложение на 3 секунды,
+  // «Подсказка» показывает правильное предложение на 3 секунды,
   // затем возвращает пустые поля. Голосовой режим не запускается.
   useEffect(() => {
     if (dontKnowCountdown === null) return undefined;
@@ -524,13 +524,13 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
               </button>
               <button className="button button-secondary button-dont-know" type="button" onClick={handleDontKnow}
                 disabled={dontKnowCountdown !== null}>
-                Не знаю
+                Подсказка
               </button>
             </div>
 
             {dontKnowCountdown !== null && (
               <div className="audition-countdown" role="status" aria-live="assertive">
-                Ответ: {dontKnowCountdown}
+                подсказка исчезнет через {dontKnowCountdown}
               </div>
             )}
             {speechError && <p className="audition-speech-error" role="status">{speechError}</p>}
