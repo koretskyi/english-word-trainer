@@ -5774,3 +5774,15 @@ button:disabled {
     font-size: 22px !important;
   }
 }
+
+
+/* Smaller words in both colored answer fields on the incorrect-answer screen. */
+.study-card-shell .incorrect-word-pair.is-compact > .answer-value-item > .answer-value-label strong {
+  font-size: 20px !important;
+  line-height: 1.15;
+}
+@media (max-width: 520px) {
+  .study-card-shell .incorrect-word-pair.is-compact > .answer-value-item > .answer-value-label strong {
+    font-size: 18px !important;
+  }
+}
