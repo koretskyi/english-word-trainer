@@ -60,6 +60,16 @@ function AuditionWordImage({ sentence }) {
 }
 
 const AUDITION_PROGRESS_KEY = "english-word-trainer-audition-progress-v1";
+const AUDITION_POSITION_KEY = "english-word-trainer-audition-position-v1";
+
+function loadAuditionPosition(level) {
+  try {
+    const saved = JSON.parse(localStorage.getItem(AUDITION_POSITION_KEY) || "{}");
+    return Number.isInteger(saved?.[level]) && saved[level] >= 0 ? saved[level] : 0;
+  } catch {
+    return 0;
+  }
+}
 
 function loadAuditionCompletedWords() {
   try {
@@ -146,7 +156,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
       .filter((word) => auditionCompletedWords.includes(word))).size / levelWordCount) * 100)
     : 0;
   const levelReviewCount = reviewWords.filter((item) => item.level === selectedLevel).length;
-  const [cardIndex, setCardIndex] = useState(0);
+  const [cardIndex, setCardIndex] = useState(() => loadAuditionPosition(selectedLevel));
   const [voiceAnswer, setVoiceAnswer] = useState("");
   const [result, setResult] = useState("");
   const [speechError, setSpeechError] = useState("");
@@ -183,9 +193,23 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     ),
     [sentence?.id, englishText, maskedTokens]
   );
+  // При возврате на вкладку восстанавливаем последнюю карточку выбранного уровня.
   useEffect(() => {
-    setCardIndex(0);
+    setCardIndex(loadAuditionPosition(selectedLevel));
   }, [selectedLevel]);
+
+  // Позиция сохраняется отдельно для каждого уровня и переживает переключение вкладок.
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(AUDITION_POSITION_KEY) || "{}");
+      localStorage.setItem(AUDITION_POSITION_KEY, JSON.stringify({
+        ...(saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {}),
+        [selectedLevel]: cardIndex,
+      }));
+    } catch (error) {
+      console.warn("Не удалось сохранить позицию аудирования:", error);
+    }
+  }, [cardIndex, selectedLevel]);
 
   useEffect(() => {
     manualInputRef.current = false;
