@@ -5525,3 +5525,47 @@ button:disabled {
     flex: 1 1 130px;
   }
 }
+
+
+/* Compact incorrect-answer feedback: small captions, prominent answer words. */
+.study-card-shell .incorrect-word-pair.is-compact {
+  grid-template-rows: auto;
+  align-items: center;
+  gap: 10px;
+}
+.study-card-shell .incorrect-word-pair.is-compact > .answer-value-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-height: 0;
+  padding: 8px 10px;
+  font-size: 10px;
+  line-height: 1.2;
+  letter-spacing: .035em;
+  text-transform: none;
+  font-weight: 600;
+}
+.study-card-shell .incorrect-word-pair.is-compact > .answer-value-label strong {
+  display: block;
+  font-size: clamp(25px, 3.4vw, 36px);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+.study-card-shell .incorrect-word-pair.is-compact > .answer-value-label.is-correct-label strong {
+  color: #34783b;
+}
+.study-card-shell .incorrect-word-pair.is-compact > .answer-value-label.is-wrong-label strong {
+  color: #a94350;
+}
+@media (max-width: 520px) {
+  .study-card-shell .incorrect-word-pair.is-compact > .answer-value-label {
+    padding: 7px 5px;
+    font-size: 9px;
+  }
+  .study-card-shell .incorrect-word-pair.is-compact > .answer-value-label strong {
+    font-size: clamp(23px, 6vw, 30px);
+  }
+}
