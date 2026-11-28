@@ -86,13 +86,14 @@ function normalizeSentence(value) {
     .trim();
 }
 
-function speakAuditionSentence(text, onFinished, onError) {
+function speakAuditionSentence(text, onStarted, onFinished, onError) {
   if (!text || !("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
     return false;
   }
 
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
+  if (onStarted) utterance.onstart = onStarted;
   if (onFinished) {
     utterance.onend = onFinished;
     utterance.onerror = (event) => {
@@ -139,6 +140,8 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   const [voiceConfetti, setVoiceConfetti] = useState(false);
   const [voiceModeActive, setVoiceModeActive] = useState(false);
   const [voicePreparing, setVoicePreparing] = useState(false);
+  const [replayPending, setReplayPending] = useState(false);
+  const [replayPlaying, setReplayPlaying] = useState(false);
   const [voiceCountdown, setVoiceCountdown] = useState(0);
   const autoVoiceRef = useRef(null);
   const confettiTimerRef = useRef(null);
@@ -181,6 +184,8 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     setVoiceModeActive(false);
     setVoicePreparing(false);
     setVoiceCountdown(0);
+    setReplayPending(false);
+    setReplayPlaying(false);
     window.clearTimeout(confettiTimerRef.current);
     setVoiceAnswer("");
     setResult("");
@@ -361,15 +366,29 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     setVoicePreparing(false);
     setVoiceCountdown(0);
     setAutoVoiceStatus("speaking");
+    setReplayPending(true);
+    setReplayPlaying(false);
     setSpeechError("");
     const ok = speakAuditionSentence(englishText,
-      () => setAutoVoiceStatus("idle"),
       () => {
+        setReplayPending(false);
+        setReplayPlaying(true);
+      },
+      () => {
+        setReplayPending(false);
+        setReplayPlaying(false);
+        setAutoVoiceStatus("idle");
+      },
+      () => {
+        setReplayPending(false);
+        setReplayPlaying(false);
         setAutoVoiceStatus("idle");
         setSpeechError("Не удалось озвучить предложение.");
       }
     );
     if (!ok) {
+      setReplayPending(false);
+      setReplayPlaying(false);
       setAutoVoiceStatus("idle");
       setSpeechError("Браузер не поддерживает озвучивание.");
     }
@@ -519,8 +538,8 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a7 7 0 0 1-14 0M12 18v4m-4 0h8"/></svg>
                 <span className="voice-button-label">{voiceModeActive ? "Выйти из режима" : "Ответить голосом"}</span>
               </button>
-              <button className="button button-secondary" type="button" onClick={playSentenceAndListen} disabled={result === "correct"}>
-                Прослушать ещё раз
+              <button className={`button audition-replay-button${replayPending ? " is-pending" : ""}${replayPlaying ? " is-playing" : ""}`} type="button" onClick={playSentenceAndListen} disabled={result === "correct"} aria-pressed={replayPlaying}>
+                {replayPlaying ? "Воспроизводится…" : replayPending ? "Подготовка звука…" : "Прослушать ещё раз"}
               </button>
               <button className="button button-secondary button-dont-know" type="button" onClick={handleDontKnow}
                 disabled={dontKnowCountdown !== null}>
