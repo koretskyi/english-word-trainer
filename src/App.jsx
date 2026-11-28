@@ -1038,9 +1038,7 @@ function StudyPage({
           </div>
         )}
         <div className={`study-card-image-slot${checked && !correct && !markedKnown ? " is-feedback" : ""}`}>
-          {checked && !correct && !markedKnown
-            ? <StudyFeedbackVisual correct={correct} markedKnown={markedKnown} />
-            : <WordImage key={sentence.id} sentence={sentence} onReady={markVoiceImageReady} />}
+          <WordImage key={sentence.id} sentence={sentence} onReady={markVoiceImageReady} />
         </div>
         <h2 className="russian-sentence">{renderRussianSentence(sentence.russian, sentence.russianWord)}</h2>
         <div className={`study-card-english${checked ? " is-result" : ""}`}>
@@ -1072,11 +1070,9 @@ function StudyPage({
                 <CorrectFeedback />
               ) : (
                 <div className="incorrect-result-content">
-                  <div className="incorrect-word-pair">
-                    <div className="answer-value-label is-correct-label">Правильный ответ</div>
-                    <div className="answer-value-label is-wrong-label">Ваш ответ</div>
-                    <strong className="answer-value is-correct-answer">{sentence.word}</strong>
-                    <strong className="answer-value is-wrong-answer">{answer.join("").trim() || "—"}</strong>
+                  <div className="incorrect-word-pair is-compact">
+                    <span className="answer-value-label is-correct-label">Правильно: <strong>{sentence.word}</strong></span>
+                    <span className="answer-value-label is-wrong-label">Ваш ответ: <strong>{answer.join("").trim() || "—"}</strong></span>
                   </div>
                 </div>
               )}
