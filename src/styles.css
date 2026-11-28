@@ -5718,3 +5718,36 @@ button:disabled {
   font-weight: 600;
   text-align: center;
 }
+
+
+/* Larger answer fields and larger words on the Words incorrect-answer screen. */
+.study-card-shell .incorrect-word-pair.is-compact > .answer-value-item > .answer-value-label {
+  min-height: 78px;
+  padding: 12px 14px;
+}
+.study-card-shell .incorrect-word-pair.is-compact > .answer-value-item > .answer-value-label strong {
+  display: block;
+  font-size: clamp(32px, 4.2vw, 44px);
+  line-height: 1.12;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+.study-card-shell .incorrect-word-pair.is-compact > .answer-value-item > .answer-value-label.is-correct-label {
+  color: #34783b;
+  background: #dff2d8 !important;
+  border-color: #b9dfa9;
+}
+.study-card-shell .incorrect-word-pair.is-compact > .answer-value-item > .answer-value-label.is-wrong-label {
+  color: #a94350;
+  background: #fce4e6 !important;
+  border-color: #efc1c8;
+}
+@media (max-width: 520px) {
+  .study-card-shell .incorrect-word-pair.is-compact > .answer-value-item > .answer-value-label {
+    min-height: 70px;
+    padding: 10px 8px;
+  }
+  .study-card-shell .incorrect-word-pair.is-compact > .answer-value-item > .answer-value-label strong {
+    font-size: clamp(29px, 7vw, 38px);
+  }
+}
