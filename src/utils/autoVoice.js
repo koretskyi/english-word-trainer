@@ -10,10 +10,13 @@ export function startAutoVoiceCapture({ expectedWord = "", whisperModel = "mediu
   let lastSoundAt = 0;
   let noiseFloor = 0.004;
   let chunks = [];
+  let transcriptionController = null;
 
   const stop = () => {
     cancelled = true;
     stopped = true;
+    transcriptionController?.abort();
+    transcriptionController = null;
     if (animationFrame !== null) cancelAnimationFrame(animationFrame);
     if (recorder && recorder.state !== "inactive") recorder.stop();
     if (stream) stream.getTracks().forEach((track) => track.stop());
@@ -66,17 +69,20 @@ export function startAutoVoiceCapture({ expectedWord = "", whisperModel = "mediu
         onStatus?.("transcribing");
         console.info("[voice] Sending audio to local Whisper", { bytes: blob.size, mimeType: blob.type || "application/octet-stream", expectedWord });
         try {
+          transcriptionController = new AbortController();
           const response = await fetch("/api/transcribe", {
             method: "POST",
             headers: {
-            "Content-Type": blob.type || "application/octet-stream",
-            "X-Expected-Word": expectedWord,
+              "Content-Type": blob.type || "application/octet-stream",
+              "X-Expected-Word": expectedWord,
               "X-Whisper-Model": whisperModel,
               "X-Transcription-Mode": transcriptionMode,
-          },
+            },
             body: blob,
+            signal: transcriptionController.signal,
           });
           const data = await response.json().catch(() => ({}));
+          if (cancelled) return;
           if (!response.ok) throw new Error(data.detail || data.error || `Ошибка сервера (${response.status}).`);
           console.info("[voice] Whisper response", {
             status: response.status,
@@ -87,11 +93,14 @@ export function startAutoVoiceCapture({ expectedWord = "", whisperModel = "mediu
             editDistance: data.edit_distance,
           });
           if (!data.text?.trim()) throw new Error("Whisper не распознал слово. Попробуй произнести его ещё раз.");
-          onText?.(data.text.trim(), data);
+          if (!cancelled) onText?.(data.text.trim(), data);
         } catch (error) {
-          onError?.(error.message || "Ошибка отправки аудио на локальный Whisper.");
+          if (!cancelled && error.name !== "AbortError") {
+            onError?.(error.message || "Ошибка отправки аудио на локальный Whisper.");
+          }
         } finally {
-          onStatus?.("idle");
+          transcriptionController = null;
+          if (!cancelled) onStatus?.("idle");
         }
       };
 
