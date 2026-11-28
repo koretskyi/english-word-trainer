@@ -1929,23 +1929,24 @@ export default function App() {
 
   function saveSentence(sentence) {
     const base = SENTENCES.find((item) => item.id === sentence.id);
+    const savedSentence = base ? { ...base, ...sentence } : sentence;
     setSentenceState((current) => {
       const exists = current.sentences.some((item) => item.id === sentence.id);
       const sentencesNext = exists
-        ? current.sentences.map((item) => item.id === sentence.id ? sentence : item)
-        : [...current.sentences, sentence];
+        ? current.sentences.map((item) => item.id === sentence.id ? savedSentence : item)
+        : [...current.sentences, savedSentence];
       if (!base) {
         const userExists = current.userCreated.some((item) => item.id === sentence.id);
         return {
           ...current,
           sentences: sentencesNext,
           userCreated: userExists
-            ? current.userCreated.map((item) => item.id === sentence.id ? sentence : item)
-            : [...current.userCreated, sentence],
+            ? current.userCreated.map((item) => item.id === sentence.id ? savedSentence : item)
+            : [...current.userCreated, savedSentence],
         };
       }
       const changedFields = Object.fromEntries(
-        Object.entries(sentence).filter(([key, value]) =>
+        Object.entries(savedSentence).filter(([key, value]) =>
           key !== "id" && JSON.stringify(value) !== JSON.stringify(base[key])
         )
       );
