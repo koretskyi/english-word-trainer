@@ -79,10 +79,7 @@ function renderRussianSentence(sentence, targetWord) {
   return String(sentence || "").split(/(\p{L}+)/u).map((part, index) => {
     if (!/\p{L}/u.test(part)) return part;
     const token = normalize(part);
-    let commonLength = 0;
-    while (commonLength < token.length && commonLength < target.length &&
-      token[commonLength] === target[commonLength]) commonLength++;
-    const matches = token.length > 0 && commonLength >= Math.min(5, target.length);
+    const matches = token.length > 0 && token === target;
     return matches
       ? <span className="target-translation" key={index}>{part}</span>
       : part;
