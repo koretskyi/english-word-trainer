@@ -79,10 +79,15 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   const [micLevel, setMicLevel] = useState(0);
   const [voiceConfetti, setVoiceConfetti] = useState(false);
   const [voiceModeActive, setVoiceModeActive] = useState(false);
+  const [voicePreparing, setVoicePreparing] = useState(false);
+  const [voiceCountdown, setVoiceCountdown] = useState(0);
   const autoVoiceRef = useRef(null);
   const confettiTimerRef = useRef(null);
   const manualInputRef = useRef(false);
   const retryTimerRef = useRef(null);
+  const countdownTimerRef = useRef(null);
+  const voiceAttemptIdRef = useRef(0);
+  const voiceModeActiveRef = useRef(false);
   const wordInputRefs = useRef([]);
   const sentence = filteredSentences.length
     ? filteredSentences[cardIndex % filteredSentences.length]
@@ -105,12 +110,18 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
 
   useEffect(() => {
     manualInputRef.current = false;
+    voiceModeActiveRef.current = false;
+    voiceAttemptIdRef.current += 1;
+    window.clearTimeout(retryTimerRef.current);
+    window.clearTimeout(countdownTimerRef.current);
     autoVoiceRef.current?.stop();
     autoVoiceRef.current = null;
     setAutoVoiceStatus("idle");
     setMicLevel(0);
     setVoiceConfetti(false);
     setVoiceModeActive(false);
+    setVoicePreparing(false);
+    setVoiceCountdown(0);
     window.clearTimeout(confettiTimerRef.current);
     setVoiceAnswer("");
     setResult("");
@@ -128,7 +139,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     const timer = window.setTimeout(() => {
       if (dontKnowCountdown <= 1) {
         setDontKnowCountdown(null);
-        startAutomaticListening();
+        startContinuousVoiceMode();
       } else {
         setDontKnowCountdown((current) => current === null ? null : current - 1);
       }
@@ -136,15 +147,85 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     return () => window.clearTimeout(timer);
   }, [dontKnowCountdown]);
 
-  function startAutomaticListening() {
+  function beginVoiceCountdown(onComplete) {
+    window.clearTimeout(countdownTimerRef.current);
+    setVoicePreparing(true);
+    setVoiceCountdown(3);
+    let remaining = 3;
+    const tick = () => {
+      countdownTimerRef.current = window.setTimeout(() => {
+        remaining -= 1;
+        if (remaining > 0) {
+          setVoiceCountdown(remaining);
+          tick();
+          return;
+        }
+        countdownTimerRef.current = null;
+        setVoiceCountdown(0);
+        setVoicePreparing(false);
+        onComplete();
+      }, 1000);
+    };
+    tick();
+  }
+
+  function scheduleVoiceRetry(message = "Запись не распознана") {
+    if (!voiceModeActiveRef.current) return;
+    setAutoVoiceStatus("idle");
+    setMicLevel(0);
+    setSpeechError(message);
+    setVoicePreparing(false);
+    setVoiceCountdown(0);
+    window.clearTimeout(retryTimerRef.current);
+    retryTimerRef.current = window.setTimeout(() => {
+      retryTimerRef.current = null;
+      if (!voiceModeActiveRef.current) return;
+      beginVoiceCountdown(() => {
+        if (voiceModeActiveRef.current) startVoiceInput();
+      });
+    }, 1000);
+  }
+
+  function startContinuousVoiceMode() {
     if (!englishText || result === "correct") return;
     manualInputRef.current = false;
-    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    voiceModeActiveRef.current = true;
     setVoiceModeActive(true);
+    setSpeechError("");
+    setVoiceAnswer("");
     window.clearTimeout(retryTimerRef.current);
+    autoVoiceRef.current?.stop();
+    beginVoiceCountdown(startVoiceInput);
+  }
+
+  function stopContinuousVoiceMode() {
+    voiceModeActiveRef.current = false;
+    voiceAttemptIdRef.current += 1;
+    setVoiceModeActive(false);
+    setVoicePreparing(false);
+    setVoiceCountdown(0);
+    window.clearTimeout(retryTimerRef.current);
+    window.clearTimeout(countdownTimerRef.current);
+    retryTimerRef.current = null;
+    countdownTimerRef.current = null;
+    autoVoiceRef.current?.stop();
+    autoVoiceRef.current = null;
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    setAutoVoiceStatus("idle");
+    setMicLevel(0);
+  }
+
+  function startVoiceInput() {
+    if (!englishText || !voiceModeActiveRef.current || result === "correct") return;
+    window.clearTimeout(retryTimerRef.current);
+    retryTimerRef.current = null;
+    const attemptId = ++voiceAttemptIdRef.current;
     autoVoiceRef.current?.stop();
     setSpeechError("");
     setVoiceAnswer("");
+    setVoicePreparing(false);
+    setVoiceCountdown(0);
+    setAutoVoiceStatus("listening");
     const capture = startAutoVoiceCapture({
       expectedWord: englishText,
       transcriptionMode: "sentence",
@@ -155,28 +236,46 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
       calibrationMs: 350,
       noSpeechTimeoutMs: 4000,
       onStatus: (status) => {
+        if (attemptId !== voiceAttemptIdRef.current) return;
         setAutoVoiceStatus(status);
         if (status !== "listening") setMicLevel(0);
       },
-      onLevel: setMicLevel,
-      onError: (message) => setSpeechError(message),
+      onLevel: (level) => {
+        if (attemptId === voiceAttemptIdRef.current) setMicLevel(level);
+      },
+      onError: (message) => {
+        if (attemptId !== voiceAttemptIdRef.current) return;
+        scheduleVoiceRetry(message || "Не удалось записать звук. Повторная попытка…");
+      },
       onNoSpeech: () => {
-        setAutoVoiceStatus("idle");
-        setSpeechError("Не услышал речь. Нажми «Прослушать ещё раз» или микрофон и повтори всё предложение.");
+        if (attemptId !== voiceAttemptIdRef.current) return;
+        scheduleVoiceRetry("Запись не распознана");
       },
       onText: (recognizedText) => {
-        if (manualInputRef.current) return;
-        setVoiceConfetti(true);
-        window.clearTimeout(confettiTimerRef.current);
-        confettiTimerRef.current = window.setTimeout(() => setVoiceConfetti(false), 1400);
-        setVoiceAnswer(recognizedText);
-        if (normalizeSentence(recognizedText) === normalizeSentence(englishText)) {
+        if (attemptId !== voiceAttemptIdRef.current || manualInputRef.current) return;
+        const transcript = String(recognizedText || "").trim();
+        setVoiceAnswer(transcript);
+        setMicLevel(0);
+        if (normalizeSentence(transcript) === normalizeSentence(englishText)) {
+          setVoiceConfetti(true);
+          window.clearTimeout(confettiTimerRef.current);
+          confettiTimerRef.current = window.setTimeout(() => setVoiceConfetti(false), 1400);
+          setWordAnswers(Object.fromEntries(wordTokens.map((token) => [token.id, [...token.value]])));
           setSpeechError("");
           setResult("correct");
+          voiceModeActiveRef.current = false;
           setVoiceModeActive(false);
+          setVoicePreparing(false);
+          setVoiceCountdown(0);
+          setAutoVoiceStatus("idle");
         } else {
+          voiceModeActiveRef.current = false;
+          setVoiceModeActive(false);
+          setVoicePreparing(false);
+          setVoiceCountdown(0);
+          setAutoVoiceStatus("idle");
           setSpeechError("Предложение распознано не полностью или с ошибками. Попробуй ещё раз.");
-          setResult("");
+          setResult("incorrect");
         }
       },
     });
@@ -189,34 +288,30 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
     manualInputRef.current = false;
     window.clearTimeout(retryTimerRef.current);
     autoVoiceRef.current?.stop();
+    voiceModeActiveRef.current = true;
+    setVoiceModeActive(true);
     setSpeechError("");
     setAutoVoiceStatus("speaking");
     const ok = speakAuditionSentence(englishText,
-      () => { if (!manualInputRef.current) startAutomaticListening(); },
-      () => { setAutoVoiceStatus("idle"); setSpeechError("Не удалось озвучить предложение."); }
+      () => {
+        if (voiceModeActiveRef.current && !manualInputRef.current) {
+          beginVoiceCountdown(startVoiceInput);
+        }
+      },
+      () => {
+        if (voiceModeActiveRef.current) scheduleVoiceRetry("Не удалось озвучить предложение.");
+      }
     );
     if (!ok) {
       setAutoVoiceStatus("idle");
       setSpeechError("Браузер не поддерживает озвучивание.");
+      voiceModeActiveRef.current = false;
+      setVoiceModeActive(false);
     }
   }
-
-  useEffect(() => {
-    if (audioEnabled && englishText) playSentenceAndListen();
-    return () => {
-      window.clearTimeout(retryTimerRef.current);
-      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-      autoVoiceRef.current?.stop();
-      autoVoiceRef.current = null;
-    };
-  }, [sentence?.id, englishText, audioEnabled]);
-
   function updateWordAnswer(token, nextValue) {
     manualInputRef.current = true;
-    setVoiceModeActive(false);
-    window.clearTimeout(retryTimerRef.current);
-    autoVoiceRef.current?.stop();
-    setAutoVoiceStatus("idle");
+    stopContinuousVoiceMode();
     const nextAnswers = { ...wordAnswers, [token.id]: nextValue };
     setWordAnswers(nextAnswers);
     setVoiceAnswer("");
@@ -239,10 +334,8 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
   }
 
   function handleDontKnow() {
+    stopContinuousVoiceMode();
     manualInputRef.current = false;
-    window.clearTimeout(retryTimerRef.current);
-    autoVoiceRef.current?.stop();
-    setAutoVoiceStatus("idle");
     setVoiceAnswer("");
     setResult("");
     setSpeechError("");
@@ -300,7 +393,7 @@ export default function AuditionPage({ sentences, selectedLevel, setSelectedLeve
               sentence={{ id: `${sentence.id}-${token.id}`, word: token.value }}
               value={wordAnswers[token.id] || Array([...token.value].length).fill("")}
               onChange={(nextValue) => updateWordAnswer(token, nextValue)}
-              disabled
+              disabled={result === "correct" || dontKnowCountdown !== null}
               autoFocus={currentWordIndex === 0}
               firstInputRef={thisWordRef}
               nextInputRef={nextWordRef}
