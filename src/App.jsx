@@ -34,32 +34,66 @@ function loadSentenceState() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved !== null) {
       const parsed = JSON.parse(saved);
-      const savedSentences = Array.isArray(parsed)
-        ? parsed
-        : Array.isArray(parsed?.sentences) ? parsed.sentences : [];
       const deletedBuiltInIds = Array.isArray(parsed?.deletedBuiltInIds)
         ? parsed.deletedBuiltInIds.filter((id) => typeof id === "string")
         : [];
-      const validParsed = savedSentences.filter((sentence) =>
-        isValidSentence(sentence) &&
-        // Remove the obsolete imported batch (cards 051–080) from each level.
-        !/^(?:a1|a2|b1|b2|c1)_(?:0*(?:5[1-9]|[6-7]\d|80))$/i.test(String(sentence.id))
-      );
-      const savedById = new Map(validParsed.map((sentence) => [sentence.id, sentence]));
-      const builtInIds = new Set(SENTENCES.map((sentence) => sentence.id));
+      const builtInById = new Map(SENTENCES.map((sentence) => [sentence.id, sentence]));
+      const builtInIds = new Set(builtInById.keys());
+      let overrides = {};
+      let userCreated = [];
+
+      if (!Array.isArray(parsed) && parsed?.version === 2 && parsed.overrides && typeof parsed.overrides === "object") {
+        overrides = parsed.overrides;
+        userCreated = Array.isArray(parsed.userCreated) ? parsed.userCreated.filter(isValidSentence) : [];
+      } else {
+        // Migrate the previous full-card array into field-level overrides.
+        const savedSentences = Array.isArray(parsed)
+          ? parsed
+          : Array.isArray(parsed?.sentences) ? parsed.sentences : [];
+        const validParsed = savedSentences.filter((sentence) =>
+          isValidSentence(sentence) &&
+          !/^(?:a1|a2|b1|b2|c1)_(?:0*(?:5[1-9]|[6-7]\\d|80))$/i.test(String(sentence.id))
+        );
+        for (const savedSentence of validParsed) {
+          const base = builtInById.get(savedSentence.id);
+          if (!base) {
+            userCreated.push(savedSentence);
+            continue;
+          }
+          const changedFields = Object.fromEntries(
+            Object.entries(savedSentence).filter(([key, value]) =>
+              key !== "id" && JSON.stringify(value) !== JSON.stringify(base[key])
+            )
+          );
+          if (Object.keys(changedFields).length) overrides[savedSentence.id] = changedFields;
+        }
+      }
+
       const deletedIds = new Set(deletedBuiltInIds);
       const mergedBuiltIn = SENTENCES
         .filter((sentence) => !deletedIds.has(sentence.id))
-        .map((sentence) => ({ ...sentence, ...(savedById.get(sentence.id) || {}) }));
-      const userCreated = validParsed.filter((sentence) => !builtInIds.has(sentence.id));
-      return { sentences: [...mergedBuiltIn, ...userCreated], deletedBuiltInIds };
+        .map((sentence) => ({ ...sentence, ...(overrides[sentence.id] || {}) }))
+        .filter(isValidSentence);
+      const validUserCreated = userCreated.filter((sentence) =>
+        isValidSentence(sentence) && !builtInIds.has(sentence.id)
+      );
+      return {
+        sentences: [...mergedBuiltIn, ...validUserCreated],
+        overrides,
+        userCreated: validUserCreated,
+        deletedBuiltInIds,
+      };
     }
   } catch (error) {
     console.error("Ошибка загрузки предложений:", error);
   }
-  return { sentences: SENTENCES.filter(isValidSentence), deletedBuiltInIds: [] };
+  return {
+    sentences: SENTENCES.filter(isValidSentence),
+    overrides: {},
+    userCreated: [],
+    deletedBuiltInIds: [],
+  };
 }
-
 
 
 const LEARNING_STORAGE_KEY = "english-word-trainer-learning-v1";
@@ -1764,7 +1798,12 @@ export default function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(sentenceState));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        version: 2,
+        overrides: sentenceState.overrides,
+        userCreated: sentenceState.userCreated,
+        deletedBuiltInIds: sentenceState.deletedBuiltInIds,
+      }));
     } catch (error) {
       console.error("Не удалось сохранить предложения:", error);
       setStorageWarning("Не удалось сохранить карточки: возможно, переполнено хранилище браузера. Освободи место и обнови страницу.");
@@ -1831,13 +1870,34 @@ export default function App() {
   }
 
   function saveSentence(sentence) {
+    const base = SENTENCES.find((item) => item.id === sentence.id);
     setSentenceState((current) => {
       const exists = current.sentences.some((item) => item.id === sentence.id);
+      const sentencesNext = exists
+        ? current.sentences.map((item) => item.id === sentence.id ? sentence : item)
+        : [...current.sentences, sentence];
+      if (!base) {
+        const userExists = current.userCreated.some((item) => item.id === sentence.id);
+        return {
+          ...current,
+          sentences: sentencesNext,
+          userCreated: userExists
+            ? current.userCreated.map((item) => item.id === sentence.id ? sentence : item)
+            : [...current.userCreated, sentence],
+        };
+      }
+      const changedFields = Object.fromEntries(
+        Object.entries(sentence).filter(([key, value]) =>
+          key !== "id" && JSON.stringify(value) !== JSON.stringify(base[key])
+        )
+      );
+      const overrides = { ...current.overrides };
+      if (Object.keys(changedFields).length) overrides[sentence.id] = changedFields;
+      else delete overrides[sentence.id];
       return {
         ...current,
-        sentences: exists
-          ? current.sentences.map((item) => item.id === sentence.id ? sentence : item)
-          : [...current.sentences, sentence],
+        sentences: sentencesNext,
+        overrides,
         deletedBuiltInIds: current.deletedBuiltInIds.filter((deletedId) => deletedId !== sentence.id),
       };
     });
@@ -1845,13 +1905,19 @@ export default function App() {
 
   function deleteSentence(id) {
     const isBuiltIn = SENTENCES.some((item) => item.id === id);
-    setSentenceState((current) => ({
-      ...current,
-      sentences: current.sentences.filter((item) => item.id !== id),
-      deletedBuiltInIds: isBuiltIn && !current.deletedBuiltInIds.includes(id)
-        ? [...current.deletedBuiltInIds, id]
-        : current.deletedBuiltInIds,
-    }));
+    setSentenceState((current) => {
+      const overrides = { ...current.overrides };
+      delete overrides[id];
+      return {
+        ...current,
+        sentences: current.sentences.filter((item) => item.id !== id),
+        overrides,
+        userCreated: current.userCreated.filter((item) => item.id !== id),
+        deletedBuiltInIds: isBuiltIn && !current.deletedBuiltInIds.includes(id)
+          ? [...current.deletedBuiltInIds, id]
+          : current.deletedBuiltInIds,
+      };
+    });
   }
 
   function saveVideo(video) {
