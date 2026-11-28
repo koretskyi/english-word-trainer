@@ -5820,3 +5820,9 @@ button:disabled {
 .study-panel .level-selector .level-word-count {
   text-transform: uppercase;
 }
+
+
+/* Words tab: reduce the uppercase level word count by 3px. */
+.study-panel .level-selector .level-word-count {
+  font-size: 13px;
+}
